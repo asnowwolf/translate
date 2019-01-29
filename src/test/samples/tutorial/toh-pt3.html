@@ -65,7 +65,7 @@
         msg = msg.replace(/^Error: /, '');
         if (e) {
           stack = e.stack
-          // strip the leading "Error: " from the stack trace
+            // strip the leading "Error: " from the stack trace
             .replace(/^Error: /, '')
             // strip the message from the stack trace, if present
             .replace(msg + '\n', '')

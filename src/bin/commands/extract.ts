@@ -1,6 +1,6 @@
 import { CommandBuilder } from 'yargs';
 import { extractFromFiles } from '../../trans-kit';
-import { toArray } from 'rxjs/operators';
+import { filter, toArray } from 'rxjs/operators';
 import { writeFileSync } from 'fs';
 
 export const command = `extract <sourceGlob> [outFile]`;
@@ -20,6 +20,11 @@ export const builder: CommandBuilder = {
     choices: ['google', 'ms'],
     default: 'google',
   },
+  pattern: {
+    type: 'string',
+    default: '.*',
+    description: '要过滤的正则表达式',
+  },
   unique: {
     type: 'boolean',
     default: false,
@@ -31,11 +36,14 @@ interface ExtractParams {
   outFile: string;
   unique: boolean;
   outType: 'google' | 'ms';
+  pattern: RegExp;
 }
 
-export const handler = function ({ sourceGlob, outFile, unique, outType }: ExtractParams) {
+export const handler = function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
+  const regExp = new RegExp(pattern, 'i');
   return extractFromFiles(sourceGlob, unique)
     .pipe(
+      filter(it => regExp.test(it.english) || regExp.test(it.chinese)),
       toArray(),
     )
     .subscribe((pairs) => {

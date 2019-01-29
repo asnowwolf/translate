@@ -1,12 +1,19 @@
 import { JSDOM } from 'jsdom';
 import * as globby from 'globby';
-import { addIdForHeaders, extractAll, markAndSwapAll } from './html';
-import { from, Observable, of } from 'rxjs';
+import { addIdForHeaders, defaultSelectors, extractAll, markAndSwapAll } from './html';
+import { concat, defer, from, Observable, of } from 'rxjs';
 import * as vfile from 'to-vfile';
 import { VFile } from 'vfile';
-import { distinct, filter, flatMap, map, switchMap, tap } from 'rxjs/operators';
+import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
+import { extname, join } from 'path';
+import * as request from 'request-promise-native';
+import { fromPromise } from 'rxjs/internal-compatibility';
+import { v4 } from 'uuid';
 
 export function listFiles(globPattern: string): Observable<string> {
+  if (globPattern.indexOf('*') === -1 && extname(globPattern) === '.') {
+    globPattern = join(globPattern, '**/*.html');
+  }
   const files = globby.sync(globPattern);
   return from(files);
 }
@@ -155,10 +162,131 @@ export function autoCheckFiles(sourceGlob: string): Observable<string> {
       distinct(),
       map(({ english, chinese }) => ({ english: textOf(english), chinese: textOf(chinese) })),
       filter(({ english, chinese }) => {
-        return chinese.indexOf(english) === -1 && countOfChinese(chinese) >= 10 &&
-          (english.length > chinese.length * 4 || english.length < chinese.length);
+        return chinese.indexOf(english) === -1 && // 排除中文完全包含英文的
+          countOfChinese(chinese) >= 10 &&  // 中文字符数必须大于 10
+          ((english.length > chinese.length * 4 || english.length < chinese.length) || // 英文长度和中文长度比例过大或过小
+            wordCount(english, 'angular') !== wordCount(chinese, 'angular')); // 中文和英文中包含的 Angular 个数不一样
       }),
       map(({ english, chinese }) => `${english}(${english.length})\t|\t${chinese}(${chinese.length})`),
     )),
   );
+}
+
+function wordCount(text: string, word: string): number {
+  let count = 0;
+  for (let i = 0; i < text.length; ++i) {
+    if (text.slice(i, i + word.length).toLowerCase() === word) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+export function autoTranslateFiles(sourceGlob: string): Observable<VFile> {
+  return listFiles(sourceGlob).pipe(
+    map(read()),
+    switchMap(file => of(file).pipe(
+      map(parse()),
+      switchMap(dom => of(dom).pipe(
+        map(dom => dom.window.document),
+        tap(checkCharset()),
+        switchMap((doc) => translateDoc(doc, defaultSelectors)),
+        mapTo(dom),
+      )),
+      map(dom => dom.serialize()),
+      tap((html) => file.contents = html),
+      mapTo(file),
+    )),
+  );
+}
+
+function shouldIgnore(element: Element): boolean {
+  return !!element.querySelector('[translation-result]');
+}
+
+function translateElement(element: Element): Observable<string> {
+  if (shouldIgnore(element)) {
+    return of(element.innerHTML);
+  }
+  return translate(element.innerHTML).pipe(
+    tap(result => {
+      const resultNode = element.ownerDocument!.createElement(element.tagName);
+      resultNode.innerHTML = result;
+      element.parentElement!.insertBefore(resultNode, element);
+      // 交换 id
+      const id = element.getAttribute('id');
+      if (id) {
+        resultNode.setAttribute('id', id);
+        element.removeAttribute('id');
+      }
+      resultNode.setAttribute('translation-result', 'on');
+      element.setAttribute('translation-origin', 'off');
+    }),
+  );
+}
+
+function translateDoc(doc: HTMLDocument, selectors: string[]): Observable<HTMLDocument> {
+  const translateTitleTask = translate(doc.title).pipe(
+    tap(title => doc.title = title),
+  );
+
+  const elements = selectors.map(selector => Array.from(doc.querySelectorAll(selector)))
+    .reduce((result, item) => [...result, ...item]);
+  const translateElementTasks = elements.map(element => translateElement(element));
+
+  const tasks = [
+    translateTitleTask,
+    ...translateElementTasks,
+  ];
+  return concat(tasks).pipe(
+    flatMap(items => items),
+    toArray(),
+    mapTo(doc),
+  );
+}
+
+interface DetectedLanguage {
+  language: string;
+  score: number;
+}
+
+interface TranslationText {
+  text: string;
+  to: string;
+}
+
+interface TranslationResult {
+  detectedLanguage: DetectedLanguage;
+  translations: TranslationText[];
+}
+
+export function translate(text: string): Observable<string> {
+  return defer(() => fromPromise(request({
+    method: 'POST',
+    baseUrl: 'https://api.cognitive.microsofttranslator.com/',
+    url: 'translate',
+    qs: {
+      'api-version': '3.0',
+      'to': 'zh-Hans',
+      category: '1a5430e5-383d-45be-a1ba-b3d99d0176f8-TECH',
+      textType: 'html',
+    },
+    headers: {
+      'Ocp-Apim-Subscription-Key': subscriptionKey,
+      'Content-type': 'application/json',
+      'X-ClientTraceId': v4().toString(),
+    },
+    body: [{
+      'text': text,
+    }],
+    json: true,
+  })).pipe(
+    map((results) => results[0] as TranslationResult),
+    map(result => result.translations[0].text),
+  ));
+}
+
+const subscriptionKey = process.env.MS_TRANSLATOR;
+if (!subscriptionKey) {
+  throw new Error('Environment variable for your subscription key is not set.');
 }

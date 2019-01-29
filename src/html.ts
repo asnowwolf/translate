@@ -38,7 +38,9 @@ export function extractAll(body: HTMLElement): SentencePair[] {
   const results: SentencePair[] = [];
   resultElements.forEach(origin => {
     const result = origin.previousElementSibling!;
-    results.push({ english: origin, chinese: result });
+    if (!containsChinese(origin.textContent!)) {
+      results.push({ english: origin, chinese: result });
+    }
   });
   return results;
 }

@@ -116,3 +116,5 @@ typings/
 .next
 
 dist/
+
+/temp

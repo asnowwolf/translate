@@ -1,23 +1,27 @@
 import { CommandBuilder } from 'yargs';
-import { autoCheckFiles } from '../../trans-kit';
+import { autoTranslateFiles } from '../../trans-kit';
 import { map, toArray } from 'rxjs/operators';
 
-export const command = `check <sourceGlob>`;
+export const command = `translate <sourceGlob> <outDir>`;
 
-export const describe = '根据中英字符串长度粗略检查翻译结果';
+export const describe = '把 sourceGlob 中的内容自动翻译的 targetDir 中';
 
 export const builder: CommandBuilder = {
   sourceGlob: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
+  outDir: {
+    description: '输出目录',
+  },
 };
 
-interface CheckParams {
+interface Params {
   sourceGlob: string;
+  outDir: string;
 }
 
-export const handler = function ({ sourceGlob }: CheckParams) {
-  return autoCheckFiles(sourceGlob)
+export const handler = function ({ sourceGlob, outDir }: Params) {
+  return autoTranslateFiles(sourceGlob)
     .pipe(
       toArray(),
       map((pairs) => pairs.join('\n')),
