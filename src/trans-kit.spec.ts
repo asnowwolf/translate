@@ -5,18 +5,17 @@ import {
   addTranslationMark,
   autoTranslateFiles,
   checkCharset,
-  extractFromFiles,
   injectTranslators,
   listFiles,
   parse,
   read,
   replaceResourceUrls,
   stringify,
-  translate,
   write,
 } from './trans-kit';
-import { map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
+import { map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { translate } from './engine';
 
 describe('trans-kit', function () {
   it('processTranslation', () => {
@@ -44,18 +43,8 @@ describe('trans-kit', function () {
       )),
     ).toPromise();
   });
-  it('extract all', () => {
-    return extractFromFiles(exampleGlob, false).pipe(
-      map(({ english, chinese }) => `${english}\t${chinese}`),
-      toArray(),
-      tap((result) => expect(result).eql([
-        'Writing file contents\t编写文件内容',
-      ])),
-    ).toPromise();
-  });
   it('translate one', () => {
-    return translate(`<p>There are now 3 new APIs: <code>Query</code>, <code>Mutation</code> and <code>Subscription</code>. Each of them allows to define the shape of a result &amp; variables.
-The only thing you need to do is to set the document property. That’s it, you use it as a regular Angular service.</p>`).pipe(
+    return translate(`Service Worker is a technology`).pipe(
       tap(it => expect(it).eql('Service Worker 是一种技术')),
     ).toPromise();
   });

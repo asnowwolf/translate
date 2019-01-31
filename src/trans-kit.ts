@@ -1,14 +1,12 @@
 import { JSDOM } from 'jsdom';
 import * as globby from 'globby';
 import { addIdForHeaders, defaultSelectors, extractAll, markAndSwapAll } from './html';
-import { concat, defer, from, Observable, of } from 'rxjs';
+import { concat, from, Observable, of } from 'rxjs';
 import * as vfile from 'to-vfile';
 import { VFile } from 'vfile';
 import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
 import { extname, join } from 'path';
-import * as request from 'request-promise-native';
-import { fromPromise } from 'rxjs/internal-compatibility';
-import { v4 } from 'uuid';
+import { translate } from './engine';
 
 export function listFiles(globPattern: string): Observable<string> {
   if (globPattern.indexOf('*') === -1 && extname(globPattern) === '.') {
@@ -243,50 +241,4 @@ function translateDoc(doc: HTMLDocument, selectors: string[]): Observable<HTMLDo
     toArray(),
     mapTo(doc),
   );
-}
-
-interface DetectedLanguage {
-  language: string;
-  score: number;
-}
-
-interface TranslationText {
-  text: string;
-  to: string;
-}
-
-interface TranslationResult {
-  detectedLanguage: DetectedLanguage;
-  translations: TranslationText[];
-}
-
-export function translate(text: string): Observable<string> {
-  return defer(() => fromPromise(request({
-    method: 'POST',
-    baseUrl: 'https://api.cognitive.microsofttranslator.com/',
-    url: 'translate',
-    qs: {
-      'api-version': '3.0',
-      'to': 'zh-Hans',
-      category: '1a5430e5-383d-45be-a1ba-b3d99d0176f8-TECH',
-      textType: 'html',
-    },
-    headers: {
-      'Ocp-Apim-Subscription-Key': subscriptionKey,
-      'Content-type': 'application/json',
-      'X-ClientTraceId': v4().toString(),
-    },
-    body: [{
-      'text': text,
-    }],
-    json: true,
-  })).pipe(
-    map((results) => results[0] as TranslationResult),
-    map(result => result.translations[0].text),
-  ));
-}
-
-const subscriptionKey = process.env.MS_TRANSLATOR;
-if (!subscriptionKey) {
-  throw new Error('Environment variable for your subscription key is not set.');
 }
