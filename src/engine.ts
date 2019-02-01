@@ -3,6 +3,7 @@ import { fromPromise } from 'rxjs/internal-compatibility';
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { map } from 'rxjs/operators';
+import { PredictionServiceClient } from '@google-cloud/automl';
 
 interface DetectedLanguage {
   language: string;
@@ -19,7 +20,12 @@ interface TranslationResult {
   translations: TranslationText[];
 }
 
-function translateUsingMsTranslator(text: string): Observable<string> {
+export function translateByMsTranslator(text: string): Observable<string> {
+  const subscriptionKey = process.env.MS_TRANSLATOR;
+  if (!subscriptionKey) {
+    throw new Error('Environment variable for your subscription key is not set.');
+  }
+
   return fromPromise(request({
     method: 'POST',
     baseUrl: 'https://api.cognitive.microsofttranslator.com/',
@@ -45,11 +51,47 @@ function translateUsingMsTranslator(text: string): Observable<string> {
   );
 }
 
-export function translate(text: string): Observable<string> {
-  return defer(() => translateUsingMsTranslator(text));
+export function translateByAutoML(text: string): Observable<string> {
+  const client = new PredictionServiceClient();
+
+  const formattedName = client.modelPath('ralph-gde', 'us-central1', 'TRL9199068616738092360');
+  const payload = {
+    textSnippet: {
+      content: text,
+      mimeType: `text/html`,
+    },
+  };
+  const request = {
+    name: formattedName,
+    payload: payload,
+  };
+  return fromPromise(client.predict(request).then((responses: AutoMLResponse[]) => {
+    return responses[0].payload[0].translation.translatedContent.content;
+  }));
 }
 
-const subscriptionKey = process.env.MS_TRANSLATOR;
-if (!subscriptionKey) {
-  throw new Error('Environment variable for your subscription key is not set.');
+export function translate(text: string): Observable<string> {
+  return defer(() => translateByAutoML(text));
+}
+
+interface AutoMLResponse {
+  metadata: Record<string, string>;
+  payload: AutoMLResponsePayload[];
+}
+
+interface AutoMLResponsePayload {
+  annotationSpecId: string;
+  detail: string;
+  displayName: string;
+  translation: AutoMLTranslation;
+}
+
+interface AutoMLTranslation {
+  translatedContent: AutoMLTranslationContent;
+}
+
+interface AutoMLTranslationContent {
+  content: string;
+  contentUri: string;
+  mimeType: string;
 }

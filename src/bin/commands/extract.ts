@@ -2,6 +2,7 @@ import { CommandBuilder } from 'yargs';
 import { extractFromFiles } from '../../trans-kit';
 import { filter, toArray } from 'rxjs/operators';
 import { writeFileSync } from 'fs';
+import { TranslationEngine } from '../../common';
 
 export const command = `extract <sourceGlob> [outFile]`;
 
@@ -17,8 +18,8 @@ export const builder: CommandBuilder = {
   },
   outType: {
     type: 'string',
-    choices: ['google', 'ms'],
-    default: 'google',
+    choices: [TranslationEngine.google, TranslationEngine.ms],
+    default: TranslationEngine.google,
   },
   pattern: {
     type: 'string',
@@ -35,7 +36,7 @@ interface ExtractParams {
   sourceGlob: string;
   outFile: string;
   unique: boolean;
-  outType: 'google' | 'ms';
+  outType: TranslationEngine;
   pattern: RegExp;
 }
 
@@ -47,10 +48,10 @@ export const handler = function ({ sourceGlob, outFile, unique, outType, pattern
       toArray(),
     )
     .subscribe((pairs) => {
-      if (outType === 'google') {
+      if (outType === TranslationEngine.google) {
         const content = pairs.map(it => `${it.english}\t${it.chinese}`).join('\n');
         writeTo(outFile, 'pair', content);
-      } else if (outType === 'ms') {
+      } else if (outType === TranslationEngine.ms) {
         writeTo(outFile, 'en', pairs.map(it => it.english).join('\n'));
         writeTo(outFile, 'cn', pairs.map(it => it.chinese).join('\n'));
       }
