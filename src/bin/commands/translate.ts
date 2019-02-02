@@ -1,6 +1,5 @@
 import { CommandBuilder } from 'yargs';
 import { autoTranslateFiles } from '../../trans-kit';
-import { map, toArray } from 'rxjs/operators';
 
 export const command = `translate <sourceGlob> <outDir>`;
 
@@ -21,12 +20,7 @@ interface Params {
 }
 
 export const handler = function ({ sourceGlob, outDir }: Params) {
-  return autoTranslateFiles(sourceGlob)
-    .pipe(
-      toArray(),
-      map((pairs) => pairs.join('\n')),
-    )
-    .subscribe((pairs) => {
-      console.log(pairs);
-    });
+  return autoTranslateFiles(sourceGlob).subscribe((vfile) => {
+    console.log(vfile.contents);
+  });
 };

@@ -21,7 +21,13 @@ export function addIdForHeaders(body: HTMLElement): void {
   });
 }
 
+function restructureElements(body: HTMLElement): void {
+  const nodes = Array.from(body.childNodes);
+  nodes.map(node => node.textContent);
+}
+
 export function markAndSwapAll(body: HTMLElement, selectors: string[] = defaultSelectors): void {
+  restructureElements(body);
   restructureTable(body);
   selectors.forEach(selectors => mark(body, selectors));
   swap(body);

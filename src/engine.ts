@@ -71,7 +71,7 @@ export function translateByAutoML(text: string): Observable<string> {
 }
 
 export function translate(text: string): Observable<string> {
-  return defer(() => translateByAutoML(text));
+  return defer(() => translateByMsTranslator(text));
 }
 
 interface AutoMLResponse {

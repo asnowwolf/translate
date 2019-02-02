@@ -1,10 +1,10 @@
 import { JSDOM } from 'jsdom';
-import * as globby from 'globby';
+import { sync as globby } from 'globby';
 import { addIdForHeaders, defaultSelectors, extractAll, markAndSwapAll } from './html';
 import { concat, from, Observable, of } from 'rxjs';
 import * as vfile from 'to-vfile';
 import { VFile } from 'vfile';
-import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
+import { distinct, filter, flatMap, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { extname, join } from 'path';
 import { translate } from './engine';
 
@@ -12,7 +12,7 @@ export function listFiles(globPattern: string): Observable<string> {
   if (globPattern.indexOf('*') === -1 && extname(globPattern) === '.') {
     globPattern = join(globPattern, '**/*.html');
   }
-  const files = globby.sync(globPattern);
+  const files = globby(globPattern);
   return from(files);
 }
 
@@ -238,7 +238,6 @@ function translateDoc(doc: HTMLDocument, selectors: string[]): Observable<HTMLDo
   ];
   return concat(tasks).pipe(
     flatMap(items => items),
-    toArray(),
     mapTo(doc),
   );
 }

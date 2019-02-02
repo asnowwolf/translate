@@ -48,8 +48,14 @@ describe('trans-kit', function () {
       tap(it => expect(it).eql('Service Worker 是一种技术')),
     ).toPromise();
   });
-  it('translate all', () => {
-    return autoTranslateFiles(__dirname + '/test/samples/quickstart.html').pipe(
+  it('translate one file', () => {
+    return autoTranslateFiles('./src/test/samples/sample-en.html').pipe(
+      map(file => file.contents),
+      tap((content => writeFileSync('./src/test/samples/sample-cn.html', content, 'utf-8'))),
+    ).toPromise();
+  });
+  it('translate all files', () => {
+    return autoTranslateFiles(__dirname + '/test/samples/**/*.html').pipe(
       map(file => file.contents),
       tap((content => writeFileSync('./temp/test.html', content, 'utf-8'))),
     ).toPromise();

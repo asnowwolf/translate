@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
+    "@types/globby": "^8.0.0",
     "@types/jsdom": "^12.2.1",
     "@types/mdast": "^3.0.1",
     "@types/node": "^9.6.41",
