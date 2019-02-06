@@ -1,4 +1,5 @@
-export enum TranslationEngine {
+export enum TranslationEngineType {
   google = 'google',
-  ms = 'ms'
+  ms = 'ms',
+  fake = 'fake',
 }

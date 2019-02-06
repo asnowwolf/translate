@@ -1,5 +1,6 @@
 import { CommandBuilder } from 'yargs';
-import { autoTranslateFiles } from '../../trans-kit';
+import { TranslationKit } from '../../translation-kit';
+import { TranslationEngineType } from '../../common';
 
 export const command = `translate <sourceGlob> <outDir>`;
 
@@ -12,15 +13,22 @@ export const builder: CommandBuilder = {
   outDir: {
     description: '输出目录',
   },
+  engine: {
+    type: 'string',
+    choices: [TranslationEngineType.google, TranslationEngineType.ms],
+    default: TranslationEngineType.google,
+  },
 };
 
 interface Params {
   sourceGlob: string;
   outDir: string;
+  engine: TranslationEngineType;
 }
 
-export const handler = function ({ sourceGlob, outDir }: Params) {
-  return autoTranslateFiles(sourceGlob).subscribe((vfile) => {
+export const handler = function ({ sourceGlob, outDir, engine }: Params) {
+  const kit = new TranslationKit(engine);
+  return kit.translateFiles(sourceGlob).subscribe((vfile) => {
     console.log(vfile.contents);
   });
 };

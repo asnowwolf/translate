@@ -1,6 +1,6 @@
 import * as slugs from 'github-slugger';
 
-export const defaultSelectors = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't', '.section-nav li.toc-entry'];
+export const defaultSelectors = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'];
 
 export interface SentencePair {
   english: Element;
@@ -21,13 +21,7 @@ export function addIdForHeaders(body: HTMLElement): void {
   });
 }
 
-function restructureElements(body: HTMLElement): void {
-  const nodes = Array.from(body.childNodes);
-  nodes.map(node => node.textContent);
-}
-
 export function markAndSwapAll(body: HTMLElement, selectors: string[] = defaultSelectors): void {
-  restructureElements(body);
   restructureTable(body);
   selectors.forEach(selectors => mark(body, selectors));
   swap(body);
@@ -153,4 +147,3 @@ function containsChinese(text?: string): boolean {
   }
   return text.search(/[\u4e00-\u9fa5]/gm) !== -1;
 }
-

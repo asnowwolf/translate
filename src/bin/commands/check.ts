@@ -1,6 +1,7 @@
 import { CommandBuilder } from 'yargs';
-import { autoCheckFiles } from '../../trans-kit';
+import { TranslationKit } from '../../translation-kit';
 import { map, toArray } from 'rxjs/operators';
+import { TranslationEngineType } from '../../common';
 
 export const command = `check <sourceGlob>`;
 
@@ -10,14 +11,21 @@ export const builder: CommandBuilder = {
   sourceGlob: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
+  engine: {
+    type: 'string',
+    choices: [TranslationEngineType.google, TranslationEngineType.ms],
+    default: TranslationEngineType.google,
+  },
 };
 
 interface CheckParams {
   sourceGlob: string;
+  engine: TranslationEngineType;
 }
 
-export const handler = function ({ sourceGlob }: CheckParams) {
-  return autoCheckFiles(sourceGlob)
+export const handler = function ({ sourceGlob, engine }: CheckParams) {
+  const kit = new TranslationKit(engine);
+  return kit.extractLowQualifyResults(sourceGlob)
     .pipe(
       toArray(),
       map((pairs) => pairs.join('\n')),

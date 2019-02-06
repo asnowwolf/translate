@@ -1,9 +1,45 @@
-import { defer, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { map } from 'rxjs/operators';
 import { PredictionServiceClient } from '@google-cloud/automl';
+import { TranslationEngineType } from './common';
+
+export abstract class TranslationEngine {
+  abstract translate(text: string): Observable<string>;
+}
+
+export function getTranslateEngine(engine: TranslationEngineType): TranslationEngine {
+  switch (engine) {
+    case TranslationEngineType.google:
+      return new GoogleTranslator();
+    case TranslationEngineType.ms:
+      return new MsTranslator();
+    case TranslationEngineType.fake:
+      return new FakeTranslator();
+    default:
+      throw new Error('Unknown Translation Engine type');
+  }
+}
+
+class MsTranslator extends TranslationEngine {
+  translate(text: string): Observable<string> {
+    return translateByMsTranslator(text);
+  }
+}
+
+class GoogleTranslator extends TranslationEngine {
+  translate(text: string): Observable<string> {
+    return translateByGoogleAutoML(text);
+  }
+}
+
+class FakeTranslator extends TranslationEngine {
+  translate(text: string): Observable<string> {
+    return of('[译]' + text);
+  }
+}
 
 interface DetectedLanguage {
   language: string;
@@ -20,7 +56,7 @@ interface TranslationResult {
   translations: TranslationText[];
 }
 
-export function translateByMsTranslator(text: string): Observable<string> {
+function translateByMsTranslator(text: string): Observable<string> {
   const subscriptionKey = process.env.MS_TRANSLATOR;
   if (!subscriptionKey) {
     throw new Error('Environment variable for your subscription key is not set.');
@@ -51,7 +87,7 @@ export function translateByMsTranslator(text: string): Observable<string> {
   );
 }
 
-export function translateByAutoML(text: string): Observable<string> {
+function translateByGoogleAutoML(text: string): Observable<string> {
   const client = new PredictionServiceClient();
 
   const formattedName = client.modelPath('ralph-gde', 'us-central1', 'TRL9199068616738092360');
@@ -68,10 +104,6 @@ export function translateByAutoML(text: string): Observable<string> {
   return fromPromise(client.predict(request).then((responses: AutoMLResponse[]) => {
     return responses[0].payload[0].translation.translatedContent.content;
   }));
-}
-
-export function translate(text: string): Observable<string> {
-  return defer(() => translateByMsTranslator(text));
 }
 
 interface AutoMLResponse {
