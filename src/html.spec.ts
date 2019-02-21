@@ -1,7 +1,11 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { addIdForHeaders, extractAll, markAndSwapAll, restructureTable } from './html';
 import { JSDOM } from 'jsdom';
+import { html } from './html';
+import restructureTable = html.restructureTable;
+import markAndSwapAll = html.markAndSwapAll;
+import addIdForHeaders = html.addIdForHeaders;
+import extractAll = html.extractAll;
 
 describe('html', function () {
   it('should mark and restructure table', () => {
@@ -67,10 +71,16 @@ describe('html', function () {
 </table>`);
   });
   it('should mark and swap translation and origin', () => {
-    const dom = new JSDOM(`<p id="a">a</p><p id="one">one</p><p id="一">一</p><script>const a = 1;</script>`);
+    const dom = new JSDOM(`<p id="a">a</p>
+<p id="one">one</p>
+<p id="一">一</p>
+<script>const a = 1;</script>`);
     const body = dom.window.document.body;
     markAndSwapAll(body);
-    expect(body.innerHTML).eql(`<p id="a">a</p><p id="one" translation-result="on">一</p><p translation-origin="off">one</p><script>const a = 1;</script>`);
+    expect(body.innerHTML).eql(`<p id="a">a</p>
+<p id="one" translation-result="on">一</p><p translation-origin="off">one</p>
+
+<script>const a = 1;</script>`);
   });
 
   it('should mark and swap anchors in Hn', () => {

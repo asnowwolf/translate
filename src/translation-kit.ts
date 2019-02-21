@@ -1,4 +1,4 @@
-import { addIdForHeaders, defaultSelectors, extractAll, markAndSwapAll } from './html';
+import { html } from './html';
 import { concat, Observable, of } from 'rxjs';
 import { VFile } from 'vfile';
 import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
@@ -6,6 +6,10 @@ import { getTranslateEngine, TranslationEngine } from './engine';
 import { listFiles, read } from './rx-file';
 import { parse } from './rx-jsdom';
 import { TranslationEngineType } from './common';
+import extractAll = html.extractAll;
+import defaultSelectors = html.defaultSelectors;
+import addIdForHeaders = html.addIdForHeaders;
+import markAndSwapAll = html.markAndSwapAll;
 
 export class TranslationKit {
   private engine: TranslationEngine;
