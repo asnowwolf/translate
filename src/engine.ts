@@ -37,7 +37,11 @@ class GoogleTranslator extends TranslationEngine {
 
 class FakeTranslator extends TranslationEngine {
   translate(text: string): Observable<string> {
-    return of('[译]' + text);
+    if (text.startsWith('<')) {
+      return of(text.replace(/<(\w+)(.*?)>(.*?)<\/\1>/g, '<$1$2>译$3</$1>'));
+    } else {
+      return of('[译]' + text);
+    }
   }
 }
 

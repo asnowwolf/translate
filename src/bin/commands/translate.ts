@@ -1,6 +1,7 @@
 import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
 import { TranslationEngineType } from '../../common';
+import * as toVFile from 'to-vfile';
 
 export const command = `translate <sourceGlob> <outDir>`;
 
@@ -15,7 +16,7 @@ export const builder: CommandBuilder = {
   },
   engine: {
     type: 'string',
-    choices: [TranslationEngineType.google, TranslationEngineType.ms],
+    choices: [TranslationEngineType.google, TranslationEngineType.ms, TranslationEngineType.fake],
     default: TranslationEngineType.google,
   },
 };
@@ -29,6 +30,6 @@ interface Params {
 export const handler = function ({ sourceGlob, outDir, engine }: Params) {
   const kit = new TranslationKit(engine);
   return kit.translateFiles(sourceGlob).subscribe((vfile) => {
-    console.log(vfile.contents);
+    toVFile.writeSync(vfile);
   });
 };

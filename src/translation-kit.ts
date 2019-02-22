@@ -6,6 +6,7 @@ import { getTranslateEngine, TranslationEngine } from './engine';
 import { listFiles, read } from './rx-file';
 import { parse } from './rx-jsdom';
 import { TranslationEngineType } from './common';
+import { markdown } from './markdown';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
 import addIdForHeaders = html.addIdForHeaders;
@@ -22,26 +23,52 @@ export class TranslationKit {
     }
   }
 
-  transformFiles(sourceGlob: string, transformer: (doc: Document) => Observable<Document>): Observable<VFile> {
+  transformFiles(sourceGlob: string, transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
     return listFiles(sourceGlob).pipe(
       map(read()),
-      switchMap(file => of(file).pipe(
-        map(parse()),
-        switchMap(dom => of(dom).pipe(
-          map(dom => dom.window.document),
-          tap(checkCharset()),
-          switchMap((doc) => transformer(doc)),
-          mapTo(dom),
-        )),
-        map(dom => dom.serialize()),
-        tap((html) => file.contents = html),
-        mapTo(file),
+      switchMap(file => transformer(file)),
+    );
+  }
+
+  translateFile(file: VFile): Observable<VFile> {
+    switch (file.extname) {
+      case '.html':
+      case '.htm':
+        return this.translateHtml(file);
+      case '.md':
+      case '.markdown':
+        return this.translateMarkdown(file);
+      default:
+        throw new Error('Unsupported file type');
+    }
+  }
+
+  translateHtml(file: VFile): Observable<VFile> {
+    return of(file).pipe(
+      map(parse()),
+      switchMap(dom => of(dom).pipe(
+        map(dom => dom.window.document),
+        tap(checkCharset()),
+        switchMap((doc) => this.translateDoc(doc)),
+        mapTo(dom),
       )),
+      map(dom => dom.serialize()),
+      tap((html) => file.contents = html),
+      mapTo(file),
+    );
+  }
+
+  translateMarkdown(file: VFile): Observable<VFile> {
+    const ast = markdown.parse(file.contents);
+    return markdown.translate(ast, this.engine).pipe(
+      map(ast => markdown.stringify(ast)),
+      tap(md => file.contents = md),
+      mapTo(file),
     );
   }
 
   translateFiles(sourceGlob: string): Observable<VFile> {
-    return this.transformFiles(sourceGlob, (doc) => this.translateDoc(doc));
+    return this.transformFiles(sourceGlob, (file) => this.translateFile(file));
   }
 
   translateElement(element: Element): Observable<string> {
@@ -129,10 +156,18 @@ export class TranslationKit {
     scriptUrls: string[],
     urlMap: Record<string, string>,
   ): Observable<VFile> {
-    return this.transformFiles(sourceGlob, (doc) => {
-      injectTranslationKitToDoc(doc, styleUrls, scriptUrls, urlMap);
-      return of(doc);
-    });
+    return this.transformFiles(sourceGlob, (file) => of(file).pipe(
+      map(parse()),
+      switchMap(dom => of(dom).pipe(
+        map(dom => dom.window.document),
+        tap(checkCharset()),
+        tap((doc) => injectTranslationKitToDoc(doc, styleUrls, scriptUrls, urlMap)),
+        mapTo(dom),
+      )),
+      map(dom => dom.serialize()),
+      tap((html) => file.contents = html),
+      mapTo(file),
+    ));
   }
 
 }

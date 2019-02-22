@@ -7,8 +7,8 @@ import { TranslationEngineType } from './common';
 describe('translation engine', function () {
   it('get fake engine', () => {
     const engine = getTranslateEngine(TranslationEngineType.fake);
-    return engine.translate('Hello, world!')
-      .pipe(map(text => expect(text).eql('[译]Hello, world!')))
+    return engine.translate('<h1>Hello, world!</h1>')
+      .pipe(map(text => expect(text).eql('<h1>译Hello, world!</h1>')))
       .toPromise();
   });
 });

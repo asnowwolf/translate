@@ -41,7 +41,7 @@ describe('translation-kit', function () {
 
 <script src="/assets/js/translator.js"></script></body></html>`);
   });
-  it('auto translate', () => {
+  it('auto translate html', () => {
     const engine = getTranslateEngine(TranslationEngineType.fake);
     const kit = new TranslationKit(engine);
     const dom = new JSDOM(`<!doctype html>

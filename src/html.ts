@@ -1,4 +1,5 @@
 import * as slugs from 'github-slugger';
+import { containsChinese } from './common';
 
 export namespace html {
   export const defaultSelectors = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'];
@@ -140,12 +141,5 @@ export namespace html {
       const prev = element.previousElementSibling;
       element.parentElement!.insertBefore(element, prev);
     });
-  }
-
-  function containsChinese(text?: string): boolean {
-    if (!text) {
-      return false;
-    }
-    return text.search(/[\u4e00-\u9fa5]/gm) !== -1;
   }
 }
