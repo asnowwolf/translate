@@ -5,7 +5,7 @@ import * as remarkHtml from 'remark-html';
 import * as rehypeRemark from 'rehype-remark';
 import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
-import * as unistMap from 'unist-util-flatMap';
+import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import { Node } from 'unist';
 import { concat, Observable, of } from 'rxjs';
