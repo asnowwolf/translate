@@ -1,15 +1,13 @@
 import { VFile } from 'vfile';
 import * as toVFile from 'to-vfile';
-import { from, Observable } from 'rxjs';
 import { extname, join } from 'path';
 import { sync as globby } from 'globby';
 
-export function listFiles(globPattern: string): Observable<string> {
+export function listFiles(globPattern: string): string[] {
   if (globPattern.indexOf('*') === -1 && extname(globPattern) === '.') {
     globPattern = join(globPattern, '**/*.html');
   }
-  const files = globby(globPattern);
-  return from(files);
+  return globby(globPattern);
 }
 
 export function read(charset = 'utf-8'): (path: string) => VFile {

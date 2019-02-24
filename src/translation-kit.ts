@@ -24,13 +24,15 @@ export class TranslationKit {
   }
 
   transformFiles(sourceGlob: string, transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
-    return listFiles(sourceGlob).pipe(
+    const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => transformer(file)),
-    );
+    ));
+    return concat(...tasks);
   }
 
   translateFile(file: VFile): Observable<VFile> {
+    console.log('translating: ', file.path);
     switch (file.extname) {
       case '.html':
       case '.htm':
@@ -113,7 +115,7 @@ export class TranslationKit {
   }
 
   extractTrainingDataset(sourceGlob: string, unique = false): Observable<{ english: string, chinese: string }> {
-    return listFiles(sourceGlob).pipe(
+    const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
         map(parse()),
@@ -125,11 +127,12 @@ export class TranslationKit {
         filter(({ chinese }) => countOfChinese(chinese) > 4),
       )),
       unique ? distinct() : tap(),
-    );
+    ));
+    return concat(...tasks);
   }
 
   extractLowQualifyResults(sourceGlob: string): Observable<string> {
-    return listFiles(sourceGlob).pipe(
+    const tasks = listFiles(sourceGlob).map((file) => of(file).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
         map(parse()),
@@ -147,29 +150,9 @@ export class TranslationKit {
         }),
         map(({ english, chinese }) => `${english}(${english.length})\t|\t${chinese}(${chinese.length})`),
       )),
-    );
-  }
-
-  injectTranslationKitToFiles(
-    sourceGlob: string,
-    styleUrls: string[],
-    scriptUrls: string[],
-    urlMap: Record<string, string>,
-  ): Observable<VFile> {
-    return this.transformFiles(sourceGlob, (file) => of(file).pipe(
-      map(parse()),
-      switchMap(dom => of(dom).pipe(
-        map(dom => dom.window.document),
-        tap(checkCharset()),
-        tap((doc) => injectTranslationKitToDoc(doc, styleUrls, scriptUrls, urlMap)),
-        mapTo(dom),
-      )),
-      map(dom => dom.serialize()),
-      tap((html) => file.contents = html),
-      mapTo(file),
     ));
+    return concat(...tasks);
   }
-
 }
 
 function checkCharset(charset = 'utf-8'): (doc: Document) => void {
@@ -201,6 +184,25 @@ export function injectTranslationKitToDoc(doc, styleUrls: string[], scriptUrls: 
   addTranslationMark(doc);
   injectTranslators(doc, styleUrls, scriptUrls);
   replaceResourceUrls(doc, urlMap);
+}
+
+export function addTranslationMarks(sourceGlob: string): Observable<VFile> {
+  const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
+    map(read()),
+    switchMap(file => of(file).pipe(
+      map(parse()),
+      switchMap(dom => of(dom).pipe(
+        map(dom => dom.window.document),
+        tap(checkCharset()),
+        tap((doc) => addTranslationMark(doc)),
+        mapTo(dom),
+      )),
+      map(dom => dom.serialize()),
+      tap((html) => file.contents = html),
+      mapTo(file),
+    )),
+  ));
+  return concat(...tasks);
 }
 
 function addTranslationMark(doc: Document): void {

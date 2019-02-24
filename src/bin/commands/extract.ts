@@ -18,7 +18,7 @@ export const builder: CommandBuilder = {
   },
   outType: {
     type: 'string',
-    choices: [TranslationEngineType.google, TranslationEngineType.ms],
+    choices: [TranslationEngineType.google, TranslationEngineType.ms, TranslationEngineType.fake],
     default: TranslationEngineType.google,
   },
   pattern: {
