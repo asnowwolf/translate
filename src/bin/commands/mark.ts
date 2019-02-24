@@ -20,5 +20,13 @@ interface Params {
 export const handler = function ({ sourceGlob }: Params) {
   return addTranslationMarks(sourceGlob).pipe(
     tap(file => toVFile.writeSync(file)),
-  ).subscribe();
+  ).subscribe((file) => {
+    console.log(`marked: ${file.path}!`);
+  }, (error) => {
+    console.error(error);
+    process.exit(-1);
+  }, () => {
+    console.log('Done!');
+    process.exit(0);
+  });
 };
