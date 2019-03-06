@@ -28,7 +28,15 @@ export const builder: CommandBuilder = {
     coerce: (filename: string) => {
       return JSON.parse(readFileSync(filename, 'utf-8'));
     },
-    description: '供替换的 url 映射，指向一个 JSON 格式的配置文件，其内容形如：{"old": "new"}',
+    description: '供替换的 url 映射（脚本、css、图片），指向一个 JSON 格式的配置文件，其内容形如：{"old": "new"}',
+  },
+  textMap: {
+    string: true,
+    alias: 't',
+    coerce: (filename: string) => {
+      return JSON.parse(readFileSync(filename, 'utf-8'));
+    },
+    description: '供替换的文本映射，指向一个 JSON 格式的配置文件，其内容形如：{"oldRegExp": "new"}',
   },
 };
 
@@ -37,10 +45,11 @@ interface Params {
   styleUrls: string[];
   scriptUrls: string[];
   urlMap: Record<string, string>;
+  textMap: Record<string, string>;
 }
 
-export const handler = function ({ sourceGlob, styleUrls, scriptUrls, urlMap }: Params) {
-  return injectTranslationKit(sourceGlob, styleUrls, scriptUrls, urlMap).pipe(
+export const handler = function ({ sourceGlob, styleUrls, scriptUrls, urlMap, textMap }: Params) {
+  return injectTranslationKit(sourceGlob, styleUrls, scriptUrls, urlMap, textMap).pipe(
     tap(file => toVFile.writeSync(file)),
   ).subscribe((file) => {
     console.log(`injected: ${file.path}!`);

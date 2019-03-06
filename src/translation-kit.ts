@@ -183,14 +183,13 @@ function countOfChinese(chinese: string): number {
 export function injectTranslationKitToDoc(
   doc: HTMLDocument,
   styleUrls: string[], scriptUrls: string[], urlMap: Record<string, string>): void {
-  addTranslationMark(doc);
   injectTranslators(doc, styleUrls, scriptUrls);
   replaceResourceUrls(doc, urlMap);
 }
 
 export function injectTranslationKit(
   sourceGlob: string,
-  styleUrls: string[], scriptUrls: string[], urlMap: Record<string, string>): Observable<VFile> {
+  styleUrls: string[], scriptUrls: string[], urlMap: Record<string, string>, textMap: Record<string, string>): Observable<VFile> {
   const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
     map(read()),
     switchMap(file => of(file).pipe(
@@ -202,11 +201,19 @@ export function injectTranslationKit(
         mapTo(dom),
       )),
       map(dom => dom.serialize()),
+      map(html => replaceText(html, textMap)),
       tap((html) => file.contents = html),
       mapTo(file),
     )),
   ));
   return concat(...tasks);
+}
+
+function replaceText(text: string, textMap: Record<string, string>): string {
+  Object.entries(textMap).forEach(([key, value]) => {
+    text = text.replace(new RegExp(key, 'gi'), value);
+  });
+  return text;
 }
 
 export function addTranslationMarks(sourceGlob: string): Observable<VFile> {
