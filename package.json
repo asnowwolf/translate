@@ -5,7 +5,7 @@
   "bin": {
     "nt": "dist/bin/index.js"
   },
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": "Zhicheng Wang<asnowwolf@gmail.com>",
   "homepage": "https://github.com/asnowwolf/translate",
   "repository": {
