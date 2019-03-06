@@ -5,7 +5,7 @@ import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from '
 import { getTranslateEngine, TranslationEngine } from './engine';
 import { listFiles, read } from './rx-file';
 import { parse } from './rx-jsdom';
-import { TranslationEngineType } from './common';
+import { containsChinese, TranslationEngineType } from './common';
 import { markdown } from './markdown';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
@@ -282,5 +282,5 @@ function textOf(node: Element): string {
 }
 
 function shouldIgnore(element: Element): boolean {
-  return !!element.querySelector('[translation-result]');
+  return !!element.querySelector('[translation-result]') || containsChinese(element.textContent!);
 }
