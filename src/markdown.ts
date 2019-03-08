@@ -7,6 +7,7 @@ import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
 import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
+import * as unistRemove from 'unist-util-remove';
 import { Node } from 'unist';
 import { concat, Observable, of } from 'rxjs';
 import { cloneDeep } from 'lodash';
@@ -63,6 +64,11 @@ export namespace markdown {
     const tasks = pairs.map(node => of(node).pipe(
       switchMap(node => engine.translate(mdToHtml(preprocess(node)))),
       map(html => htmlToMd(html)),
+      tap(translation => {
+        if (stringify(node) === stringify(translation)) {
+          return unistRemove(tree, translation);
+        }
+      }),
       tap(translation => postprocess(node, translation)),
     ));
     return concat(...tasks).pipe(

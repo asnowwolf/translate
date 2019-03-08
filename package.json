@@ -5,7 +5,7 @@
   "bin": {
     "nt": "dist/bin/index.js"
   },
-  "version": "0.3.4",
+  "version": "0.3.5",
   "author": "Zhicheng Wang<asnowwolf@gmail.com>",
   "homepage": "https://github.com/asnowwolf/translate",
   "repository": {
@@ -57,6 +57,7 @@
     "to-vfile": "^5.0.2",
     "unified": "^7.1.0",
     "unist-util-flatmap": "^1.0.0",
+    "unist-util-remove": "^1.0.1",
     "unist-util-visit": "^1.4.0",
     "uuid": "^3.3.2",
     "vfile": "^4.0.0",
