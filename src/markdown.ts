@@ -57,8 +57,10 @@ export namespace markdown {
     return result;
   }
 
-  function translateNode(node: Node, engine: TranslationEngine): Observable<string> {
-    return engine.translate(mdToHtml(preprocess(node)));
+  function translateNormalNode(node: Node, engine: TranslationEngine): Observable<Node> {
+    return engine.translate(mdToHtml(preprocess(node))).pipe(
+      map(html => htmlToMd(html)),
+    );
   }
 
   export function translate(tree: Node, engine: TranslationEngine): Observable<Node> {
@@ -79,8 +81,7 @@ export namespace markdown {
       }
     });
     const tasks = pairs.map(node => of(node).pipe(
-      switchMap(node => translateNode(node, engine)),
-      map(html => htmlToMd(html)),
+      switchMap(node => translateNormalNode(node, engine)),
       tap(translation => {
         if (stringify(node) === stringify(translation)) {
           return unistRemove(tree, translation);
@@ -88,9 +89,7 @@ export namespace markdown {
       }),
       tap(translation => postprocess(node, translation)),
     ));
-    const yamlTasks = yamls.map(node => of(node).pipe(
-      switchMap(node => translateYamlNode(node, engine)),
-    ));
+    const yamlTasks = yamls.map(node => translateYamlNode(node, engine));
     return concat(...tasks, ...yamlTasks).pipe(
       toArray(),
       mapTo(result),
