@@ -14,8 +14,26 @@ describe('markdown', () => {
     expect(markdown.stringify(markdown.htmlToMd(`<h1>H1</h1>`))).eql('# H1\n');
   });
 
+  it('yaml', () => {
+    const tree = markdown.parse(`---
+title: abc
+---
+# Head 1`);
+    const text = markdown.stringify(tree);
+    expect(text).eql(`---
+title: abc
+---
+
+# Head 1
+`);
+  });
+
   it('translate', (done) => {
-    const tree = markdown.parse(`# Head 1
+    const tree = markdown.parse(`---
+title: abc
+---
+
+# Head 1
 
 Test
 
@@ -42,7 +60,13 @@ Test
 | c | c |
 `);
     markdown.translate(tree, getTranslateEngine(TranslationEngineType.fake)).subscribe(tree => {
-      expect(markdown.stringify(tree)).eql(`# Head 1
+      expect(markdown.stringify(tree)).eql(`---
+title$$origin: abc
+title: '[译]abc'
+
+---
+
+# Head 1
 
 # 译Head 1
 

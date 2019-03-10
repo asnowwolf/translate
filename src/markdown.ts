@@ -3,6 +3,7 @@ import * as remarkStringify from 'remark-stringify';
 import * as rehypeParse from 'rehype-parse';
 import * as remarkHtml from 'remark-html';
 import * as rehypeRemark from 'rehype-remark';
+import * as frontmatter from 'remark-frontmatter';
 import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
 import * as unistMap from 'unist-util-flatmap';
@@ -16,6 +17,7 @@ import { map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
 import { containsChinese } from './common';
 import { ListItem } from 'mdast';
 import * as stringWidth from 'string-width';
+import { safeDump, safeLoad } from 'js-yaml';
 
 export namespace markdown {
   const stringifyOptions = {
@@ -23,15 +25,22 @@ export namespace markdown {
   };
 
   export function parse(markdown: VFileCompatible): Node {
-    return unified().use(remarkParse).parse(markdown);
+    return unified().use(remarkParse)
+      .use(frontmatter)
+      .parse(markdown);
   }
 
   export function stringify(tree: Node): string {
-    return unified().use(remarkStringify, stringifyOptions).stringify(tree);
+    return unified().use(remarkStringify, stringifyOptions)
+      .use(frontmatter)
+      .stringify(tree);
   }
 
   export function mdToHtml(ast: Node): string {
-    return unified().use(remarkParse).use(remarkHtml).processSync(stringify(ast)).contents.toString('utf-8');
+    return unified().use(remarkParse)
+      .use(frontmatter)
+      .use(remarkHtml)
+      .processSync(stringify(ast)).contents.toString('utf-8');
   }
 
   export function htmlToMd(html: string): Node {
@@ -48,21 +57,29 @@ export namespace markdown {
     return result;
   }
 
+  function translateNode(node: Node, engine: TranslationEngine): Observable<string> {
+    return engine.translate(mdToHtml(preprocess(node)));
+  }
+
   export function translate(tree: Node, engine: TranslationEngine): Observable<Node> {
     const result = unistMap(tree, (node, _, parent) => {
-      if (node.type === 'paragraph' || node.type === 'tableRow' || node.type === 'heading' && shouldTranslate(node)) {
+      if ((node.type === 'paragraph' || node.type === 'tableRow' || node.type === 'heading') && shouldTranslate(node)) {
         return [node, markNode(cloneDeep<Node>(node), parent)];
       }
       return [node];
     });
     const pairs: Node[] = [];
+    const yamls: Node[] = [];
     unistVisit(result, (node) => {
       if (node.translation) {
         pairs.push(node);
       }
+      if (node.type === 'yaml') {
+        yamls.push(node);
+      }
     });
     const tasks = pairs.map(node => of(node).pipe(
-      switchMap(node => engine.translate(mdToHtml(preprocess(node)))),
+      switchMap(node => translateNode(node, engine)),
       map(html => htmlToMd(html)),
       tap(translation => {
         if (stringify(node) === stringify(translation)) {
@@ -71,9 +88,28 @@ export namespace markdown {
       }),
       tap(translation => postprocess(node, translation)),
     ));
-    return concat(...tasks).pipe(
+    const yamlTasks = yamls.map(node => of(node).pipe(
+      switchMap(node => translateYamlNode(node, engine)),
+    ));
+    return concat(...tasks, ...yamlTasks).pipe(
       toArray(),
       mapTo(result),
+    );
+  }
+
+  function translateYamlNode(node: Node, engine: TranslationEngine): Observable<void> {
+    const frontMatter = safeLoad(node.value as string);
+    const result = {};
+    const tasks = Object.entries<string>(frontMatter).map(([key, value]) => engine.translate(value).pipe(
+      tap(translation => {
+        result[`${key}$$origin`] = value;
+        result[key] = translation;
+      }),
+    ));
+    return concat(...tasks).pipe(
+      toArray(),
+      tap(() => node.value = safeDump(result)),
+      mapTo(void 0),
     );
   }
 
