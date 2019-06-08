@@ -21,7 +21,7 @@ import { safeDump, safeLoad } from 'js-yaml';
 
 export namespace markdown {
   const stringifyOptions = {
-    emphasis: '*', listItemIndent: 1, incrementListMarker: false, stringLength: stringWidth,
+    emphasis: '*', listItemIndent: 1, incrementListMarker: false, stringLength: stringWidth, paddedTable: false,
   };
 
   export function parse(markdown: VFileCompatible): Node {
