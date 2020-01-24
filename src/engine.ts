@@ -1,10 +1,10 @@
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { map } from 'rxjs/operators';
-import { PredictionServiceClient } from '@google-cloud/automl';
 import { TranslationEngineType } from './common';
+import { v3 } from '@google-cloud/translate';
 
 export abstract class TranslationEngine {
   abstract translate(text: string): Observable<string>;
@@ -31,7 +31,8 @@ class MsTranslator extends TranslationEngine {
 
 class GoogleTranslator extends TranslationEngine {
   translate(text: string): Observable<string> {
-    return translateByGoogleAutoML(text);
+    console.log('translating:', text);
+    return translateByGoogleCloud(text);
   }
 }
 
@@ -91,43 +92,15 @@ function translateByMsTranslator(text: string): Observable<string> {
   );
 }
 
-function translateByGoogleAutoML(text: string): Observable<string> {
-  const client = new PredictionServiceClient();
-
-  const formattedName = client.modelPath('ralph-gde', 'us-central1', 'TRL9199068616738092360');
-  const payload = {
-    textSnippet: {
-      content: text,
-      mimeType: `text/html`,
-    },
-  };
-  const request = {
-    name: formattedName,
-    payload: payload,
-  };
-  return fromPromise(client.predict(request).then((responses: AutoMLResponse[]) => {
-    return responses[0].payload[0].translation.translatedContent.content;
-  }));
-}
-
-interface AutoMLResponse {
-  metadata: Record<string, string>;
-  payload: AutoMLResponsePayload[];
-}
-
-interface AutoMLResponsePayload {
-  annotationSpecId: string;
-  detail: string;
-  displayName: string;
-  translation: AutoMLTranslation;
-}
-
-interface AutoMLTranslation {
-  translatedContent: AutoMLTranslationContent;
-}
-
-interface AutoMLTranslationContent {
-  content: string;
-  contentUri: string;
-  mimeType: string;
+function translateByGoogleCloud(text: string): Observable<string> {
+  const client = new v3.TranslationServiceClient();
+  return from(client.translateText({
+    parent: `projects/ralph-gde/locations/global`,
+    contents: [text],
+    mimeType: 'text/html', // mime types: text/plain, text/html
+    sourceLanguageCode: 'en',
+    targetLanguageCode: 'zh-cn',
+  })).pipe(
+    map(it => it[0]!.translations![0].translatedText!!),
+  );
 }
