@@ -14,6 +14,26 @@ describe('markdown', () => {
     expect(markdown.stringify(markdown.htmlToMd(`<h1>H1</h1>`))).eql('# H1\n');
   });
 
+  it('markdown code to html', () => {
+    expect(markdown.mdToHtml(mdParse('```\nvar a = 1;\nvar b = 2;\n```\n'))).eql(`<pre><code>var a = 1;
+var b = 2;
+</code></pre>
+`);
+  });
+  it('html code to markdown', () => {
+    expect(markdown.stringify(markdown.htmlToMd(`<pre>
+<code>
+var a = 1;
+var b = 2;
+</code>
+</pre>
+`))).eql(`\`\`\`
+var a = 1;
+var b = 2;
+\`\`\`
+`);
+  });
+
   it('yaml', () => {
     const tree = markdown.parse(`---
 title: abc
