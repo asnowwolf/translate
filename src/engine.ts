@@ -95,11 +95,12 @@ function translateByMsTranslator(text: string): Observable<string> {
 function translateByGoogleCloud(text: string): Observable<string> {
   const client = new v3.TranslationServiceClient();
   return from(client.translateText({
-    parent: `projects/ralph-gde/locations/global`,
+    parent: `projects/ralph-gde/locations/us-central1`,
     contents: [text],
     mimeType: 'text/html', // mime types: text/plain, text/html
     sourceLanguageCode: 'en',
     targetLanguageCode: 'zh-cn',
+    model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
   })).pipe(
     map(it => it[0]!.translations![0].translatedText!!),
   );
