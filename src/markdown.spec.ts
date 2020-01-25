@@ -34,6 +34,23 @@ var b = 2;
 `);
   });
 
+  xit('markdown custom tag to html', () => {
+    expect(markdown.mdToHtml(mdParse(`<t>a</t>`))).eql(`<p><t>a</t></p>
+`);
+  });
+
+  xit('html custom tag to markdown', () => {
+    expect(markdown.stringify(markdown.htmlToMd(`<t>a</t>`))).eql('<t>a</t>');
+  });
+
+  it('markdown escaped text to html', () => {
+    expect(markdown.mdToHtml(mdParse(`<p>&mdash;</p>`))).eql(`<p>&mdash;</p>\n`);
+  });
+
+  it('html escaped text to markdown', () => {
+    expect(markdown.stringify(markdown.htmlToMd(`<p>&mdash;</p>`))).eql('&mdash;\n');
+  });
+
   it('yaml', () => {
     const tree = markdown.parse(`---
 title: abc
