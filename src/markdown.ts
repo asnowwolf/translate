@@ -103,7 +103,7 @@ export namespace markdown {
   }
 
   function translateYamlNode(node: Node, engine: TranslationEngine): Observable<void> {
-    const frontMatter = safeLoad(node.value as string);
+    const frontMatter = safeLoad(node.value as string) || {};
     const result = {};
     const tasks = Object.entries<string>(frontMatter).map(([key, value]) => engine.translate(value).pipe(
       tap(translation => {
