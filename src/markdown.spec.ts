@@ -44,11 +44,11 @@ var b = 2;
   });
 
   it('markdown escaped text to html', () => {
-    expect(markdown.mdToHtml(mdParse(`<p>&mdash;</p>`))).eql(`<p>&mdash;</p>\n`);
+    expect(markdown.mdToHtml(mdParse(`<p>中文&mdash;</p>`))).eql(`<p>中文&mdash;</p>\n`);
   });
 
   it('html escaped text to markdown', () => {
-    expect(markdown.stringify(markdown.htmlToMd(`<p>&mdash;</p>`))).eql('&mdash;\n');
+    expect(markdown.stringify(markdown.htmlToMd(`<p>中文&mdash;</p>`))).eql('中文—\n');
   });
 
   it('yaml', () => {

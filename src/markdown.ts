@@ -27,7 +27,7 @@ export namespace markdown {
     stringLength: stringWidth,
     paddedTable: false,
     fences: true,
-    entities: true,
+    entities: false,
   };
 
   export function parse(markdown: VFileCompatible): Node {
