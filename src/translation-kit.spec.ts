@@ -34,10 +34,10 @@ describe('translation-kit', function () {
   <link rel="stylesheet" href="/assets/css/Material_Icons.css">
 <link href="/assets/css/translator.css" rel="stylesheet"></head>
 <body>
-<p translation-result="on">一</p><p translation-origin="off">one</p>
-
-<h1 id="two" translation-result="on">二</h1><h1 translation-origin="off">two</h1>
-
+<p>one</p>
+<p>一</p>
+<h1>two</h1>
+<h1>二</h1>
 
 <script src="/assets/js/translator.js"></script></body></html>`);
   });

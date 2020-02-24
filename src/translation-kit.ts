@@ -7,6 +7,7 @@ import { listFiles, read } from './rx-file';
 import { parse } from './rx-jsdom';
 import { containsChinese, TranslationEngineType } from './common';
 import { markdown } from './markdown';
+import { DictEntryModel } from './models/dict-entry.model';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
 import addIdForHeaders = html.addIdForHeaders;
@@ -15,16 +16,18 @@ import markAndSwapAll = html.markAndSwapAll;
 export class TranslationKit {
   private engine: TranslationEngine;
 
-  constructor(engine: TranslationEngine | TranslationEngineType, private selectors = defaultSelectors) {
+  constructor(engine: TranslationEngine | TranslationEngineType, params: Record<string, any> = {}, private selectors = defaultSelectors) {
     if (engine instanceof TranslationEngine) {
       this.engine = engine;
     } else {
       this.engine = getTranslateEngine(engine);
     }
+    this.engine.init(params);
   }
 
   transformFiles(sourceGlob: string, transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
-    const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
+    const files = listFiles(sourceGlob);
+    const tasks = files.map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => transformer(file)),
     ));
@@ -114,7 +117,7 @@ export class TranslationKit {
     );
   }
 
-  extractTrainingDataset(sourceGlob: string, unique = false): Observable<{ english: string, chinese: string }> {
+  extractTrainingDataset(sourceGlob: string, unique = false): Observable<DictEntryModel> {
     const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
@@ -123,7 +126,7 @@ export class TranslationKit {
         tap(checkCharset()),
         map(doc => extractAll(doc.body)),
         flatMap(pairs => pairs),
-        map(({ english, chinese }) => ({ english: textOf(english), chinese: textOf(chinese) })),
+        map(({ english, chinese }) => ({ file: filename, english: textOf(english), chinese: textOf(chinese) })),
         filter(({ chinese }) => countOfChinese(chinese) > 4),
       )),
       unique ? distinct() : tap(),

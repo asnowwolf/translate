@@ -14,18 +14,23 @@ export const builder: CommandBuilder = {
   },
   engine: {
     type: 'string',
-    choices: [TranslationEngineType.google, TranslationEngineType.ms, TranslationEngineType.fake],
+    choices: [TranslationEngineType.google, TranslationEngineType.ms, TranslationEngineType.dict, TranslationEngineType.fake],
     default: TranslationEngineType.google,
+  },
+  dict: {
+    type: 'string',
+    description: '当使用 dict 引擎时，指定要使用的字典目录。字典目录与被翻译目标同构，每个字典文件为一个 markdown 文件',
   },
 };
 
 interface Params {
   sourceGlob: string;
   engine: TranslationEngineType;
+  dict: string;
 }
 
-export const handler = function ({ sourceGlob, engine }: Params) {
-  const kit = new TranslationKit(engine);
+export const handler = function ({ sourceGlob, engine, dict }: Params) {
+  const kit = new TranslationKit(engine, { dict });
   return kit.translateFiles(sourceGlob).pipe(
     tap(file => toVFile.writeSync(file)),
   ).subscribe();
