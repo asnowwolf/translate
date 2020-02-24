@@ -5,8 +5,12 @@ import { v4 } from 'uuid';
 import { map } from 'rxjs/operators';
 import { TranslationEngineType } from './common';
 import { v3 } from '@google-cloud/translate';
+import { readFileSync } from 'fs';
 
 export abstract class TranslationEngine {
+  init(params: Record<string, any>): void {
+  }
+
   abstract translate(text: string): Observable<string>;
 }
 
@@ -16,6 +20,8 @@ export function getTranslateEngine(engine: TranslationEngineType): TranslationEn
       return new GoogleTranslator();
     case TranslationEngineType.ms:
       return new MsTranslator();
+    case TranslationEngineType.dict:
+      return new DictTranslator();
     case TranslationEngineType.fake:
       return new FakeTranslator();
     default:
@@ -31,8 +37,30 @@ class MsTranslator extends TranslationEngine {
 
 class GoogleTranslator extends TranslationEngine {
   translate(text: string): Observable<string> {
-    console.log('translating:', text);
     return translateByGoogleCloud(text);
+  }
+}
+
+class DictTranslator extends TranslationEngine {
+  private dict: Map<string, string>;
+  private params: Record<string, any>;
+
+  init(params: Record<string, any>): void {
+    this.params = params;
+  }
+
+  translate(text: string): Observable<string> {
+    this.load();
+    return of(this.dict[text] || text);
+  }
+
+  private load(): void {
+    if (this.dict) {
+      return;
+    }
+    this.dict = new Map<string, string>();
+    const pairs = readFileSync(this.params['dict'], 'utf-8').split('\n');
+    pairs.map(pair => pair.split('\t')).forEach(([en, cn]) => this.dict.set(en, cn));
   }
 }
 
