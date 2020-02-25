@@ -48,7 +48,7 @@ interface ExtractParams {
 export const handler = function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
   const engine = new TranslationKit(outType);
   const regExp = new RegExp(pattern, 'i');
-  engine.extractTrainingDataset(sourceGlob, unique)
+  engine.extractPairs(sourceGlob, unique)
     .pipe(
       filter(it => regExp.test(it.english) || regExp.test(it.chinese)),
       toArray(),

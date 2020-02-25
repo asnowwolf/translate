@@ -117,7 +117,7 @@ export class TranslationKit {
     );
   }
 
-  extractTrainingDataset(sourceGlob: string, unique = false): Observable<DictEntryModel> {
+  extractPairs(sourceGlob: string, unique = false): Observable<DictEntryModel> {
     const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
