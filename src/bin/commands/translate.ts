@@ -3,6 +3,7 @@ import { TranslationKit } from '../../translation-kit';
 import { TranslationEngineType } from '../../common';
 import * as toVFile from 'to-vfile';
 import { tap } from 'rxjs/operators';
+import { listFiles } from '../../rx-file';
 
 export const command = `translate <sourceGlob>`;
 
@@ -31,7 +32,7 @@ interface Params {
 
 export const handler = function ({ sourceGlob, engine, dict }: Params) {
   const kit = new TranslationKit(engine, { dict });
-  return kit.translateFiles(sourceGlob).pipe(
+  return kit.translateFiles(listFiles(sourceGlob)).pipe(
     tap(file => toVFile.writeSync(file)),
   ).subscribe();
 };

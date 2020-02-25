@@ -2,6 +2,7 @@ import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
 import { map, toArray } from 'rxjs/operators';
 import { TranslationEngineType } from '../../common';
+import { listFiles } from '../../rx-file';
 
 export const command = `check <sourceGlob>`;
 
@@ -25,7 +26,7 @@ interface CheckParams {
 
 export const handler = function ({ sourceGlob, engine }: CheckParams) {
   const kit = new TranslationKit(engine);
-  return kit.extractLowQualifyResults(sourceGlob)
+  return kit.extractLowQualifyResults(listFiles(sourceGlob))
     .pipe(
       toArray(),
       map((pairs) => pairs.join('\n')),
