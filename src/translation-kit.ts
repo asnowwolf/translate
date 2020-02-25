@@ -3,7 +3,7 @@ import { concat, Observable, of } from 'rxjs';
 import { VFile } from 'vfile';
 import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
 import { getTranslateEngine, TranslationEngine } from './engine';
-import { listFiles, read } from './rx-file';
+import { read } from './rx-file';
 import { parse } from './rx-jsdom';
 import { containsChinese, TranslationEngineType } from './common';
 import { markdown } from './markdown';
@@ -25,8 +25,7 @@ export class TranslationKit {
     this.engine.init(params);
   }
 
-  transformFiles(sourceGlob: string, transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
-    const files = listFiles(sourceGlob);
+  transformFiles(files: string[], transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
     const tasks = files.map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => transformer(file)),
@@ -72,8 +71,8 @@ export class TranslationKit {
     );
   }
 
-  translateFiles(sourceGlob: string): Observable<VFile> {
-    return this.transformFiles(sourceGlob, (file) => this.translateFile(file));
+  translateFiles(files: string[]): Observable<VFile> {
+    return this.transformFiles(files, (file) => this.translateFile(file));
   }
 
   translateElement(element: Element): Observable<string> {
@@ -117,8 +116,8 @@ export class TranslationKit {
     );
   }
 
-  extractPairs(sourceGlob: string, unique = false): Observable<DictEntryModel> {
-    const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
+  extractPairs(files: string[], unique = false): Observable<DictEntryModel> {
+    const tasks = files.map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
         map(parse()),
@@ -134,8 +133,8 @@ export class TranslationKit {
     return concat(...tasks);
   }
 
-  extractLowQualifyResults(sourceGlob: string): Observable<string> {
-    const tasks = listFiles(sourceGlob).map((file) => of(file).pipe(
+  extractLowQualifyResults(files: string[]): Observable<string> {
+    const tasks = files.map((file) => of(file).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
         map(parse()),
@@ -190,10 +189,9 @@ export function injectTranslationKitToDoc(
   replaceResourceUrls(doc, urlMap);
 }
 
-export function injectTranslationKit(
-  sourceGlob: string,
-  styleUrls: string[], scriptUrls: string[], urlMap: Record<string, string>, textMap: Record<string, string>): Observable<VFile> {
-  const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
+export function injectTranslationKit(files: string[],
+                                     styleUrls: string[], scriptUrls: string[], urlMap: Record<string, string>, textMap: Record<string, string>): Observable<VFile> {
+  const tasks = files.map(filename => of(filename).pipe(
     map(read()),
     switchMap(file => of(file).pipe(
       map(parse()),
@@ -219,8 +217,8 @@ function replaceText(text: string, textMap: Record<string, string>): string {
   return text;
 }
 
-export function addTranslationMarks(sourceGlob: string): Observable<VFile> {
-  const tasks = listFiles(sourceGlob).map(filename => of(filename).pipe(
+export function addTranslationMarks(files: string[]): Observable<VFile> {
+  const tasks = files.map(filename => of(filename).pipe(
     map(read()),
     switchMap(file => of(file).pipe(
       map(parse()),

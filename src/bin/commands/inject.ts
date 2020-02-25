@@ -3,6 +3,7 @@ import { injectTranslationKit } from '../../translation-kit';
 import * as toVFile from 'to-vfile';
 import { tap } from 'rxjs/operators';
 import { readFileSync } from 'fs';
+import { listFiles } from '../../rx-file';
 
 export const command = `inject <sourceGlob>`;
 
@@ -49,7 +50,7 @@ interface Params {
 }
 
 export const handler = function ({ sourceGlob, styleUrls, scriptUrls, urlMap, textMap }: Params) {
-  return injectTranslationKit(sourceGlob, styleUrls, scriptUrls, urlMap, textMap).pipe(
+  return injectTranslationKit(listFiles(sourceGlob), styleUrls, scriptUrls, urlMap, textMap).pipe(
     tap(file => toVFile.writeSync(file)),
   ).subscribe((file) => {
     console.log(`injected: ${file.path}!`);

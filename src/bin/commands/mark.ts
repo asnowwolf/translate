@@ -2,6 +2,7 @@ import { CommandBuilder } from 'yargs';
 import { addTranslationMarks } from '../../translation-kit';
 import * as toVFile from 'to-vfile';
 import { tap } from 'rxjs/operators';
+import { listFiles } from '../../rx-file';
 
 export const command = `mark <sourceGlob>`;
 
@@ -18,7 +19,7 @@ interface Params {
 }
 
 export const handler = function ({ sourceGlob }: Params) {
-  return addTranslationMarks(sourceGlob).pipe(
+  return addTranslationMarks(listFiles(sourceGlob)).pipe(
     tap(file => toVFile.writeSync(file)),
   ).subscribe((file) => {
     console.log(`marked: ${file.path}!`);

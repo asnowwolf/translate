@@ -8,6 +8,8 @@ import { DictEntryModel } from '../../models/dict-entry.model';
 import * as path from 'path';
 import { basename, dirname, join, relative } from 'path';
 import * as mkdirp from 'mkdirp';
+import { listFiles } from '../../rx-file';
+import * as commonDir from 'common-dir';
 
 export const command = `extract <sourceGlob> [outFile]`;
 
@@ -48,7 +50,9 @@ interface ExtractParams {
 export const handler = function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
   const engine = new TranslationKit(outType);
   const regExp = new RegExp(pattern, 'i');
-  engine.extractPairs(sourceGlob, unique)
+  const files = listFiles(sourceGlob);
+  const commonPath = commonDir(files);
+  engine.extractPairs(files, unique)
     .pipe(
       filter(it => regExp.test(it.english) || regExp.test(it.chinese)),
       toArray(),
@@ -68,7 +72,7 @@ export const handler = function ({ sourceGlob, outFile, unique, outType, pattern
             groupBy((it) => it.file),
             mergeMap((group: GroupedObservable<string, DictEntryModel>) => zip(of(group.key), group.pipe(toArray()))),
             tap(([key, pairs]) => {
-              const filename = path.join(outFile, relative(process.cwd(), key));
+              const filename = path.join(outFile, relative(commonPath, key));
               const dir = dirname(filename);
               mkdirp.sync(dir);
               const dictFileName = join(dir, basename(filename, '.html') + '.md');
