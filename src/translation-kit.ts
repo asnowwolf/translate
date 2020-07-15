@@ -13,6 +13,13 @@ import defaultSelectors = html.defaultSelectors;
 import addIdForHeaders = html.addIdForHeaders;
 import markAndSwapAll = html.markAndSwapAll;
 
+function prettify(md: string): string {
+  return md
+    .replace(/([\w`])([\u4e00-\u9fa5])/g, '$1 $2')
+    .replace(/([\u4e00-\u9fa5])([\w`])/g, '$1 $2')
+    .replace(/\n\n+/g, '\n\n');
+}
+
 export class TranslationKit {
   private engine: TranslationEngine;
 
@@ -66,7 +73,7 @@ export class TranslationKit {
     const ast = markdown.parse(file.contents);
     return markdown.translate(ast, this.engine).pipe(
       map(ast => markdown.stringify(ast)),
-      tap(md => file.contents = md),
+      tap(md => file.contents = prettify(md)),
       mapTo(file),
     );
   }
@@ -116,7 +123,7 @@ export class TranslationKit {
     );
   }
 
-  extractPairs(files: string[], unique = false): Observable<DictEntryModel> {
+  extractPairs(files: string[], html: boolean): Observable<DictEntryModel> {
     const tasks = files.map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => of(file).pipe(
@@ -125,10 +132,9 @@ export class TranslationKit {
         tap(checkCharset()),
         map(doc => extractAll(doc.body)),
         flatMap(pairs => pairs),
-        map(({ english, chinese }) => ({ file: filename, english: textOf(english), chinese: textOf(chinese) })),
+        map(({ english, chinese }) => ({ file: filename, english: textOf(english, html), chinese: textOf(chinese, html) })),
         filter(({ chinese }) => countOfChinese(chinese) > 4),
       )),
-      unique ? distinct() : tap(),
     ));
     return concat(...tasks);
   }
@@ -143,7 +149,7 @@ export class TranslationKit {
         map(doc => extractAll(doc.body)),
         flatMap(pairs => pairs),
         distinct(),
-        map(({ english, chinese }) => ({ english: textOf(english), chinese: textOf(chinese) })),
+        map(({ english, chinese }) => ({ english: textOf(english, true), chinese: textOf(chinese, true) })),
         filter(({ english, chinese }) => {
           return chinese.indexOf(english) === -1 && // 排除中文完全包含英文的
             countOfChinese(chinese) >= 10 &&  // 中文字符数必须大于 10
@@ -189,8 +195,8 @@ export function injectTranslationKitToDoc(
   replaceResourceUrls(doc, urlMap);
 }
 
-export function injectTranslationKit(files: string[],
-                                     styleUrls: string[], scriptUrls: string[], urlMap: Record<string, string>, textMap: Record<string, string>): Observable<VFile> {
+export function injectTranslationKit(files: string[], styleUrls: string[], scriptUrls: string[],
+                                     urlMap: Record<string, string>, textMap: Record<string, string>): Observable<VFile> {
   const tasks = files.map(filename => of(filename).pipe(
     map(read()),
     switchMap(file => of(file).pipe(
@@ -308,8 +314,8 @@ function scriptsOf(doc: Document): NodeListOf<HTMLScriptElement> {
   return doc.querySelectorAll<HTMLScriptElement>('script[src]');
 }
 
-function textOf(node: Element): string {
-  return node.textContent!.trim().replace(/\s+/g, ' ');
+function textOf(node: Element, html: boolean): string {
+  return (html ? node.innerHTML : node.textContent!).trim().replace(/\s+/g, ' ');
 }
 
 function shouldIgnore(element: Element): boolean {
