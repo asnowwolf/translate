@@ -1,6 +1,6 @@
 import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
-import { filter, groupBy, mergeMap, tap, toArray } from 'rxjs/operators';
+import { distinct, filter, groupBy, mergeMap, tap, toArray } from 'rxjs/operators';
 import { writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../common';
 import { from, GroupedObservable, of, zip } from 'rxjs';
@@ -52,9 +52,10 @@ export const handler = function ({ sourceGlob, outFile, unique, outType, pattern
   const regExp = new RegExp(pattern, 'i');
   const files = listFiles(sourceGlob);
   const commonPath = commonDir(files);
-  engine.extractPairs(files, unique)
+  engine.extractPairs(files, outType === TranslationEngineType.dict)
     .pipe(
       filter(it => regExp.test(it.english) || regExp.test(it.chinese)),
+      unique ? distinct() : tap(),
       toArray(),
     )
     .subscribe((pairs) => {
