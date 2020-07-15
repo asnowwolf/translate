@@ -1,17 +1,49 @@
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, Subject, Subscription } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
-import { map } from 'rxjs/operators';
+import { bufferTime, delay, filter, map, publishReplay, refCount, switchMap, take, tap } from 'rxjs/operators';
 import { TranslationEngineType } from './common';
 import { v3 } from '@google-cloud/translate';
 import { readFileSync } from 'fs';
 
 export abstract class TranslationEngine {
+  private _original$ = new Subject<{ id: string, original: string }>();
+  private _translation$ = new Subject<{ id: string, translation: string }>();
+  private subTranslator: Subscription;
+
+  constructor() {
+    this.subTranslator = this._original$.pipe(
+      bufferTime(100),
+      filter(it => it.length > 0),
+      publishReplay(1),
+      refCount(),
+      switchMap(texts => this.batchTranslate(texts.map(it => it.original)).pipe(
+        map(translations => translations.map((translation, index) => ({ id: texts[index].id, translation }))),
+      )),
+      switchMap(it => from(it)),
+      tap(it => this._translation$.next(it)),
+    ).subscribe();
+  }
+
+  destroy(): void {
+    this.subTranslator.unsubscribe();
+  }
+
   init(params: Record<string, any>): void {
   }
 
-  abstract translate(text: string): Observable<string>;
+  translate(text: string): Observable<string> {
+    const id = v4();
+    this._original$.next({ id, original: text });
+    return this._translation$.pipe(
+      filter(it => it.id === id),
+      map(it => it.translation),
+      take(1),
+    );
+  }
+
+  abstract batchTranslate(texts: string[]): Observable<string[]>;
 }
 
 export function getTranslateEngine(engine: TranslationEngineType): TranslationEngine {
@@ -30,14 +62,14 @@ export function getTranslateEngine(engine: TranslationEngineType): TranslationEn
 }
 
 class MsTranslator extends TranslationEngine {
-  translate(text: string): Observable<string> {
-    return translateByMsTranslator(text);
+  batchTranslate(texts: string[]): Observable<string[]> {
+    return translateByMsTranslator(texts);
   }
 }
 
 class GoogleTranslator extends TranslationEngine {
-  translate(text: string): Observable<string> {
-    return translateByGoogleCloud(text);
+  batchTranslate(texts: string[]): Observable<string[]> {
+    return translateByGoogleCloud(texts);
   }
 }
 
@@ -49,9 +81,9 @@ class DictTranslator extends TranslationEngine {
     this.params = params;
   }
 
-  translate(text: string): Observable<string> {
+  batchTranslate(texts: string[]): Observable<string[]> {
     this.load();
-    return of(this.dict[text] || text);
+    return of(texts.map(text => this.dict[text] || text));
   }
 
   private load(): void {
@@ -64,13 +96,18 @@ class DictTranslator extends TranslationEngine {
   }
 }
 
-class FakeTranslator extends TranslationEngine {
-  translate(text: string): Observable<string> {
-    if (text.startsWith('<')) {
-      return of(text.replace(/<(\w+)(.*?)>(.*?)<\/\1>/g, '<$1$2>译$3</$1>'));
-    } else {
-      return of('[译]' + text);
-    }
+export class FakeTranslator extends TranslationEngine {
+  batchApiCalls = 0;
+
+  batchTranslate(texts: string[]): Observable<string[]> {
+    ++this.batchApiCalls;
+    return of(texts.map(text => {
+      if (text.startsWith('<')) {
+        return text.replace(/<(\w+)(.*?)>(.*?)<\/\1>/g, '<$1$2>译$3</$1>');
+      } else {
+        return '[译]' + text;
+      }
+    })).pipe(delay(1000));
   }
 }
 
@@ -89,7 +126,7 @@ interface TranslationResult {
   translations: TranslationText[];
 }
 
-function translateByMsTranslator(text: string): Observable<string> {
+function translateByMsTranslator(texts: string[]): Observable<string[]> {
   const subscriptionKey = process.env.MS_TRANSLATOR;
   if (!subscriptionKey) {
     throw new Error('Environment variable for your subscription key is not set.');
@@ -110,26 +147,26 @@ function translateByMsTranslator(text: string): Observable<string> {
       'Content-type': 'application/json',
       'X-ClientTraceId': v4().toString(),
     },
-    body: [{
+    body: texts.map(text => ({
       'text': text,
-    }],
+    })),
     json: true,
   })).pipe(
     map((results) => results[0] as TranslationResult),
-    map(result => result.translations[0].text),
+    map(result => result.translations.map(it => it.text)),
   );
 }
 
-function translateByGoogleCloud(text: string): Observable<string> {
+function translateByGoogleCloud(texts: string[]): Observable<string[]> {
   const client = new v3.TranslationServiceClient();
   return from(client.translateText({
     parent: `projects/ralph-gde/locations/us-central1`,
-    contents: [text],
+    contents: texts,
     mimeType: 'text/html', // mime types: text/plain, text/html
     sourceLanguageCode: 'en',
     targetLanguageCode: 'zh-cn',
     model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
   })).pipe(
-    map(it => it[0]!.translations![0].translatedText!!),
+    map(it => it[0]!.translations!.map(it => it.translatedText!!)),
   );
 }
