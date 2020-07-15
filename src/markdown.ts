@@ -10,7 +10,7 @@ import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { Node } from 'unist';
-import { concat, Observable, of } from 'rxjs';
+import { concat, merge, Observable, of } from 'rxjs';
 import { cloneDeep } from 'lodash';
 import { TranslationEngine } from './engine';
 import { map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
@@ -96,7 +96,7 @@ export namespace markdown {
       tap(translation => postprocess(node, translation)),
     ));
     const yamlTasks = yamls.map(node => translateYamlNode(node, engine));
-    return concat(...tasks, ...yamlTasks).pipe(
+    return merge(...tasks, ...yamlTasks).pipe(
       toArray(),
       mapTo(result),
     );

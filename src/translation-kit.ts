@@ -1,7 +1,7 @@
 import { html } from './html';
-import { concat, Observable, of } from 'rxjs';
+import { concat, merge, Observable, of } from 'rxjs';
 import { VFile } from 'vfile';
-import { distinct, filter, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
+import { distinct, filter, finalize, flatMap, map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
 import { getTranslateEngine, TranslationEngine } from './engine';
 import { read } from './rx-file';
 import { parse } from './rx-jsdom';
@@ -32,7 +32,7 @@ export class TranslationKit {
     this.engine.init(params);
   }
 
-  transformFiles(files: string[], transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
+  private transformFiles(files: string[], transformer: (file: VFile) => Observable<VFile>): Observable<VFile> {
     const tasks = files.map(filename => of(filename).pipe(
       map(read()),
       switchMap(file => transformer(file)),
@@ -40,7 +40,7 @@ export class TranslationKit {
     return concat(...tasks);
   }
 
-  translateFile(file: VFile): Observable<VFile> {
+  private translateFile(file: VFile): Observable<VFile> {
     console.log('translating: ', file.path);
     switch (file.extname) {
       case '.html':
@@ -54,7 +54,7 @@ export class TranslationKit {
     }
   }
 
-  translateHtml(file: VFile): Observable<VFile> {
+  private translateHtml(file: VFile): Observable<VFile> {
     return of(file).pipe(
       map(parse()),
       switchMap(dom => of(dom).pipe(
@@ -69,7 +69,7 @@ export class TranslationKit {
     );
   }
 
-  translateMarkdown(file: VFile): Observable<VFile> {
+  private translateMarkdown(file: VFile): Observable<VFile> {
     const ast = markdown.parse(file.contents);
     return markdown.translate(ast, this.engine).pipe(
       map(ast => markdown.stringify(ast)),
@@ -79,10 +79,12 @@ export class TranslationKit {
   }
 
   translateFiles(files: string[]): Observable<VFile> {
-    return this.transformFiles(files, (file) => this.translateFile(file));
+    return this.transformFiles(files, (file) => this.translateFile(file)).pipe(
+      finalize(() => this.engine.destroy()),
+    );
   }
 
-  translateElement(element: Element): Observable<string> {
+  private translateElement(element: Element): Observable<string> {
     if (shouldIgnore(element)) {
       return of(element.innerHTML);
     }
@@ -103,7 +105,7 @@ export class TranslationKit {
     );
   }
 
-  translateDoc(doc: Document): Observable<Document> {
+  private translateDoc(doc: Document): Observable<Document> {
     const translateTitleTask = this.engine.translate(doc.title).pipe(
       tap(title => doc.title = title),
     );
@@ -116,7 +118,7 @@ export class TranslationKit {
       translateTitleTask,
       ...translateElementTasks,
     ];
-    return concat(...tasks).pipe(
+    return merge(...tasks).pipe(
       tap(items => items),
       toArray(),
       mapTo(doc),
@@ -136,7 +138,7 @@ export class TranslationKit {
         filter(({ chinese }) => countOfChinese(chinese) > 4),
       )),
     ));
-    return concat(...tasks);
+    return concat(...tasks).pipe(finalize(() => this.engine.destroy()));
   }
 
   extractLowQualifyResults(files: string[]): Observable<string> {
@@ -159,7 +161,7 @@ export class TranslationKit {
         map(({ english, chinese }) => `${english}(${english.length})\t|\t${chinese}(${chinese.length})`),
       )),
     ));
-    return concat(...tasks);
+    return concat(...tasks).pipe(finalize(() => this.engine.destroy()));
   }
 }
 
