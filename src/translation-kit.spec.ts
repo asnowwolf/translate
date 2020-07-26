@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { tap } from 'rxjs/operators';
+import { finalize, tap } from 'rxjs/operators';
 import { getTranslateEngine } from './engine';
 import { TranslationEngineType } from './common';
 import { injectTranslationKitToDoc, TranslationKit } from './translation-kit';
@@ -81,6 +81,7 @@ describe('translation-kit', function () {
     </ul>
   </li>
 </ul>`)),
+      finalize(() => engine.destroy()),
     ).toPromise();
   });
 });
