@@ -1,15 +1,17 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { finalize, map, tap } from 'rxjs/operators';
-import { FakeTranslator, getTranslateEngine } from './engine';
-import { TranslationEngineType } from './common';
+import { FakeTranslator } from './engine';
 import { merge } from 'rxjs';
 
 describe('translation engine', function () {
   it('translate one sentence with fake engine', () => {
-    const engine = getTranslateEngine(TranslationEngineType.fake);
+    const engine = new FakeTranslator();
     return engine.translate('<h1>Hello, world!</h1>')
-      .pipe(map(text => expect(text).eql('<h1>译Hello, world!</h1>')))
+      .pipe(
+        map(text => expect(text).eql('<h1>译Hello, world!</h1>')),
+        finalize(() => engine.destroy()),
+      )
       .toPromise();
   });
   it('translate multi sentences with fake engine', () => {

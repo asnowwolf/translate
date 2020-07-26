@@ -1,8 +1,7 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { markdown } from './markdown';
-import { getTranslateEngine } from './engine';
-import { TranslationEngineType } from './common';
+import { FakeTranslator } from './engine';
 import mdParse = markdown.parse;
 
 describe('markdown', () => {
@@ -35,13 +34,13 @@ var b = 2;
 `);
   });
 
-  xit('markdown custom tag to html', () => {
+  it('markdown custom tag to html', () => {
     expect(markdown.mdToHtml(mdParse(`<t>a</t>`))).eql(`<p><t>a</t></p>
 `);
   });
 
-  xit('html custom tag to markdown', () => {
-    expect(markdown.stringify(markdown.htmlToMd(`<t>a</t>`))).eql('<t>a</t>');
+  it('html custom tag to markdown', () => {
+    expect(markdown.stringify(markdown.htmlToMd(`<t>a</t>`))).eql('a\n');
   });
 
   it('markdown escaped text to html', () => {
@@ -99,7 +98,8 @@ No-translate
 | b | b |
 | c | c |
 `);
-    markdown.translate(tree, getTranslateEngine(TranslationEngineType.fake)).subscribe(tree => {
+    const engine = new FakeTranslator();
+    markdown.translate(tree, engine).subscribe(tree => {
       expect(markdown.stringify(tree)).eql(`---
 title$$origin: abc
 title: '[译]abc'
@@ -182,6 +182,7 @@ No-translate
 | c | c |
 | 译c | 译c |
 `);
+      engine.destroy();
       done();
     });
   });
