@@ -10,6 +10,7 @@ describe('markdown', () => {
     expect(markdown.mdToHtml(mdParse(`# h1`))).eql(`<h1>h1</h1>
 `);
   });
+
   it('html to markdown', () => {
     expect(markdown.stringify(markdown.htmlToMd(`<h1>H1</h1>`))).eql('# H1\n');
   });
@@ -74,6 +75,8 @@ title: abc
 
 Test
 
+No-translate
+
 1. a
 1. b
    1. b1
@@ -112,6 +115,8 @@ Test
 
 译Test
 
+
+No-translate
 
 1. a
 

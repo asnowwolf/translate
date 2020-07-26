@@ -9,7 +9,7 @@ import { VFileCompatible } from 'unified';
 import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
-import { Node } from 'unist';
+import { Node, Parent } from 'unist';
 import { concat, merge, Observable, of } from 'rxjs';
 import { cloneDeep } from 'lodash';
 import { TranslationEngine } from './engine';
@@ -89,8 +89,8 @@ export namespace markdown {
     const tasks = pairs.map(node => of(node).pipe(
       switchMap(node => translateNormalNode(node, engine)),
       tap(translation => {
-        if (stringify(node) === stringify(translation)) {
-          return unistRemove(tree, translation);
+        if (stringify(node) === stringify((translation as Parent).children[0])) {
+          return unistRemove(tree, node);
         }
       }),
       tap(translation => postprocess(node, translation)),

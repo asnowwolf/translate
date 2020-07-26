@@ -102,6 +102,9 @@ export class FakeTranslator extends TranslationEngine {
   batchTranslate(texts: string[]): Observable<string[]> {
     ++this.batchApiCalls;
     return of(texts.map(text => {
+      if (text.includes('No-translate')) {
+        return text;
+      }
       if (text.startsWith('<')) {
         return text.replace(/<(\w+)(.*?)>(.*?)<\/\1>/g, '<$1$2>译$3</$1>');
       } else {
