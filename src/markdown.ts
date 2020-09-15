@@ -46,7 +46,7 @@ export namespace markdown {
     return unified().use(remarkParse)
       .use(frontmatter)
       .use(remarkHtml)
-      .processSync(stringify(ast)).contents.toString('utf-8');
+      .processSync(stringify(ast)).contents.toString();
   }
 
   export function htmlToMd(html: string): Node {
@@ -105,7 +105,7 @@ export namespace markdown {
   function translateYamlNode(node: Node, engine: TranslationEngine): Observable<void> {
     const frontMatter = safeLoad(node.value as string) || {};
     const result = {};
-    const tasks = Object.entries<string>(frontMatter).map(([key, value]) => engine.translate(value).pipe(
+    const tasks = Object.entries(frontMatter).map(([key, value]) => engine.translate(value).pipe(
       tap(translation => {
         result[`${key}$$origin`] = value;
         result[key] = translation;
