@@ -9,11 +9,9 @@ import { VFileCompatible } from 'unified';
 import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
-import { Node } from 'unist';
-import { concat, Observable, of } from 'rxjs';
+import { Node, Parent } from 'unist';
 import { cloneDeep } from 'lodash';
 import { TranslationEngine } from './engine';
-import { map, mapTo, switchMap, tap, toArray } from 'rxjs/operators';
 import { containsChinese } from './common';
 import { ListItem } from 'mdast';
 import * as stringWidth from 'string-width';
@@ -53,69 +51,75 @@ export namespace markdown {
     return parse(unified().use(rehypeParse).use(rehypeRemark).use(remarkStringify, stringifyOptions).processSync(html));
   }
 
-  function shouldTranslate(root: Node): boolean {
-    let result = true;
-    unistVisit(root, (node) => {
-      if (containsChinese(node.value)) {
-        result = false;
+  function alreadyTranslated(nextNode: Node, node: Node) {
+    // 如果下一个兄弟节点含中文，而且是同一个类型，说明这个节点已经翻译过了，不用再翻译它
+    return nextNode.type === node.type && isChineseNode(nextNode);
+  }
+
+  function isChineseNode(node: Node): boolean {
+    let result = false;
+    unistVisit(node, (it) => {
+      if (containsChinese(it.value)) {
+        result = true;
       }
     });
     return result;
   }
 
-  function translateNormalNode(node: Node, engine: TranslationEngine): Observable<Node> {
-    return engine.translate(mdToHtml(preprocess(node))).pipe(
-      map(html => htmlToMd(html)),
-    );
+  function shouldTranslate(node: Node, index: number, parent: Parent): boolean {
+    const nextNode = parent.children[index + 1];
+    if (nextNode && alreadyTranslated(nextNode, node)) {
+      return false;
+    }
+    return !isChineseNode(node);
   }
 
-  export function translate(tree: Node, engine: TranslationEngine): Observable<Node> {
-    const result = unistMap(tree, (node, _, parent) => {
-      if ((node.type === 'paragraph' || node.type === 'tableRow' || node.type === 'heading') && shouldTranslate(node)) {
+  async function translateNormalNode(node: Node, engine: TranslationEngine): Promise<Node> {
+    const html = mdToHtml(preprocess(node));
+    const translations = await engine.translate([html]);
+    return translations.map(it => htmlToMd(it))[0];
+  }
+
+  async function translateYaml(yaml: string, engine: TranslationEngine): Promise<string> {
+    const frontMatter = (safeLoad(yaml as string) as object) || {};
+    const result = {};
+    await Promise.all(Object.entries(frontMatter).map(async ([key, value]) => {
+      const translation = await engine.translate([value]);
+      result[`${key}$$origin`] = value;
+      result[key] = translation[0];
+    }));
+    return safeDump(result);
+  }
+
+  function mapToPaired(tree: Node) {
+    return unistMap(tree, (node, index, parent) => {
+      if ((node.type === 'paragraph' || node.type === 'tableRow' || node.type === 'heading') && shouldTranslate(node, index, parent)) {
         return [node, markNode(cloneDeep<Node>(node), parent)];
       }
       return [node];
     });
-    const pairs: Node[] = [];
-    const yamls: Node[] = [];
-    unistVisit(result, (node) => {
-      if (node.translation) {
-        pairs.push(node);
-      }
-      if (node.type === 'yaml') {
-        yamls.push(node);
-      }
-    });
-    const tasks = pairs.map(node => of(node).pipe(
-      switchMap(node => translateNormalNode(node, engine)),
-      tap(translation => {
-        if (stringify(node) === stringify(translation)) {
-          return unistRemove(tree, translation);
-        }
-      }),
-      tap(translation => postprocess(node, translation)),
-    ));
-    const yamlTasks = yamls.map(node => translateYamlNode(node, engine));
-    return concat(...tasks, ...yamlTasks).pipe(
-      toArray(),
-      mapTo(result),
-    );
   }
 
-  function translateYamlNode(node: Node, engine: TranslationEngine): Observable<void> {
-    const frontMatter = safeLoad(node.value as string) || {};
-    const result = {};
-    const tasks = Object.entries(frontMatter).map(([key, value]) => engine.translate(value).pipe(
-      tap(translation => {
-        result[`${key}$$origin`] = value;
-        result[key] = translation;
-      }),
-    ));
-    return concat(...tasks).pipe(
-      toArray(),
-      tap(() => node.value = safeDump(result)),
-      mapTo(void 0),
-    );
+  export async function translate(tree: Node, engine: TranslationEngine): Promise<Node> {
+    const result = mapToPaired(tree);
+    const pairs: Node[] = [];
+    await unistVisit(result, async (node) => {
+      if (node.type === 'yaml') {
+        node.value = await translateYaml(node.value, engine);
+      } else if (node.translation) {
+        pairs.push(node);
+      }
+    });
+
+    const translatedPairs = await Promise.all(pairs.map(it => translateNormalNode(it, engine)));
+    pairs.forEach((original, index) => {
+      const translation = translatedPairs[index];
+      if (translation && stringify(original).trim() === stringify(translation).trim()) {
+        unistRemove(result, original);
+      }
+      postprocess(original, translation);
+    });
+    return result;
   }
 
   function preprocess(node: Node): Node {

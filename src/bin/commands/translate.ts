@@ -2,8 +2,7 @@ import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
 import { TranslationEngineType } from '../../common';
 import * as toVFile from 'to-vfile';
-import { tap } from 'rxjs/operators';
-import { listFiles } from '../../rx-file';
+import { listFiles } from '../../file-utils';
 
 export const command = `translate <sourceGlob>`;
 
@@ -30,9 +29,9 @@ interface Params {
   dict: string;
 }
 
-export const handler = function ({ sourceGlob, engine, dict }: Params) {
+export const handler = async function ({ sourceGlob, engine, dict }: Params) {
   const kit = new TranslationKit(engine, { dict });
-  return kit.translateFiles(listFiles(sourceGlob)).pipe(
-    tap(file => toVFile.writeSync(file)),
-  ).subscribe();
+  const files = listFiles(sourceGlob);
+  const translatedFiles = await kit.translateFiles(files);
+  translatedFiles.forEach(file => toVFile.writeSync(file));
 };
