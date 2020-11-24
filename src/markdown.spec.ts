@@ -65,7 +65,7 @@ title: abc
 `);
   });
 
-  it('translate', (done) => {
+  it('translate complex markdown', async () => {
     const tree = markdown.parse(`---
 title: abc
 ---
@@ -81,6 +81,10 @@ No-translate
    1. b1
    1. b2
    1. b3
+
+<code-example
+    region="import">
+</code-example>
 
 - a
   - b
@@ -99,8 +103,9 @@ No-translate
 | c | c |
 `);
     const engine = new FakeTranslator();
-    markdown.translate(tree, engine).subscribe(tree => {
-      expect(markdown.stringify(tree)).eql(`---
+    const result = await markdown.translate(tree, engine);
+    const md = markdown.stringify(result);
+    expect(md).eql(`---
 title$$origin: abc
 title: '[译]abc'
 
@@ -138,6 +143,13 @@ No-translate
    1. b3
 
       译b3
+
+
+<code-example
+    region="import">
+</code-example>
+
+
 
 
 - a
@@ -182,8 +194,5 @@ No-translate
 | c | c |
 | 译c | 译c |
 `);
-      engine.destroy();
-      done();
-    });
   });
 });
