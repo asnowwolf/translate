@@ -1,8 +1,5 @@
-import { from, Observable, of } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
-import { map } from 'rxjs/operators';
 import { TranslationEngineType } from './common';
 import { v3 } from '@google-cloud/translate';
 import { readFileSync } from 'fs';
@@ -11,7 +8,14 @@ export abstract class TranslationEngine {
   init(params: Record<string, any>): void {
   }
 
-  abstract translate(text: string): Observable<string>;
+  async translate(texts: string[]): Promise<string[]> {
+    if (!texts.length) {
+      return texts;
+    }
+    return await this.doTranslate(texts);
+  }
+
+  protected abstract async doTranslate(texts: string[]): Promise<string[]>;
 }
 
 export function getTranslateEngine(engine: TranslationEngineType): TranslationEngine {
@@ -29,19 +33,19 @@ export function getTranslateEngine(engine: TranslationEngineType): TranslationEn
   }
 }
 
-class MsTranslator extends TranslationEngine {
-  translate(text: string): Observable<string> {
-    return translateByMsTranslator(text);
+export class MsTranslator extends TranslationEngine {
+  protected async doTranslate(texts: string[]): Promise<string[]> {
+    return translateByMsTranslator(texts);
   }
 }
 
-class GoogleTranslator extends TranslationEngine {
-  translate(text: string): Observable<string> {
-    return translateByGoogleCloud(text);
+export class GoogleTranslator extends TranslationEngine {
+  protected async doTranslate(texts: string[]): Promise<string[]> {
+    return translateByGoogleCloud(texts);
   }
 }
 
-class DictTranslator extends TranslationEngine {
+export class DictTranslator extends TranslationEngine {
   private dict: Map<string, string>;
   private params: Record<string, any>;
 
@@ -49,9 +53,9 @@ class DictTranslator extends TranslationEngine {
     this.params = params;
   }
 
-  translate(text: string): Observable<string> {
+  protected async doTranslate(texts: string[]): Promise<string[]> {
     this.load();
-    return of(this.dict[text] || text);
+    return texts.map(text => this.dict[text] || text);
   }
 
   private load(): void {
@@ -64,13 +68,18 @@ class DictTranslator extends TranslationEngine {
   }
 }
 
-class FakeTranslator extends TranslationEngine {
-  translate(text: string): Observable<string> {
-    if (text.startsWith('<')) {
-      return of(text.replace(/<(\w+)(.*?)>(.*?)<\/\1>/g, '<$1$2>译$3</$1>'));
-    } else {
-      return of('[译]' + text);
-    }
+export class FakeTranslator extends TranslationEngine {
+  protected async doTranslate(texts: string[]): Promise<string[]> {
+    return texts.map(text => {
+      if (text.includes('No-translate')) {
+        return text;
+      }
+      if (text.startsWith('<')) {
+        return text.replace(/<([-\w]+)\b([^>]*)>([\s\S]*?)<\/\1>/g, '<$1$2>译$3</$1>');
+      } else {
+        return '[译]' + text;
+      }
+    });
   }
 }
 
@@ -89,13 +98,13 @@ interface TranslationResult {
   translations: TranslationText[];
 }
 
-function translateByMsTranslator(text: string): Observable<string> {
+async function translateByMsTranslator(texts: string[]): Promise<string[]> {
   const subscriptionKey = process.env.MS_TRANSLATOR;
   if (!subscriptionKey) {
     throw new Error('Environment variable for your subscription key is not set.');
   }
 
-  return fromPromise(request({
+  const results = await request({
     method: 'POST',
     baseUrl: 'https://api.cognitive.microsofttranslator.com/',
     url: 'translate',
@@ -110,26 +119,22 @@ function translateByMsTranslator(text: string): Observable<string> {
       'Content-type': 'application/json',
       'X-ClientTraceId': v4().toString(),
     },
-    body: [{
+    body: texts.map(text => ({
       'text': text,
-    }],
+    })),
     json: true,
-  })).pipe(
-    map((results) => results[0] as TranslationResult),
-    map(result => result.translations[0].text),
-  );
+  }) as TranslationResult[];
+  return results[0].translations.map(it => it.text);
 }
 
-function translateByGoogleCloud(text: string): Observable<string> {
+function translateByGoogleCloud(texts: string[]): Promise<string[]> {
   const client = new v3.TranslationServiceClient();
-  return from(client.translateText({
+  return client.translateText({
     parent: `projects/ralph-gde/locations/us-central1`,
-    contents: [text],
+    contents: texts,
     mimeType: 'text/html', // mime types: text/plain, text/html
     sourceLanguageCode: 'en',
     targetLanguageCode: 'zh-cn',
     model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
-  })).pipe(
-    map(it => it[0]!.translations![0].translatedText!!),
-  );
+  }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
 }

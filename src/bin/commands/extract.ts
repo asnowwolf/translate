@@ -1,12 +1,11 @@
 import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
-import { concatAll, distinct, filter, groupBy, map, mergeMap, switchMap, tap, toArray } from 'rxjs/operators';
 import { writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../common';
-import { from, GroupedObservable, Observable, of, zip } from 'rxjs';
 import { DictEntryModel } from '../../models/dict-entry.model';
-import { listFiles } from '../../rx-file';
-import { Dict, DictEntry } from '../../dict';
+import { listFiles } from '../../file-utils';
+import { Dict } from '../../dict';
+import { groupBy, map, uniqBy } from 'lodash';
 
 export const command = `extract <sourceGlob> [outFile]`;
 
@@ -44,45 +43,36 @@ interface ExtractParams {
   pattern: RegExp;
 }
 
-export const handler = function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
+export const handler = async function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
   const engine = new TranslationKit(outType);
   const regExp = new RegExp(pattern, 'i');
   const files = listFiles(sourceGlob);
-  engine.extractPairs(files, outType === TranslationEngineType.dict)
-    .pipe(
-      filter(it => regExp.test(it.english) || regExp.test(it.chinese)),
-      unique ? distinct() : tap(),
-      toArray(),
-    )
-    .subscribe((pairs) => {
-      switch (outType) {
-        case TranslationEngineType.google:
-          const content = pairs.map(it => `${it.english}\t${it.chinese}`).join('\n');
-          writeTo(outFile, 'pair', content);
-          break;
-        case TranslationEngineType.ms:
-          writeTo(outFile, 'en', pairs.map(it => it.english).join('\n'));
-          writeTo(outFile, 'cn', pairs.map(it => it.chinese).join('\n'));
-          break;
-        case TranslationEngineType.dict:
-          from(pairs).pipe(
-            groupBy((it) => it.file),
-            mergeMap((group: GroupedObservable<string, DictEntryModel>) => zip(of(group.key), group.pipe(toArray()))),
-            switchMap(([file, pairs]) => saveToDict(outFile, file, pairs)),
-          ).subscribe();
-          break;
+  const allPairs = await engine.extractPairsFromHtml(files, outType === TranslationEngineType.dict);
+  const pairs = uniqBy(allPairs.filter(it => regExp.test(it.english) || regExp.test(it.chinese)), (it) => it.english + it.chinese);
+  switch (outType) {
+    case TranslationEngineType.google:
+      const content = pairs.map(it => `${it.english}\t${it.chinese}`).join('\n');
+      writeTo(outFile, 'pair', content);
+      break;
+    case TranslationEngineType.ms:
+      writeTo(outFile, 'en', pairs.map(it => it.english).join('\n'));
+      writeTo(outFile, 'cn', pairs.map(it => it.chinese).join('\n'));
+      break;
+    case TranslationEngineType.dict:
+      const grouped = map(groupBy(pairs, it => it.file), (pairs, file) => ({ file, pairs }));
+      for (const { file, pairs } of grouped) {
+        await saveToDict(outFile, file, pairs);
       }
-    });
+      break;
+  }
 };
 
-function saveToDict(dictFile: string, contextFile: string, pairs: DictEntryModel[]): Observable<DictEntry> {
+async function saveToDict(dictFile: string, contextFile: string, pairs: DictEntryModel[]): Promise<void> {
   const dict = new Dict();
-  return from(dict.open(dictFile)).pipe(
-    switchMap(() => from(pairs).pipe(
-      map((pair) => from(dict.createOrUpdate(contextFile, pair.english, pair.chinese))),
-    )),
-    concatAll(),
-  );
+  await dict.open(dictFile);
+  for (const pair of pairs) {
+    await dict.createOrUpdate(contextFile, pair.english, pair.chinese);
+  }
 }
 
 function writeTo(filename: string, lang: 'pair' | 'en' | 'cn' | 'dict', content: string): void {

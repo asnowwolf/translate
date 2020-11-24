@@ -19,6 +19,7 @@ var b = 2;
 </code></pre>
 `);
   });
+
   it('html code to markdown', () => {
     expect(markdown.stringify(markdown.htmlToMd(`<pre>
 <code>
@@ -64,7 +65,7 @@ title: abc
 `);
   });
 
-  it('translate', (done) => {
+  it('translate complex markdown', async () => {
     const tree = markdown.parse(`---
 title: abc
 ---
@@ -79,7 +80,7 @@ Test
    1. b2
    1. b3
 
-- a
+- a1
   - b
   - c
 
@@ -96,8 +97,9 @@ Test
 | c | c |
 `);
     const engine = new FakeTranslator();
-    markdown.translate(tree, engine).subscribe(tree => {
-      expect(markdown.stringify(tree)).eql(`---
+    const result = await markdown.translate(tree, engine);
+    const md = markdown.stringify(result);
+    expect(md).eql(`---
 title$$origin: abc
 title: '[译]abc'
 
@@ -135,9 +137,9 @@ Test
       译b3
 
 
-- a
+- a1
 
-  译a
+  译a1
 
 
   - b
@@ -177,8 +179,5 @@ Test
 | c | c |
 | 译c | 译c |
 `);
-      engine.destroy();
-      done();
-    });
   });
 });
