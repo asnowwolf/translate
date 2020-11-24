@@ -1,15 +1,12 @@
 import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
-import { distinct, filter, groupBy, mergeMap, tap, toArray } from 'rxjs/operators';
+import { concatAll, distinct, filter, groupBy, map, mergeMap, switchMap, tap, toArray } from 'rxjs/operators';
 import { writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../common';
-import { from, GroupedObservable, of, zip } from 'rxjs';
+import { from, GroupedObservable, Observable, of, zip } from 'rxjs';
 import { DictEntryModel } from '../../models/dict-entry.model';
-import * as path from 'path';
-import { basename, dirname, join, relative } from 'path';
-import * as mkdirp from 'mkdirp';
 import { listFiles } from '../../rx-file';
-import * as commonDir from 'common-dir';
+import { Dict, DictEntry } from '../../dict';
 
 export const command = `extract <sourceGlob> [outFile]`;
 
@@ -51,7 +48,6 @@ export const handler = function ({ sourceGlob, outFile, unique, outType, pattern
   const engine = new TranslationKit(outType);
   const regExp = new RegExp(pattern, 'i');
   const files = listFiles(sourceGlob);
-  const commonPath = commonDir(files);
   engine.extractPairs(files, outType === TranslationEngineType.dict)
     .pipe(
       filter(it => regExp.test(it.english) || regExp.test(it.chinese)),
@@ -72,18 +68,22 @@ export const handler = function ({ sourceGlob, outFile, unique, outType, pattern
           from(pairs).pipe(
             groupBy((it) => it.file),
             mergeMap((group: GroupedObservable<string, DictEntryModel>) => zip(of(group.key), group.pipe(toArray()))),
-            tap(([key, pairs]) => {
-              const filename = path.join(outFile, relative(commonPath, key));
-              const dir = dirname(filename);
-              mkdirp.sync(dir);
-              const dictFileName = join(dir, basename(filename, '.html') + '.md');
-              writeTo(dictFileName, 'dict', pairs.map(it => `${it.english}\n\n${it.chinese}\n\n`).join('\n'));
-            }),
+            switchMap(([file, pairs]) => saveToDict(outFile, file, pairs)),
           ).subscribe();
           break;
       }
     });
 };
+
+function saveToDict(dictFile: string, contextFile: string, pairs: DictEntryModel[]): Observable<DictEntry> {
+  const dict = new Dict();
+  return from(dict.open(dictFile)).pipe(
+    switchMap(() => from(pairs).pipe(
+      map((pair) => from(dict.createOrUpdate(contextFile, pair.english, pair.chinese))),
+    )),
+    concatAll(),
+  );
+}
 
 function writeTo(filename: string, lang: 'pair' | 'en' | 'cn' | 'dict', content: string): void {
   if (filename === 'STDOUT') {
