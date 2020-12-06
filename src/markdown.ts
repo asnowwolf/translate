@@ -9,7 +9,7 @@ import { VFileCompatible } from 'unified';
 import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
-import { Node } from 'unist';
+import { Node, Parent } from 'unist';
 import { cloneDeep } from 'lodash';
 import { TranslationEngine } from './engine';
 import { containsChinese } from './common';
@@ -51,13 +51,13 @@ export namespace markdown {
     return parse(unified().use(rehypeParse).use(rehypeRemark).use(remarkStringify, stringifyOptions).processSync(html));
   }
 
-  function alreadyTranslated(nextNode, node: Node) {
+  function alreadyTranslated(nextNode: Node, node: Node) {
     // 如果下一个兄弟节点含中文，而且是同一个类型，说明这个节点已经翻译过了，不用再翻译它
-    return nextNode.type === node.type && containsChinese(nextNode);
+    return nextNode.type === node.type && containsChinese(stringify(nextNode));
   }
 
-  function shouldTranslate(node: Node, index: number, parent: ParentNode): boolean {
-    const nextNode = parent[index + 1];
+  function shouldTranslate(node: Node, index: number, parent: Parent): boolean {
+    const nextNode = parent.children[index + 1];
     if (nextNode && alreadyTranslated(nextNode, node)) {
       return false;
     }
