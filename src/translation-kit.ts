@@ -94,9 +94,8 @@ export class TranslationKit {
   }
 
   private async translateMarkdown(file: VFile): Promise<VFile> {
-    const ast = markdown.parse(file.contents as string);
-    const translatedAst = await markdown.translate(ast, this.engine);
-    file.contents = prettify(markdown.stringify(translatedAst));
+    const translation = await markdown.translate(file.contents as string, this.engine);
+    file.contents = prettify(translation);
     return file;
   }
 

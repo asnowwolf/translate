@@ -18,6 +18,14 @@ import * as stringWidth from 'string-width';
 import { safeDump, safeLoad } from 'js-yaml';
 
 export namespace markdown {
+  function encodeExampleTags(text: string): string {
+    return text.replace(/(<(code-example|live-example)\b[^>]*>[\s\S]*?<\/\2>)/g, '`$1`');
+  }
+
+  function decodeExampleTags(text: string): string {
+    return text.replace(/`(<(code-example|live-example)\b[^>]*>[\s\S]*?<\/\2>)`/g, '$1');
+  }
+
   const stringifyOptions = {
     emphasis: '*',
     listItemIndent: 1,
@@ -100,7 +108,8 @@ export namespace markdown {
     });
   }
 
-  export async function translate(tree: Node, engine: TranslationEngine): Promise<Node> {
+  export async function translate(original: string, engine: TranslationEngine): Promise<string> {
+    const tree = parse(encodeExampleTags(original));
     const result = mapToPaired(tree);
     const pairs: Node[] = [];
     const yamls: YAML[] = [];
@@ -124,7 +133,7 @@ export namespace markdown {
       }
       postprocess(original, translation);
     });
-    return result;
+    return decodeExampleTags(stringify(result));
   }
 
   function preprocess(node: Node): Node {

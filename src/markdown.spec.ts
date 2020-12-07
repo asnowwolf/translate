@@ -66,7 +66,7 @@ title: abc
   });
 
   it('translate complex markdown', async () => {
-    const tree = markdown.parse(`---
+    const original = `---
 title: abc
 ---
 
@@ -95,10 +95,11 @@ Test
 |----|----|
 | b | b |
 | c | c |
-`);
+
+<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
+`;
     const engine = new FakeTranslator();
-    const result = await markdown.translate(tree, engine);
-    const md = markdown.stringify(result);
+    const md = await markdown.translate(original, engine);
     expect(md).eql(`---
 title$$origin: abc
 title: '[译]abc'
@@ -178,6 +179,11 @@ Test
 | 译b | 译b |
 | c | c |
 | 译c | 译c |
+
+<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
+
+译<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
+
 `);
   });
 });
