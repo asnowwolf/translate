@@ -16,7 +16,15 @@ import { containsChinese } from './common';
 import { ListItem } from 'mdast';
 import * as stringWidth from 'string-width';
 import { safeDump, safeLoad } from 'js-yaml';
+import * as codeExampleHandler from './plugins/code-example-handler';
+import * as liveExampleHandler from './plugins/live-example-handler';
 
+const compiler = remarkStringify.Compiler;
+compiler.prototype.visitors['code-example'] = function (node) {
+  return this.all(node).join('');
+};
+
+console.log(compiler);
 export namespace markdown {
   const stringifyOptions = {
     emphasis: '*',
@@ -47,8 +55,15 @@ export namespace markdown {
       .processSync(stringify(ast)).contents.toString();
   }
 
+  const customElementHandlers = {
+    handlers: {
+      'code-example': codeExampleHandler,
+      'live-example': liveExampleHandler,
+    },
+  };
+
   export function htmlToMd(html: string): Node {
-    return parse(unified().use(rehypeParse).use(rehypeRemark).use(remarkStringify, stringifyOptions).processSync(html));
+    return parse(unified().use(rehypeParse).use(rehypeRemark, customElementHandlers).use(remarkStringify, stringifyOptions).processSync(html));
   }
 
   function alreadyTranslated(nextNode: Node, node: Node) {

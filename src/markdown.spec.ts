@@ -20,8 +20,8 @@ var b = 2;
 `);
   });
 
-  xit('markdown to html to markdown', () => {
-    const html = markdown.mdToHtml(mdParse('a<code-example>b</code-example>c'));
+  it('markdown to html to markdown', () => {
+    const html = markdown.mdToHtml(mdParse('a<code-example src="/abc">b</code-example>c'));
     const ast = markdown.htmlToMd(html);
     const md = markdown.stringify(ast);
     expect(md).eql(`a<code-example>b</code-example>c`);
