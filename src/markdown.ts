@@ -10,7 +10,7 @@ import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { Node, Parent } from 'unist';
-import { cloneDeep } from 'lodash';
+import { chunk, cloneDeep } from 'lodash';
 import { TranslationEngine } from './engine';
 import { containsChinese } from './common';
 import { ListItem, YAML } from 'mdast';
@@ -82,20 +82,22 @@ export namespace markdown {
     return !isChineseNode(node);
   }
 
-  async function translateNormalNode(node: Node, engine: TranslationEngine): Promise<Node> {
-    const html = mdToHtml(preprocess(node));
-    const translations = await engine.translate([html]);
-    return translations.map(it => htmlToMd(it))[0];
+  async function translateNormalNodes(pairs: Node[], engine: TranslationEngine): Promise<Node[]> {
+    const originals = pairs.map(it => mdToHtml(preprocess(it)));
+    const batches = chunk(originals, engine.batchSize);
+    const translations = await Promise.all(batches.map(async (it) => engine.translate(it)));
+    return translations.flat().map(it => htmlToMd(it));
   }
 
   async function translateYaml(yaml: string, engine: TranslationEngine): Promise<string> {
     const frontMatter = (safeLoad(yaml as string) as object) || {};
     const result = {};
-    for (const [key, value] of Object.entries(frontMatter)) {
-      const translation = await engine.translate([value]);
+    const entries = Object.entries(frontMatter);
+    const translations = await engine.translate(entries.map(([, value]) => value));
+    entries.forEach(([key, value], index) => {
       result[`${key}$$origin`] = value;
-      result[key] = translation[0];
-    }
+      result[key] = translations[index];
+    });
     return safeDump(result);
   }
 
@@ -125,7 +127,7 @@ export namespace markdown {
       node.value = await translateYaml(node.value, engine);
     }
 
-    const translatedPairs = await Promise.all(pairs.map(it => translateNormalNode(it, engine)));
+    const translatedPairs = await translateNormalNodes(pairs, engine);
     pairs.forEach((original, index) => {
       const translation = translatedPairs[index];
       if (translation && stringify(original).trim() === stringify(translation).trim()) {

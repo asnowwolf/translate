@@ -99,6 +99,7 @@ Test
 <code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
 `;
     const engine = new FakeTranslator();
+    engine.batchSize = 10;
     const md = await markdown.translate(original, engine);
     expect(md).eql(`---
 title$$origin: abc

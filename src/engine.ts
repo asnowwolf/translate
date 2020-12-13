@@ -5,6 +5,8 @@ import { v3 } from '@google-cloud/translate';
 import { readFileSync } from 'fs';
 
 export abstract class TranslationEngine {
+  batchSize = 100;
+
   init(params: Record<string, any>): void {
   }
 
