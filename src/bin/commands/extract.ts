@@ -70,8 +70,12 @@ export const handler = async function ({ sourceGlob, outFile, unique, outType, p
 async function saveToDict(dictFile: string, contextFile: string, pairs: DictEntryModel[]): Promise<void> {
   const dict = new Dict();
   await dict.open(dictFile);
-  for (const pair of pairs) {
-    await dict.createOrUpdate(contextFile, pair.english, pair.chinese);
+  try {
+    for (const pair of pairs) {
+      await dict.createOrUpdate(contextFile, pair.english, pair.chinese, pair.xpath);
+    }
+  } finally {
+    await dict.close();
   }
 }
 

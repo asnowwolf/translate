@@ -18,6 +18,27 @@ function prettify(md: string): string {
 class CharsetNotSupportedError extends Error {
 }
 
+
+function indexInParent(node: Node): number {
+  if (!node.parentNode) {
+    return -1;
+  }
+  const siblings = node.parentNode.children;
+  for (let i = 0; i < siblings.length; ++i) {
+    if (siblings.item(i) === node) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function getPathsTo(element: Element): string[] {
+  if (!element || element.parentElement?.tagName === 'BODY') {
+    return [];
+  }
+  return [...getPathsTo(element.parentElement), element.tagName, indexInParent(element).toString(10)];
+}
+
 function extractAllFromHtml(filename: string, outputHtml: boolean): DictEntryModel[] {
   const file = read(filename);
   const dom = parse(file);
@@ -26,6 +47,7 @@ function extractAllFromHtml(filename: string, outputHtml: boolean): DictEntryMod
   const pairs = extractAll(doc.body);
   return pairs.map(pair => ({
     file: filename,
+    xpath: getPathsTo(pair.english).join('/'),
     english: textOf(pair.english, outputHtml),
     chinese: textOf(pair.chinese, outputHtml),
   }));

@@ -9,6 +9,8 @@ export class DictEntry {
   path: string;
   @Column()
   filename: string;
+  @Column()
+  xpath: string;
   @Column({ type: 'nvarchar', length: 256 })
   english: string;
   @Column({ type: 'nvarchar', length: 256 })
@@ -41,13 +43,14 @@ export class Dict {
       matches[0];
   }
 
-  async createOrUpdate(filePath: string, english: string, chinese: string): Promise<DictEntry> {
+  async createOrUpdate(filePath: string, english: string, chinese: string, xpath: string): Promise<DictEntry> {
     const entry = await this.dictRepo.findOne({ path: filePath, english });
     if (entry) {
       entry.chinese = chinese;
+      entry.xpath = xpath;
       return await this.dictRepo.save(entry);
     } else {
-      return await this.dictRepo.save({ path: filePath, english, chinese, filename: basename(filePath) });
+      return await this.dictRepo.save({ path: filePath, xpath, english, chinese, filename: basename(filePath) });
     }
   }
 }
