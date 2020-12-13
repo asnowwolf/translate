@@ -35,13 +35,45 @@ export function getTranslateEngine(engine: TranslationEngineType): TranslationEn
 
 export class MsTranslator extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
-    return translateByMsTranslator(texts);
+    if (!process.env.MS_TRANSLATOR) {
+      throw new Error('Environment variable for your subscription key is not set.');
+    }
+
+    const results = await request({
+      method: 'POST',
+      baseUrl: 'https://api.cognitive.microsofttranslator.com/',
+      url: 'translate',
+      qs: {
+        'api-version': '3.0',
+        'to': 'zh-Hans',
+        category: '1a5430e5-383d-45be-a1ba-b3d99d0176f8-TECH',
+        textType: 'html',
+      },
+      headers: {
+        'Ocp-Apim-Subscription-Key': process.env.MS_TRANSLATOR,
+        'Content-type': 'application/json',
+        'X-ClientTraceId': v4().toString(),
+      },
+      body: texts.map(text => ({
+        'text': text,
+      })),
+      json: true,
+    }) as TranslationResult[];
+    return results[0].translations.map(it => it.text);
   }
 }
 
 export class GoogleTranslator extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
-    return translateByGoogleCloud(texts);
+    const client = new v3.TranslationServiceClient();
+    return client.translateText({
+      parent: `projects/ralph-gde/locations/us-central1`,
+      contents: texts,
+      mimeType: 'text/html', // mime types: text/plain, text/html
+      sourceLanguageCode: 'en',
+      targetLanguageCode: 'zh-cn',
+      model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
+    }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
   }
 }
 
@@ -96,45 +128,4 @@ interface TranslationText {
 interface TranslationResult {
   detectedLanguage: DetectedLanguage;
   translations: TranslationText[];
-}
-
-async function translateByMsTranslator(texts: string[]): Promise<string[]> {
-  const subscriptionKey = process.env.MS_TRANSLATOR;
-  if (!subscriptionKey) {
-    throw new Error('Environment variable for your subscription key is not set.');
-  }
-
-  const results = await request({
-    method: 'POST',
-    baseUrl: 'https://api.cognitive.microsofttranslator.com/',
-    url: 'translate',
-    qs: {
-      'api-version': '3.0',
-      'to': 'zh-Hans',
-      category: '1a5430e5-383d-45be-a1ba-b3d99d0176f8-TECH',
-      textType: 'html',
-    },
-    headers: {
-      'Ocp-Apim-Subscription-Key': subscriptionKey,
-      'Content-type': 'application/json',
-      'X-ClientTraceId': v4().toString(),
-    },
-    body: texts.map(text => ({
-      'text': text,
-    })),
-    json: true,
-  }) as TranslationResult[];
-  return results[0].translations.map(it => it.text);
-}
-
-function translateByGoogleCloud(texts: string[]): Promise<string[]> {
-  const client = new v3.TranslationServiceClient();
-  return client.translateText({
-    parent: `projects/ralph-gde/locations/us-central1`,
-    contents: texts,
-    mimeType: 'text/html', // mime types: text/plain, text/html
-    sourceLanguageCode: 'en',
-    targetLanguageCode: 'zh-cn',
-    model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
-  }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
 }
