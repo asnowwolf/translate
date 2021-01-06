@@ -4,12 +4,12 @@ import { TranslationEngineType } from '../../common';
 import * as toVFile from 'to-vfile';
 import { listFiles } from '../../file-utils';
 
-export const command = `translate <sourceGlob>`;
+export const command = `translate <sourceGlobs...>`;
 
 export const describe = '自动翻译 sourceGlob 中的文件，支持 html 和 markdown 两种格式';
 
 export const builder: CommandBuilder = {
-  sourceGlob: {
+  sourceGlobs: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
   engine: {
@@ -30,14 +30,14 @@ export const builder: CommandBuilder = {
 };
 
 interface Params {
-  sourceGlob: string;
+  sourceGlobs: string[];
   engine: TranslationEngineType;
   dict: string;
 }
 
-export const handler = async function ({ sourceGlob, engine, dict }: Params) {
+export const handler = async function ({ sourceGlobs, engine, dict }: Params) {
   const kit = new TranslationKit(engine, { dict });
-  const files = listFiles(sourceGlob);
+  const files = sourceGlobs.map(it => listFiles(it)).flat();
   const translatedFiles = await kit.translateFiles(files);
   translatedFiles.forEach(file => toVFile.writeSync(file));
 };
