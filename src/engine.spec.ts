@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { FakeTranslator } from './engine';
+import { FakeTranslator, GoogleTranslator } from './engine';
 
 describe('translation engine', function () {
   it('translate one sentence with fake engine', async () => {
@@ -12,5 +12,10 @@ describe('translation engine', function () {
     const engine = new FakeTranslator();
     const texts = await engine.translate(['one', 'two', 'three']);
     expect(texts).eql(['[译]one', '[译]two', '[译]three']);
+  });
+  it('translate with google translate', async () => {
+    const engine = new GoogleTranslator();
+    const texts = await engine.translate(['one', 'two', 'three']);
+    expect(texts).eql(['一', '二', '三']);
   });
 });

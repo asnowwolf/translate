@@ -2,6 +2,7 @@ import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { TranslationEngineType } from './common';
 import { v3 } from '@google-cloud/translate';
+import * as translate from '@vitalets/google-translate-api';
 import { readFileSync } from 'fs';
 
 export abstract class TranslationEngine {
@@ -24,6 +25,8 @@ export function getTranslateEngine(engine: TranslationEngineType): TranslationEn
   switch (engine) {
     case TranslationEngineType.google:
       return new GoogleTranslator();
+    case TranslationEngineType.gcloud:
+      return new GoogleCloudTranslator();
     case TranslationEngineType.ms:
       return new MsTranslator();
     case TranslationEngineType.dict:
@@ -65,7 +68,7 @@ export class MsTranslator extends TranslationEngine {
   }
 }
 
-export class GoogleTranslator extends TranslationEngine {
+export class GoogleCloudTranslator extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     const client = new v3.TranslationServiceClient();
     return client.translateText({
@@ -76,6 +79,12 @@ export class GoogleTranslator extends TranslationEngine {
       targetLanguageCode: 'zh-cn',
       model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
     }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
+  }
+}
+
+export class GoogleTranslator extends TranslationEngine {
+  protected async doTranslate(texts: string[]): Promise<string[]> {
+    return Promise.all(texts.map(text => translate(text, { from: 'en', to: 'zh-CN' }).then(it => it.text)));
   }
 }
 

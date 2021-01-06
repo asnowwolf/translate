@@ -14,7 +14,13 @@ export const builder: CommandBuilder = {
   },
   engine: {
     type: 'string',
-    choices: [TranslationEngineType.google, TranslationEngineType.ms, TranslationEngineType.dict, TranslationEngineType.fake],
+    choices: [
+      TranslationEngineType.google,
+      TranslationEngineType.gcloud,
+      TranslationEngineType.ms,
+      TranslationEngineType.dict,
+      TranslationEngineType.fake,
+    ],
     default: TranslationEngineType.google,
   },
   dict: {
