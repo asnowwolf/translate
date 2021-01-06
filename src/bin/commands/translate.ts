@@ -21,7 +21,7 @@ export const builder: CommandBuilder = {
       TranslationEngineType.dict,
       TranslationEngineType.fake,
     ],
-    default: TranslationEngineType.google,
+    default: TranslationEngineType.gcloud,
   },
   dict: {
     type: 'string',
