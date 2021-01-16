@@ -12,7 +12,7 @@ export abstract class TranslationEngine {
   }
 
   async translate(texts: string[]): Promise<string[]> {
-    if (!texts.length) {
+    if (!texts.filter(it => it?.trim().length).length) {
       return texts;
     }
     return await this.doTranslate(texts);
