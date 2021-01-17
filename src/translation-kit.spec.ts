@@ -1,6 +1,6 @@
 import { getTranslateEngine } from './engine';
 import { TranslationEngineType } from './common';
-import { TranslationKit } from './translation-kit';
+import { addTranslationMark, TranslationKit } from './translation-kit';
 import { JSDOM } from 'jsdom';
 
 describe('translation-kit', () => {
@@ -77,5 +77,10 @@ describe('translation-kit', () => {
         xpath: 'P/1',
       },
     ]);
+  });
+
+  it('should add translation mark', () => {
+    const result = addTranslationMark('<h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p>');
+    expect(result).toEqual('<html><head></head><body><h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p></body></html>');
   });
 });

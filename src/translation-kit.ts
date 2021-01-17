@@ -5,8 +5,12 @@ import { parse, read } from './file-utils';
 import { containsChinese, TranslationEngineType } from './common';
 import { markdown } from './markdown';
 import { DictEntryModel } from './models/dict-entry.model';
+import { JSDOM } from 'jsdom';
+import { readFileSync, writeFileSync } from 'fs';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
+import addIdForHeaders = html.addIdForHeaders;
+import markAndSwapAll = html.markAndSwapAll;
 
 function prettify(md: string): string {
   return md
@@ -152,4 +156,19 @@ function textOf(node: Element, html: boolean): string {
 
 function shouldIgnore(element: Element): boolean {
   return !!element.querySelector('[translation-result]') || containsChinese(element.textContent!);
+}
+
+export function addTranslationMarks(files: string[]) {
+  for (const file of files) {
+    const content = readFileSync(file, 'utf8');
+    writeFileSync(file, addTranslationMark(content), 'utf8');
+  }
+}
+
+export function addTranslationMark(content: string): string {
+  const dom = new JSDOM(content);
+  const doc = dom.window.document;
+  addIdForHeaders(doc.body);
+  markAndSwapAll(doc.body);
+  return dom.serialize();
 }
