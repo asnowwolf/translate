@@ -1,5 +1,3 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
 import { JSDOM } from 'jsdom';
 import { html } from './html';
 import restructureTable = html.restructureTable;
@@ -43,7 +41,7 @@ describe('html', function () {
 </table>`);
     const body = dom.window.document.body;
     restructureTable(body);
-    expect(body.innerHTML).eql(`<table>
+    expect(body.innerHTML).toEqual(`<table>
 <thead>
 <tr>
   <th><p>one</p><p>一</p></th>
@@ -77,7 +75,7 @@ describe('html', function () {
 <script>const a = 1;</script>`);
     const body = dom.window.document.body;
     markAndSwapAll(body);
-    expect(body.innerHTML).eql(`<p id="a">a</p>
+    expect(body.innerHTML).toEqual(`<p id="a">a</p>
 <p id="one" translation-result="on">一</p><p translation-origin="off">one</p>
 
 <script>const a = 1;</script>`);
@@ -93,7 +91,7 @@ english content</h3>
 中文内容</h3>`);
     const body = dom.window.document.body;
     markAndSwapAll(body);
-    expect(body.innerHTML).eql(`<h3 id="english_id" translation-result="on">
+    expect(body.innerHTML).toEqual(`<h3 id="english_id" translation-result="on">
 <a id="中文标题" class="anchor" href="#english_id" aria-hidden="true">
 <span class="octicon octicon-link"></span></a>
 中文内容</h3><h3 translation-origin="off">
@@ -105,7 +103,7 @@ english content</h3>
     const dom = new JSDOM(`<h1>a%b -1</h1><h2>one</h2><h3>一</h3>`);
     const body = dom.window.document.body;
     addIdForHeaders(body);
-    expect(body.innerHTML).eql(`<h1 id="ab--1">a%b -1</h1><h2 id="one">one</h2><h3 id="一">一</h3>`);
+    expect(body.innerHTML).toEqual(`<h1 id="ab--1">a%b -1</h1><h2 id="one">one</h2><h3 id="一">一</h3>`);
   });
 
   it('should extract sentence pair', () => {
@@ -119,7 +117,7 @@ english content</h3>
       english: english.textContent!,
       chinese: chinese.textContent!,
     }));
-    expect(sentencePairs).eql([
+    expect(sentencePairs).toEqual([
       {
         'chinese': '一',
         'english': 'one',
