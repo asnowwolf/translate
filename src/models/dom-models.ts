@@ -150,6 +150,10 @@ export class DomDocument extends DomParentNode {
   nodeName: '#document' = '#document';
   mode: DocumentMode;
 
+  get head(): DomElement {
+    return this.querySelector(it => it.isTagOf('head'));
+  }
+
   get body(): DomElement {
     return this.querySelector(it => it.isTagOf('body'));
   }
@@ -201,8 +205,8 @@ function isSameName(name1: string, name2: string) {
 export class DomElement extends DomParentNode implements DomChildNode {
   constructor(
     public tagName: string,
-    public namespaceURI = 'http://www.w3.org/1999/xhtml',
     public attrs: DomAttr[] = [],
+    public namespaceURI = 'http://www.w3.org/1999/xhtml',
   ) {
     super();
     this.nodeName = tagName;

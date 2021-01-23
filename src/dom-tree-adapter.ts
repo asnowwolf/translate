@@ -59,14 +59,14 @@ export class DomTreeAdapter implements TypedTreeAdapter<DomTreeAdapterTypeMap> {
   createElement(tagName: string, namespaceURI: string, attrs: Array<DomTreeAdapterTypeMap['attribute']>): DomTreeAdapterTypeMap['element'] {
     switch (tagName) {
       case 'table':
-        return new DomTableElement(tagName, namespaceURI, attrs);
+        return new DomTableElement(tagName, attrs, namespaceURI);
       case 'tr':
-        return new DomTableRowElement(tagName, namespaceURI, attrs);
+        return new DomTableRowElement(tagName, attrs, namespaceURI);
       case 'th':
       case 'td':
-        return new DomTableCellElement(tagName, namespaceURI, attrs);
+        return new DomTableCellElement(tagName, attrs, namespaceURI);
       default:
-        return new DomElement(tagName, namespaceURI, attrs);
+        return new DomElement(tagName, attrs, namespaceURI);
     }
   }
 
