@@ -1,12 +1,14 @@
 import { html } from './html';
 import { VFile } from 'vfile';
 import { getTranslateEngine, TranslationEngine } from './engine';
-import { parse, read } from './file-utils';
+import { read } from './file-utils';
 import { containsChinese, TranslationEngineType } from './common';
 import { markdown } from './markdown';
 import { DictEntryModel } from './models/dict-entry.model';
-import { JSDOM } from 'jsdom';
 import { readFileSync, writeFileSync } from 'fs';
+import { DomDocument, DomElement, DomNode, DomParentNode } from './models/dom-models';
+import { parse, parseFragment } from 'parse5';
+import { treeAdapter } from './dom-tree-adapter';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
 import addIdForHeaders = html.addIdForHeaders;
@@ -19,36 +21,29 @@ function prettify(md: string): string {
     .replace(/\n\n+/g, '\n\n');
 }
 
-class CharsetNotSupportedError extends Error {
-}
-
-
-function indexInParent(node: Node): number {
+function indexInParent(node: DomNode): number {
   if (!node.parentNode) {
     return -1;
   }
   const siblings = node.parentNode.children;
   for (let i = 0; i < siblings.length; ++i) {
-    if (siblings.item(i) === node) {
+    if (siblings[i] === node) {
       return i;
     }
   }
   return -1;
 }
 
-export function getPathsTo(element: Element): string[] {
+export function getPathsTo(element: DomParentNode): string[] {
   if (!element || element.parentElement?.tagName === 'BODY') {
     return [];
   }
-  return [...getPathsTo(element.parentElement), element.tagName, indexInParent(element).toString(10)];
+  return [...getPathsTo(element.parentElement), element.nodeName, indexInParent(element).toString(10)];
 }
 
 function extractAllFromHtml(filename: string, outputHtml: boolean): DictEntryModel[] {
-  const file = read(filename);
-  const dom = parse(file);
-  const doc = dom.window.document;
-  checkCharset(doc);
-  const pairs = extractAll(doc.body);
+  const doc = parse(readFileSync(filename, 'utf8'), { treeAdapter });
+  const pairs = extractAll(doc);
   return pairs.map(pair => ({
     file: filename,
     xpath: getPathsTo(pair.english).join('/'),
@@ -77,7 +72,7 @@ export class TranslationKit {
     return files.map(file => extractAllFromHtml(file, outputHtml)).flat(9);
   }
 
-  async translateDoc(doc: Document): Promise<Document> {
+  async translateDoc(doc: DomDocument): Promise<DomDocument> {
     const titles = await this.engine.translate([doc.title]);
     doc.title = titles[0];
 
@@ -111,11 +106,9 @@ export class TranslationKit {
   }
 
   private async translateHtml(file: VFile): Promise<VFile> {
-    const dom = parse(file);
-    const doc = dom.window.document;
-    checkCharset(doc);
+    const doc = parse(file.contents as string, { treeAdapter });
     await this.translateDoc(doc);
-    file.contents = dom.serialize();
+    file.contents = doc.toHtml();
     return file;
   }
 
@@ -125,14 +118,14 @@ export class TranslationKit {
     return file;
   }
 
-  private async translateElement(element: Element): Promise<string> {
+  private async translateElement(element: DomElement): Promise<string> {
     if (shouldIgnore(element)) {
       return element.innerHTML;
     }
     const translations = await this.engine.translate([element.innerHTML]);
-    const resultNode = element.ownerDocument!.createElement(element.tagName);
+    const resultNode = new DomElement(element.tagName);
     resultNode.innerHTML = translations[0];
-    element.parentElement!.insertBefore(resultNode, element);
+    element.parentNode.insertBefore(resultNode, element);
     // 交换 id
     const id = element.getAttribute('id');
     if (id) {
@@ -144,18 +137,12 @@ export class TranslationKit {
   }
 }
 
-function checkCharset(doc: Document, charset = 'utf-8'): void {
-  if (doc.charset !== charset.toUpperCase()) {
-    throw new CharsetNotSupportedError();
-  }
-}
-
-function textOf(node: Element, html: boolean): string {
+function textOf(node: DomElement, html: boolean): string {
   return (html ? node.innerHTML : node.textContent!).trim().replace(/\s+/g, ' ');
 }
 
-function shouldIgnore(element: Element): boolean {
-  return !!element.querySelector('[translation-result]') || containsChinese(element.textContent!);
+function shouldIgnore(element: DomElement): boolean {
+  return !!element.querySelector(it => it.hasAttribute('translation-result')) || containsChinese(element.textContent!);
 }
 
 export function addTranslationMarks(files: string[]) {
@@ -166,9 +153,8 @@ export function addTranslationMarks(files: string[]) {
 }
 
 export function addTranslationMark(content: string): string {
-  const dom = new JSDOM(content);
-  const doc = dom.window.document;
-  addIdForHeaders(doc.body);
-  markAndSwapAll(doc.body);
-  return dom.serialize();
+  const doc = parseFragment(content, { treeAdapter });
+  addIdForHeaders(doc);
+  markAndSwapAll(doc);
+  return doc.toHtml();
 }

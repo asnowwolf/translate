@@ -1,13 +1,14 @@
 import { getTranslateEngine } from './engine';
 import { TranslationEngineType } from './common';
 import { addTranslationMark, TranslationKit } from './translation-kit';
-import { JSDOM } from 'jsdom';
+import { treeAdapter } from './dom-tree-adapter';
+import { parse } from 'parse5';
 
 describe('translation-kit', () => {
   it('auto translate html', async () => {
     const engine = getTranslateEngine(TranslationEngineType.fake);
     const kit = new TranslationKit(engine);
-    const dom = new JSDOM(`<!doctype html>
+    const dom = parse(`<!doctype html>
 <html lang="en-US">
 <head>
   <title>english</title>
@@ -27,11 +28,15 @@ describe('translation-kit', () => {
   </li>
 </ul>
 </body>
-</html>`);
+</html>`, { treeAdapter });
 
-    const doc = await kit.translateDoc(dom.window.document);
+    const doc = await kit.translateDoc(dom);
     expect(doc.title).toEqual('[译]english');
-    expect(doc.body.innerHTML.trim()).toEqual(`<p translation-result="on">[译]one</p><p translation-origin="off">one</p>
+    expect(dom.toHtml()).toEqual(`<!DOCTYPE html><html lang="en-US"><head>
+  <title>[译]english</title>
+</head>
+<body>
+<p translation-result="on">[译]one</p><p translation-origin="off">one</p>
 <div>two</div>
 <div>three <a href="./sample-en.html">four</a></div>
 <div>five<p translation-result="on">[译]six</p><p translation-origin="off">six</p></div>
@@ -43,7 +48,9 @@ describe('translation-kit', () => {
       <li>nine</li>
     </ul>
   </li>
-</ul>`);
+</ul>
+
+</body></html>`);
   });
   it('extract pairs from html', async () => {
     const engine = getTranslateEngine(TranslationEngineType.fake);
@@ -53,34 +60,34 @@ describe('translation-kit', () => {
       true);
     expect(entries).toEqual([
       {
-        chinese: '一',
-        english: 'One',
-        file: 'src/test/samples/simple/extract1.html',
-        xpath: '',
+        'chinese': '一',
+        'english': 'One',
+        'file': 'src/test/samples/simple/extract1.html',
+        'xpath': 'p/2',
       },
       {
-        chinese: '二',
-        english: 'Two',
-        file: 'src/test/samples/simple/extract1.html',
-        xpath: 'P/1',
+        'chinese': '二',
+        'english': 'Two',
+        'file': 'src/test/samples/simple/extract1.html',
+        'xpath': 'div/3/p/1',
       },
       {
-        chinese: '三',
-        english: 'Three',
-        file: 'src/test/samples/simple/extract2.html',
-        xpath: '',
+        'chinese': '三',
+        'english': 'Three',
+        'file': 'src/test/samples/simple/extract2.html',
+        'xpath': 'p/2',
       },
       {
-        chinese: '四',
-        english: 'Four',
-        file: 'src/test/samples/simple/extract2.html',
-        xpath: 'P/1',
+        'chinese': '四',
+        'english': 'Four',
+        'file': 'src/test/samples/simple/extract2.html',
+        'xpath': 'div/3/p/1',
       },
     ]);
   });
 
   it('should add translation mark', () => {
     const result = addTranslationMark('<h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p>');
-    expect(result).toEqual('<html><head></head><body><h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p></body></html>');
+    expect(result).toEqual('<h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p>');
   });
 });

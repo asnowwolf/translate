@@ -1,20 +1,23 @@
 import * as slugs from 'github-slugger';
 import { containsChinese } from './common';
+import { DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowElement } from './models/dom-models';
 
 export namespace html {
-  export const defaultSelectors = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't', '[ng-should-translate]'];
+  const elementSelectors = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'].map(it => (node: DomElement) => node.isTagOf(it));
+  const attributeSelector = (node: DomElement) => node.hasAttribute('ng-should-translate');
+  export const defaultSelectors = [...elementSelectors, attributeSelector];
 
   export interface SentencePair {
-    english: Element;
-    chinese: Element;
+    english: DomElement;
+    chinese: DomElement;
   }
 
   function toId(slugger, text) {
     return slugger.slug(text);
   }
 
-  export function addIdForHeaders(body: HTMLElement): void {
-    const headers = body.querySelectorAll<HTMLHeadingElement>('h1,h2,h3,h4,h5,h6');
+  export function addIdForHeaders(body: DomParentNode): void {
+    const headers = body.querySelectorAll<DomElement>(it => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(it.nodeName));
     const slugger = slugs();
     headers.forEach(header => {
       if (!header.hasAttribute('id')) {
@@ -23,19 +26,19 @@ export namespace html {
     });
   }
 
-  export function markAndSwapAll(body: HTMLElement, selectors: string[] = defaultSelectors): void {
+  export function markAndSwapAll(body: DomParentNode, selectors: DomSelector[] = defaultSelectors): void {
     restructureTable(body);
     selectors.forEach(selectors => markAndSwap(body, selectors));
   }
 
-  function clearAiraHidden(body: HTMLElement): void {
-    const hiddens = body.querySelectorAll('[aria-hidden=true]');
+  function clearAiraHidden(body: DomParentNode): void {
+    const hiddens = body.querySelectorAll<DomElement>(it => it.hasAttribute('aria-hidden'));
     hiddens.forEach(element => element.remove());
   }
 
-  export function extractAll(body: HTMLElement): SentencePair[] {
+  export function extractAll(body: DomParentNode): SentencePair[] {
     clearAiraHidden(body);
-    const resultElements = body.querySelectorAll('[translation-result]+[translation-origin]');
+    const resultElements = body.querySelectorAll(it => it.previousElementSibling?.hasAttribute('translation-result') && it.hasAttribute('translation-origin'));
     const results: SentencePair[] = [];
     resultElements.forEach(origin => {
       const result = origin.previousElementSibling!;
@@ -46,12 +49,12 @@ export namespace html {
     return results;
   }
 
-  function isPaired(prev: Element, element: Element): boolean {
+  function isPaired(prev: DomElement, element: DomElement): boolean {
     return prev && prev.nextElementSibling === element &&
-      prev.tagName === element.tagName && prev.className === element.className;
+      prev.isTagOf(element.tagName) && prev.className === element.className;
   }
 
-  export function markAndSwap(element: Element, selector: string): void {
+  export function markAndSwap(element: DomParentNode, selector: DomSelector): void {
     const elements = element.querySelectorAll(selector);
     elements.forEach(element => {
       if (containsChinese(element.innerHTML)) {
@@ -59,7 +62,7 @@ export namespace html {
         if (isPaired(prev, element) && !containsChinese(prev.innerHTML)) {
           element.setAttribute('translation-result', 'on');
           prev.setAttribute('translation-origin', 'off');
-          element.parentElement!.insertBefore(element, prev);
+          element.parentNode.insertBefore(element, prev);
           // 交换 id，中文内容应该占用原文的 id
           const id = prev.getAttribute('id');
           if (id) {
@@ -70,9 +73,9 @@ export namespace html {
           if (href) {
             element.setAttribute('href', href);
           }
-          if (element.tagName.match(/(H[1-6]|li)/)) {
-            const prevAnchor = prev.querySelector('a[href]');
-            const thisAnchor = element.querySelector('a[href]');
+          if (element.isTagOf('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li')) {
+            const prevAnchor = prev.querySelector(it => it.isTagOf('a') && it.hasAttribute('href'));
+            const thisAnchor = element.querySelector(it => it.isTagOf('a') && it.hasAttribute('href'));
             if (prevAnchor && thisAnchor && containsChinese(decodeURIComponent(thisAnchor.getAttribute('href')!)!)) {
               thisAnchor.setAttribute('href', prevAnchor.getAttribute('href')!);
             }
@@ -82,17 +85,17 @@ export namespace html {
     });
   }
 
-  function shouldMergeTable(element: HTMLTableElement): boolean {
+  function shouldMergeTable(element: DomTableElement): boolean {
     return element.getAttribute('translation-merge-rows') === 'no';
   }
 
-  function shouldMergeRow(element: HTMLTableRowElement): boolean {
+  function shouldMergeRow(element: DomTableRowElement): boolean {
     if (element.getAttribute('translation-merge-rows') === 'no') {
       return false;
     }
     // 如果内部有 p 元素，则禁止自动合并
     for (let i = 0; i < element.cells.length; ++i) {
-      if (element.cells.item(i)!.querySelector('p')) {
+      if (element.cells[i].querySelector(it => it.isTagOf('p'))) {
         return false;
       }
     }
@@ -100,18 +103,18 @@ export namespace html {
   }
 
 // 重塑表格结构
-  export function restructureTable(element: Element): void {
-    const items = element.querySelectorAll('table');
+  export function restructureTable(element: DomParentNode): void {
+    const items = element.querySelectorAll(it => it.isTagOf('table'));
     items.forEach(table => {
       if (shouldMergeTable(table)) {
         return;
       }
       // 对出现在 thead 的行和出现在 tbody 的行进行统一处理
-      const rows = table.querySelectorAll('* > tr');
-      const translationRows: HTMLElement[] = [];
+      const rows = table.querySelectorAll(it => it.isTagOf('tr'));
+      const translationRows: DomElement[] = [];
       for (let i = 0; i < rows.length - 1; ++i) {
-        const thisRow = rows.item(i) as HTMLTableRowElement;
-        const nextRow = rows.item(i + 1) as HTMLTableRowElement;
+        const thisRow = rows[i] as DomTableRowElement;
+        const nextRow = rows[i + 1] as DomTableRowElement;
         if (shouldMergeRow(nextRow) && containsChinese(nextRow.innerHTML) && !containsChinese(thisRow.innerHTML)) {
           translationRows.push(nextRow);
           mergeRows(thisRow, nextRow);
@@ -121,14 +124,14 @@ export namespace html {
     });
   }
 
-  function mergeRows(originRow: HTMLTableRowElement, translationRow: HTMLTableRowElement): void {
+  function mergeRows(originRow: DomTableRowElement, translationRow: DomTableRowElement): void {
     if (originRow.cells.length !== translationRow.cells.length) {
       console.warn('Origin row must have same cells count with translation row!');
       return;
     }
     for (let i = 0; i < originRow.cells.length; ++i) {
-      const originCell = originRow.cells.item(i)!;
-      const translationCell = translationRow.cells.item(i)!;
+      const originCell = originRow.cells[i];
+      const translationCell = translationRow.cells[i];
       if (originCell.innerHTML !== translationCell.innerHTML) {
         originCell.innerHTML = `<p>${originCell.innerHTML}</p><p>${translationCell.innerHTML}</p>`;
       }

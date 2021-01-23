@@ -2,7 +2,7 @@ import { VFile } from 'vfile';
 import * as toVFile from 'to-vfile';
 import { extname, join } from 'path';
 import { sync as globby } from 'globby';
-import { JSDOM } from 'jsdom';
+import { DomDocument, DomDocumentFragment } from './models/dom-models';
 
 export function listFiles(globPattern: string): string[] {
   if (globPattern.indexOf('*') === -1 && extname(globPattern) === '.') {
@@ -20,10 +20,6 @@ export function write(file: VFile, contents: string): void {
   toVFile.writeSync(file);
 }
 
-export function parse(file: VFile): JSDOM {
-  return new JSDOM(file.contents);
-}
-
-export function stringify(dom: JSDOM): string {
-  return dom.serialize();
+export function stringify(doc: DomDocument | DomDocumentFragment): string {
+  return doc.toHtml();
 }
