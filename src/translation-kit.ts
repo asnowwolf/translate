@@ -134,13 +134,6 @@ function shouldIgnore(element: DomElement): boolean {
   return !!element.querySelector(it => it.hasAttribute('translation-result')) || containsChinese(element.textContent!);
 }
 
-export function addTranslationMarks(files: string[]) {
-  for (const file of files) {
-    const content = readFileSync(file, 'utf8');
-    writeFileSync(file, addTranslationMark(content), 'utf8');
-  }
-}
-
 export function addTranslationMark(content: string): string {
   const doc = parseFragment(content, { treeAdapter });
   addIdForHeaders(doc);
