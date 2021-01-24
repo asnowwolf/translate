@@ -104,7 +104,7 @@ export class TranslationKit {
 
   private async translateJsDoc(file: string): Promise<void> {
     const translation = await jsdoc.translate(readFileSync(file, 'utf8'), this.engine);
-    writeFileSync(file, translation, 'utf8');
+    writeFileSync(file, prettify(translation), 'utf8');
   }
 
   private async translateElement(element: DomElement): Promise<string> {

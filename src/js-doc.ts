@@ -18,7 +18,9 @@ export namespace jsdoc {
         for (const tag of structure.tags) {
           await translateTag(tag, engine);
         }
-        structure.description = await markdown.translate(structure.description as string, engine);
+        if ((structure.description as string).trim()) {
+          structure.description = await markdown.translate(structure.description as string, engine);
+        }
         doc.set(structure);
       }
     }
@@ -31,8 +33,8 @@ export namespace jsdoc {
     const matches = splitTagText(tag);
     if (matches) {
       const [, prefix, text] = matches;
-      if (prefix) {
-        tag.text = (prefix ?? '') + await markdown.translate((text ?? ''), engine);
+      if (prefix?.trim() && text?.trim()) {
+        tag.text = prefix + await markdown.translate(text, engine);
       }
     }
   }
