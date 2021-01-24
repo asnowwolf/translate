@@ -1,7 +1,6 @@
 import { CommandBuilder } from 'yargs';
 import { TranslationKit } from '../../translation-kit';
 import { TranslationEngineType } from '../../common';
-import * as toVFile from 'to-vfile';
 import { listFiles } from '../../file-utils';
 
 export const command = `translate <sourceGlobs...>`;
@@ -38,6 +37,8 @@ interface Params {
 export const handler = async function ({ sourceGlobs, engine, dict }: Params) {
   const kit = new TranslationKit(engine, { dict });
   const files = sourceGlobs.map(it => listFiles(it)).flat();
-  const translatedFiles = await kit.translateFiles(files);
-  translatedFiles.forEach(file => toVFile.writeSync(file));
+  for (const file of files) {
+    console.log('translating: ', file);
+    await kit.translateFile(file);
+  }
 };

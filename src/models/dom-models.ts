@@ -11,7 +11,14 @@ export class DomNode {
     if (!(this instanceof DomChildNode)) {
       return -1;
     }
-    return this.parentNode.childNodes.indexOf(this);
+    return this.parentNode?.childNodes.indexOf(this);
+  }
+
+  get indexOfElement(): number {
+    if (!(this instanceof DomElement)) {
+      return -1;
+    }
+    return this.parentNode?.children.indexOf(this);
   }
 
   get firstChild(): DomChildNode {
@@ -66,14 +73,14 @@ export class DomNode {
     if (this.index === -1) {
       return;
     }
-    return this.parentNode.childNodes[this.index - 1];
+    return this.parentNode?.childNodes[this.index - 1];
   }
 
   nextSibling(): DomNode {
     if (this.index === -1) {
       return;
     }
-    return this.parentNode.childNodes[this.index + 1];
+    return this.parentNode?.childNodes[this.index + 1];
   }
 
   appendChild(child: DomChildNode): void {

@@ -96,25 +96,25 @@ describe('translation-kit', () => {
         'chinese': '一',
         'english': 'One',
         'file': 'src/test/samples/simple/extract1.html',
-        'xpath': 'p/2',
+        'xpath': 'p/1',
       },
       {
         'chinese': '二',
         'english': 'Two',
         'file': 'src/test/samples/simple/extract1.html',
-        'xpath': 'div/3/p/1',
+        'xpath': 'div/2/p/1',
       },
       {
         'chinese': '三',
         'english': 'Three',
         'file': 'src/test/samples/simple/extract2.html',
-        'xpath': 'p/2',
+        'xpath': 'p/1',
       },
       {
         'chinese': '四',
         'english': 'Four',
         'file': 'src/test/samples/simple/extract2.html',
-        'xpath': 'div/3/p/1',
+        'xpath': 'div/2/p/1',
       },
     ]);
   });

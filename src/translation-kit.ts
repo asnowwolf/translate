@@ -1,14 +1,13 @@
 import { html } from './html';
-import { VFile } from 'vfile';
 import { getTranslateEngine, TranslationEngine } from './engine';
-import { read } from './file-utils';
 import { containsChinese, TranslationEngineType } from './common';
 import { markdown } from './markdown';
 import { DictEntryModel } from './models/dict-entry.model';
 import { readFileSync, writeFileSync } from 'fs';
-import { DomDocument, DomElement, DomNode, DomParentNode } from './models/dom-models';
+import { DomDocument, DomElement, DomParentNode } from './models/dom-models';
 import { parse, parseFragment } from 'parse5';
 import { treeAdapter } from './dom-tree-adapter';
+import { extname } from 'path';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
 import addIdForHeaders = html.addIdForHeaders;
@@ -21,24 +20,11 @@ function prettify(md: string): string {
     .replace(/\n\n+/g, '\n\n');
 }
 
-function indexInParent(node: DomNode): number {
-  if (!node.parentNode) {
-    return -1;
-  }
-  const siblings = node.parentNode.children;
-  for (let i = 0; i < siblings.length; ++i) {
-    if (siblings[i] === node) {
-      return i;
-    }
-  }
-  return -1;
-}
-
 export function getPathsTo(element: DomParentNode): string[] {
-  if (!element || element.parentElement?.tagName === 'BODY') {
+  if (!element || element instanceof DomElement && element.isTagOf('body')) {
     return [];
   }
-  return [...getPathsTo(element.parentElement), element.nodeName, indexInParent(element).toString(10)];
+  return [...getPathsTo(element.parentElement), element.nodeName, element.indexOfElement.toString(10)];
 }
 
 function extractAllFromHtml(filename: string, outputHtml: boolean): DictEntryModel[] {
@@ -64,10 +50,6 @@ export class TranslationKit {
     this.engine.init(params);
   }
 
-  translateFiles(files: string[]): Promise<VFile[]> {
-    return this.transformFiles(files, (file) => this.translateFile(file));
-  }
-
   async extractPairsFromHtml(files: string[], outputHtml: boolean): Promise<DictEntryModel[]> {
     return files.map(file => extractAllFromHtml(file, outputHtml)).flat(9);
   }
@@ -87,35 +69,30 @@ export class TranslationKit {
     return doc;
   }
 
-  private async transformFiles(files: string[], transformer: (file: VFile) => Promise<VFile>): Promise<VFile[]> {
-    return Promise.all(files.map(it => read(it)).map(transformer));
-  }
-
-  private translateFile(file: VFile): Promise<VFile> {
-    console.log('translating: ', file.path);
-    switch (file.extname) {
+  async translateFile(file: string): Promise<void> {
+    switch (extname(file)) {
       case '.html':
       case '.htm':
-        return this.translateHtml(file);
+        await this.translateHtml(file);
+        break;
       case '.md':
       case '.markdown':
-        return this.translateMarkdown(file);
+        await this.translateMarkdown(file);
+        break;
       default:
         throw new Error('Unsupported file type');
     }
   }
 
-  private async translateHtml(file: VFile): Promise<VFile> {
-    const doc = parse(file.contents as string, { treeAdapter });
+  private async translateHtml(file: string): Promise<void> {
+    const doc = parse(readFileSync(file, 'utf8'), { treeAdapter });
     await this.translateDoc(doc);
-    file.contents = doc.toHtml();
-    return file;
+    writeFileSync(file, doc.toHtml(), 'utf8');
   }
 
-  private async translateMarkdown(file: VFile): Promise<VFile> {
-    const translation = await markdown.translate(file.contents as string, this.engine);
-    file.contents = prettify(translation);
-    return file;
+  private async translateMarkdown(file: string): Promise<void> {
+    const translation = await markdown.translate(readFileSync(file, 'utf8'), this.engine);
+    writeFileSync(file, prettify(translation), 'utf8');
   }
 
   private async translateElement(element: DomElement): Promise<string> {

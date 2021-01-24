@@ -5,7 +5,6 @@ import * as remarkHtml from 'remark-html';
 import * as rehypeRemark from 'rehype-remark';
 import * as frontmatter from 'remark-frontmatter';
 import * as unified from 'unified';
-import { VFileCompatible } from 'unified';
 import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
@@ -36,7 +35,7 @@ export namespace markdown {
     entities: false,
   };
 
-  export function parse(markdown: VFileCompatible): Node {
+  export function parse(markdown: string): Node {
     return unified().use(remarkParse)
       .use(frontmatter)
       .parse(markdown);
@@ -56,7 +55,7 @@ export namespace markdown {
   }
 
   export function htmlToMd(html: string): Node {
-    return parse(unified().use(rehypeParse).use(rehypeRemark).use(remarkStringify, stringifyOptions).processSync(html));
+    return parse(unified().use(rehypeParse).use(rehypeRemark).use(remarkStringify, stringifyOptions).processSync(html).contents as string);
   }
 
   function alreadyTranslated(nextNode: Node, node: Node) {
