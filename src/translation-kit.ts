@@ -8,6 +8,7 @@ import { DomDocument, DomElement, DomParentNode } from './models/dom-models';
 import { parse, parseFragment } from 'parse5';
 import { treeAdapter } from './dom-tree-adapter';
 import { extname } from 'path';
+import { jsdoc } from './js-doc';
 import extractAll = html.extractAll;
 import defaultSelectors = html.defaultSelectors;
 import addIdForHeaders = html.addIdForHeaders;
@@ -79,6 +80,12 @@ export class TranslationKit {
       case '.markdown':
         await this.translateMarkdown(file);
         break;
+      case '.js':
+      case '.ts':
+      case '.jsx':
+      case '.tsx':
+        await this.translateJsDoc(file);
+        break;
       default:
         throw new Error('Unsupported file type');
     }
@@ -93,6 +100,11 @@ export class TranslationKit {
   private async translateMarkdown(file: string): Promise<void> {
     const translation = await markdown.translate(readFileSync(file, 'utf8'), this.engine);
     writeFileSync(file, prettify(translation), 'utf8');
+  }
+
+  private async translateJsDoc(file: string): Promise<void> {
+    const translation = await jsdoc.translate(readFileSync(file, 'utf8'), this.engine);
+    writeFileSync(file, translation, 'utf8');
   }
 
   private async translateElement(element: DomElement): Promise<string> {

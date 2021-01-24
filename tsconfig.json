@@ -24,6 +24,7 @@
     "lib": [
       "es2017",
       "ESNext.Array",
+      "es2018.asyncgenerator",
       "dom"
     ]
   },
@@ -31,6 +32,7 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/test/**/*"
   ]
 }
