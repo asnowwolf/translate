@@ -9,8 +9,8 @@ function createTag(tagName: string, text: string): OptionalKind<JSDocTagStructur
 
 describe('TS Doc Translation', () => {
   it('translate ts file', async () => {
-    const result = await jsdoc.translate(readFileSync('src/test/samples/ts/overlay.ts', 'utf8'), new FakeTranslator());
-    expect(result).toEqual('');
+    const result = await jsdoc.translate(readFileSync('src/test/samples/ts/demo.ts', 'utf8'), new FakeTranslator());
+    expect(result).toEqual(readFileSync('src/test/samples/ts/demo-translated.ts', 'utf8'));
   });
   it('split param tag with type and name', () => {
     const [, prefix, text] = jsdoc.splitTagText(createTag('param', '{OverlayConfig} config Configuration applied to the overlay.'));

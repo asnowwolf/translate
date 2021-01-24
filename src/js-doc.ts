@@ -31,7 +31,9 @@ export namespace jsdoc {
     const matches = splitTagText(tag);
     if (matches) {
       const [, prefix, text] = matches;
-      tag.text = (prefix ?? '') + await markdown.translate((text ?? ''), engine);
+      if (prefix) {
+        tag.text = (prefix ?? '') + await markdown.translate((text ?? ''), engine);
+      }
     }
   }
 
