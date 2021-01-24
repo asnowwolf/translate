@@ -1,10 +1,10 @@
-import { JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
+import { IndentationText, JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
 import { TranslationEngine } from './engine';
 import { markdown } from './markdown';
 
 export namespace jsdoc {
   export async function translate(content: string, engine: TranslationEngine): Promise<string> {
-    const project = new Project();
+    const project = new Project({ manipulationSettings: { indentationText: IndentationText.TwoSpaces } });
     const sourceFile = project.createSourceFile('placeholder.ts', content);
     await translateNode(sourceFile, engine);
     return sourceFile.getFullText();
