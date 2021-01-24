@@ -47,6 +47,10 @@ export namespace markdown {
       .stringify(tree);
   }
 
+  function sameExceptWhitespace(s1: string, s2: string): boolean {
+    return s1.replace(/\s/g, '') === s2.replace(/\s/g, '');
+  }
+
   export function mdToHtml(ast: Node): string {
     return unified().use(remarkParse)
       .use(frontmatter)
@@ -129,7 +133,7 @@ export namespace markdown {
     const translatedPairs = await translateNormalNodes(pairs, engine);
     pairs.forEach((original, index) => {
       const translation = translatedPairs[index];
-      if (translation && stringify(original).trim() === stringify(translation).trim()) {
+      if (translation && sameExceptWhitespace(stringify(original), stringify(translation))) {
         unistRemove(result, original);
       }
       postprocess(original, translation);
