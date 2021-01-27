@@ -19,6 +19,7 @@ export const builder: CommandBuilder = {
       TranslationEngineType.ms,
       TranslationEngineType.dict,
       TranslationEngineType.fake,
+      TranslationEngineType.noop,
     ],
     default: TranslationEngineType.gcloud,
   },

@@ -33,6 +33,8 @@ export function getTranslateEngine(engine: TranslationEngineType): TranslationEn
       return new DictTranslator();
     case TranslationEngineType.fake:
       return new FakeTranslator();
+    case TranslationEngineType.noop:
+      return new NoopTranslator();
     default:
       throw new Error('Unknown Translation Engine type');
   }
@@ -123,6 +125,12 @@ export class FakeTranslator extends TranslationEngine {
         return '[译]' + text;
       }
     });
+  }
+}
+
+export class NoopTranslator extends TranslationEngine {
+  protected async doTranslate(texts: string[]): Promise<string[]> {
+    return texts;
   }
 }
 

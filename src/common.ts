@@ -4,6 +4,7 @@ export enum TranslationEngineType {
   ms = 'ms',
   dict = 'dict',
   fake = 'fake',
+  noop = 'noop',
 }
 
 export function containsChinese(text?: string): boolean {
