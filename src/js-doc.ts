@@ -33,7 +33,7 @@ export namespace jsdoc {
     const matches = splitTagText(tag);
     if (matches) {
       const [, prefix, text] = matches;
-      if (prefix?.trim() && text?.trim()) {
+      if (prefix.trim() && text.trim()) {
         tag.text = prefix + await markdown.translate(text, engine);
       }
     }
@@ -49,6 +49,8 @@ export namespace jsdoc {
       case 'prop':
       case 'yields':
       case 'yield':
+      case 'template':
+      case 'breaking-change':
         return text.match(/^((?:{.*?}\s*)?[\w.]+\s+)([\s\S]*)$/);
       case 'returns':
       case 'return':
