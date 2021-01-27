@@ -1,6 +1,7 @@
 import { IndentationText, JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
 import { TranslationEngine } from './engine';
 import { markdown } from './markdown';
+import { isDeepStrictEqual } from 'util';
 
 export namespace jsdoc {
   export async function translate(content: string, engine: TranslationEngine): Promise<string> {
@@ -18,10 +19,16 @@ export namespace jsdoc {
         for (const tag of structure.tags) {
           await translateTag(tag, engine);
         }
-        if ((structure.description as string).trim()) {
-          structure.description = await markdown.translate(structure.description as string, engine);
+        const origin = (structure.description as string).trim();
+        if (origin) {
+          const translation = await markdown.translate(structure.description as string, engine);
+          if (translation.trim() !== origin.trim()) {
+            structure.description = trimLastLf(translation);
+          }
         }
-        doc.set(structure);
+        if (!isDeepStrictEqual(structure, doc.getStructure())) {
+          doc.set(structure);
+        }
       }
     }
     for (const subNode of node.getChildren()) {
@@ -30,38 +37,38 @@ export namespace jsdoc {
   }
 
   async function translateTag(tag: OptionalKind<JSDocTagStructure>, engine: TranslationEngine) {
-    const matches = splitTagText(tag);
-    if (matches) {
-      const [, prefix, text] = matches;
-      if (prefix.trim() && text.trim()) {
-        tag.text = prefix + await markdown.translate(text, engine);
+    const text = tag.text as string;
+
+    if (isBinaryTag(tag)) {
+      const [, name, description] = text.match(/^((?:{.*?}\s*)?[\w.]+\s+)([\s\S]*)$/) ?? [];
+      if (description?.trim()) {
+        const translation = await markdown.translate(description, engine);
+        if (translation.trim() !== description.trim()) {
+          tag.text = (name ?? '') + trimLastLf(translation);
+        }
+      }
+    } else if (isUnaryTag(tag)) {
+      const [, prefix, description] = text.match(/^({.*?}\s*)?([\s\S]*)$/);
+      if (description?.trim()) {
+        const translation = await markdown.translate(description, engine);
+        if (translation.trim() !== description.trim()) {
+          tag.text = (prefix ?? '') + trimLastLf(translation);
+        }
       }
     }
   }
 
-  export function splitTagText(tag: OptionalKind<JSDocTagStructure>): RegExpMatchArray {
-    const text = (tag.text as string);
-    switch (tag.tagName) {
-      case 'param':
-      case 'arg':
-      case 'argument':
-      case 'property':
-      case 'prop':
-      case 'yields':
-      case 'yield':
-      case 'template':
-      case 'breaking-change':
-        return text.match(/^((?:{.*?}\s*)?[\w.]+\s+)([\s\S]*)$/);
-      case 'returns':
-      case 'return':
-      case 'classdesc':
-      case 'description':
-      case 'desc':
-      case 'summary':
-      case 'throws':
-        return text.match(/^({.*?}\s*)?([\s\S]*)$/);
-      default:
-        return [text, '', text];
-    }
+  // 有两个参数且需要翻译的标记，如 @param a Some value
+  function isBinaryTag(tag: OptionalKind<JSDocTagStructure>): boolean {
+    return ['param', 'arg', 'argument', 'property', 'prop', 'yields', 'yield', 'template', 'breaking-change'].includes(tag.tagName);
   }
+
+  // 有一个参数且需要翻译的标记，如 @returns Some value
+  function isUnaryTag(tag: OptionalKind<JSDocTagStructure>): boolean {
+    return ['returns', 'return', 'classdesc', 'description', 'desc', 'summary', 'throws'].includes(tag.tagName);
+  }
+}
+
+function trimLastLf(translation: string) {
+  return translation.replace(/\n$/s, '');
 }

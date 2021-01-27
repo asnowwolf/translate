@@ -29,10 +29,10 @@ export class Demo {
    *
    * @param {Number} p1 Js Doc for parameter 1
    * @param p2 Js Doc for parameter 2
-   * @returns {Number} Js Doc for Return value
    * @see bar
    * @see
    * http://github.com|GitHub
+   * @returns Js Doc for Return value
    */
   foo1(p1: number, p2: string): number {
     return 1;
