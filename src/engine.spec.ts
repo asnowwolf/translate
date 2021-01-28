@@ -1,13 +1,13 @@
-import { FakeTranslator, GoogleTranslator } from './engine';
+import { FakeTranslationEngine, GoogleTranslationEngine } from './engine';
 
 describe('translation engine', function () {
   it('translate one sentence with fake engine', async () => {
-    const engine = new FakeTranslator();
+    const engine = new FakeTranslationEngine();
     const texts = await engine.translate(['<h1>Hello, world!</h1>']);
     expect(texts).toEqual(['<h1>译Hello, world!</h1>']);
   });
   it('translate multi sentences with fake engine with duplicated items', async () => {
-    const engine = new FakeTranslator();
+    const engine = new FakeTranslationEngine();
     const texts = await engine.translate([
       'one',
       'two',
@@ -24,7 +24,7 @@ describe('translation engine', function () {
     ]);
   });
   it('translate with google translate', async () => {
-    const engine = new GoogleTranslator();
+    const engine = new GoogleTranslationEngine();
     const texts = await engine.translate(['one', 'two', 'three']);
     expect(texts).toEqual(['一', '二', '三']);
   });

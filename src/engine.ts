@@ -30,23 +30,23 @@ export abstract class TranslationEngine {
 export function getTranslateEngine(engine: TranslationEngineType): TranslationEngine {
   switch (engine) {
     case TranslationEngineType.google:
-      return new GoogleTranslator();
+      return new GoogleTranslationEngine();
     case TranslationEngineType.gcloud:
-      return new GoogleCloudTranslator();
+      return new GoogleCloudTranslationEngine();
     case TranslationEngineType.ms:
-      return new MsTranslator();
+      return new MsTranslationEngine();
     case TranslationEngineType.dict:
-      return new DictTranslator();
+      return new DictTranslationEngine();
     case TranslationEngineType.fake:
-      return new FakeTranslator();
+      return new FakeTranslationEngine();
     case TranslationEngineType.noop:
-      return new NoopTranslator();
+      return new NoopTranslationEngine();
     default:
       throw new Error('Unknown Translation Engine type');
   }
 }
 
-export class MsTranslator extends TranslationEngine {
+export class MsTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     if (!process.env.MS_TRANSLATOR) {
       throw new Error('Environment variable for your subscription key is not set.');
@@ -76,7 +76,7 @@ export class MsTranslator extends TranslationEngine {
   }
 }
 
-export class GoogleCloudTranslator extends TranslationEngine {
+export class GoogleCloudTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     const client = new v3.TranslationServiceClient();
     return client.translateText({
@@ -90,13 +90,13 @@ export class GoogleCloudTranslator extends TranslationEngine {
   }
 }
 
-export class GoogleTranslator extends TranslationEngine {
+export class GoogleTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     return Promise.all(texts.map(text => translate(text, { from: 'en', to: 'zh-CN' }).then(it => it.text)));
   }
 }
 
-export class DictTranslator extends TranslationEngine {
+export class DictTranslationEngine extends TranslationEngine {
   private dict: Map<string, string>;
   private params: Record<string, any>;
 
@@ -119,7 +119,7 @@ export class DictTranslator extends TranslationEngine {
   }
 }
 
-export class FakeTranslator extends TranslationEngine {
+export class FakeTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     return texts.map(text => {
       if (text.includes('No-translate')) {
@@ -134,7 +134,7 @@ export class FakeTranslator extends TranslationEngine {
   }
 }
 
-export class NoopTranslator extends TranslationEngine {
+export class NoopTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     return texts;
   }
