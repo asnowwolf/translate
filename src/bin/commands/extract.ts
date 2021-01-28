@@ -3,9 +3,9 @@ import { TranslationKit } from '../../translation-kit';
 import { writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../common';
 import { DictEntryModel } from '../../models/dict-entry.model';
-import { listFiles } from '../../file-utils';
 import { Dict } from '../../dict';
 import { groupBy, map, uniqBy } from 'lodash';
+import { sync as globby } from 'globby';
 
 export const command = `extract <sourceGlob> [outFile]`;
 
@@ -44,9 +44,9 @@ interface ExtractParams {
 }
 
 export const handler = async function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
-  const engine = new TranslationKit(outType);
+  const engine = new TranslationKit();
   const regExp = new RegExp(pattern, 'i');
-  const files = listFiles(sourceGlob);
+  const files = globby(sourceGlob);
   const allPairs = await engine.extractPairsFromHtml(files, outType === TranslationEngineType.dict);
   const pairs = uniqBy(allPairs.filter(it => regExp.test(it.english) || regExp.test(it.chinese)), (it) => it.english + it.chinese);
   switch (outType) {

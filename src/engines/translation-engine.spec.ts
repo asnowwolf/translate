@@ -1,4 +1,5 @@
-import { FakeTranslationEngine, GoogleTranslationEngine } from './engine';
+import { GoogleTranslationEngine } from './google-engine';
+import { FakeTranslationEngine } from './fake-engine';
 
 describe('translation engine', function () {
   it('translate one sentence with fake engine', async () => {

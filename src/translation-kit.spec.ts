@@ -1,5 +1,3 @@
-import { getTranslateEngine } from './engine';
-import { TranslationEngineType } from './common';
 import { addTranslationMark, injectTranslationKitToDoc, TranslationKit } from './translation-kit';
 import { treeAdapter } from './dom-tree-adapter';
 import { parse } from 'parse5';
@@ -38,82 +36,35 @@ describe('translation-kit', () => {
 
 <script src="/assets/js/translator.js"></script></body></html>`);
   });
-  it('auto translate html', async () => {
-    const engine = getTranslateEngine(TranslationEngineType.fake);
-    const kit = new TranslationKit(engine);
-    const dom = parse(`<!doctype html>
-<html lang="en-US">
-<head>
-  <title>english</title>
-</head>
-<body>
-<p>one</p>
-<div>two</div>
-<div>three <a href="./sample-en.html">four</a></div>
-<div>five<p>six</p></div>
-<ul>
-  <li>seven</li>
-  <li>
-    eight
-    <ul>
-      <li>nine</li>
-    </ul>
-  </li>
-</ul>
-</body>
-</html>`, { treeAdapter });
 
-    const doc = await kit.translateDoc(dom);
-    expect(doc.title).toEqual('[译]english');
-    expect(dom.toHtml()).toEqual(`<!DOCTYPE html><html lang="en-US"><head>
-  <title>[译]english</title>
-</head>
-<body>
-<p translation-result="on">[译]one</p><p translation-origin="off">one</p>
-<div>two</div>
-<div>three <a href="./sample-en.html">four</a></div>
-<div>five<p translation-result="on">[译]six</p><p translation-origin="off">six</p></div>
-<ul>
-  <li>seven</li>
-  <li>
-    eight
-    <ul>
-      <li>nine</li>
-    </ul>
-  </li>
-</ul>
-
-</body></html>`);
-  });
   it('extract pairs from html', async () => {
-    const engine = getTranslateEngine(TranslationEngineType.fake);
-    const kit = new TranslationKit(engine);
+    const kit = new TranslationKit();
     const entries = await kit.extractPairsFromHtml(
-      ['src/test/samples/simple/extract1.html', 'src/test/samples/simple/extract2.html'],
+      ['samples/html/extract1.html', 'samples/html/extract2.html'],
       true);
     expect(entries).toEqual([
       {
         'chinese': '一',
         'english': 'One',
-        'file': 'src/test/samples/simple/extract1.html',
+        'file': 'samples/html/extract1.html',
         'xpath': 'p/1',
       },
       {
         'chinese': '二',
         'english': 'Two',
-        'file': 'src/test/samples/simple/extract1.html',
+        'file': 'samples/html/extract1.html',
         'xpath': 'div/2/p/1',
       },
       {
         'chinese': '三',
         'english': 'Three',
-        'file': 'src/test/samples/simple/extract2.html',
+        'file': 'samples/html/extract2.html',
         'xpath': 'p/1',
       },
       {
         'chinese': '四',
         'english': 'Four',
-        'file': 'src/test/samples/simple/extract2.html',
+        'file': 'samples/html/extract2.html',
         'xpath': 'div/2/p/1',
       },
     ]);

@@ -1,7 +1,8 @@
 import { CommandBuilder } from 'yargs';
-import { TranslationKit } from '../../translation-kit';
 import { TranslationEngineType } from '../../common';
-import { listFiles } from '../../file-utils';
+import { getTranslationEngine } from '../../engines/get-translation-engine';
+import { getTranslator } from '../../translators/get-translator';
+import { sync as globby } from 'globby';
 
 export const command = `translate <sourceGlobs...>`;
 
@@ -36,10 +37,10 @@ interface Params {
 }
 
 export const handler = async function ({ sourceGlobs, engine, dict }: Params) {
-  const kit = new TranslationKit(engine, { dict });
-  const files = sourceGlobs.map(it => listFiles(it)).flat();
-  for (const file of files) {
-    console.log('translating: ', file);
-    await kit.translateFile(file);
+  const filenames = sourceGlobs.map(it => globby(it)).flat();
+  for (const filename of filenames) {
+    console.log('translating: ', filename);
+    const translator = getTranslator(filename, getTranslationEngine(engine));
+    await translator.translateFile();
   }
 };

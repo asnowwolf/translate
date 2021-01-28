@@ -1,5 +1,4 @@
 import { markdown } from './markdown';
-import { FakeTranslationEngine } from './engine';
 import mdParse = markdown.parse;
 
 describe('markdown', () => {
@@ -62,127 +61,12 @@ title: abc
 # Head 1
 `);
   });
-
-  it('translate complex markdown', async () => {
-    const original = `---
-title: abc
----
-
-# Head 1
-
-Test
-
-1. a
-1. b
-   1. b1
-   1. b2
-   1. b3
-
-- a1
-  - b
-  - c
-
-> a
-
-> b
->> c
-
->> d
-
-| a | a |
-|----|----|
-| b | b |
-| c | c |
-
-<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
+  it('markdown to html to markdown', () => {
+    const sample = `- a
+- b
 `;
-    const engine = new FakeTranslationEngine();
-    engine.batchSize = 10;
-    const md = await markdown.translate(original, engine);
-    expect(md).toEqual(`---
-title$$origin: abc
-title: '[译]abc'
-
----
-
-# Head 1
-
-# 译Head 1
-
-
-Test
-
-译Test
-
-
-1. a
-
-   译a
-
-1. b
-
-   译b
-
-
-   1. b1
-
-      译b1
-
-   1. b2
-
-      译b2
-
-   1. b3
-
-      译b3
-
-
-- a1
-
-  译a1
-
-
-  - b
-
-    译b
-
-  - c
-
-    译c
-
-
-> a
->
-> 译a
->
->
-> b
->
-> 译b
->
->
-> > c
-> >
-> > 译c
-> >
->
-> > d
-> >
-> > 译d
-> >
-
-| a | a |
-| --- | --- |
-| 译a | 译a |
-| b | b |
-| 译b | 译b |
-| c | c |
-| 译c | 译c |
-
-<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
-
-译<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
-
-`);
+    const fromMdNode = mdParse(sample);
+    const toMdNode = markdown.htmlToMd(markdown.mdToHtml(fromMdNode));
+    expect(markdown.stringify(toMdNode)).toEqual(sample);
   });
 });

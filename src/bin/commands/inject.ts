@@ -1,7 +1,7 @@
 import { CommandBuilder } from 'yargs';
 import { injectTranslationKit } from '../../translation-kit';
 import { readFileSync } from 'fs';
-import { listFiles } from '../../file-utils';
+import { sync as globby } from 'globby';
 
 export const command = `inject <sourceGlob>`;
 
@@ -48,7 +48,7 @@ interface Params {
 }
 
 export const handler = function ({ sourceGlob, styleUrls, scriptUrls, urlMap, textMap }: Params) {
-  const filenames = listFiles(sourceGlob);
+  const filenames = globby(sourceGlob);
   filenames.forEach(filename => {
     injectTranslationKit(filename, styleUrls, scriptUrls, urlMap, textMap);
     console.log(`injected: ${filename}!`);

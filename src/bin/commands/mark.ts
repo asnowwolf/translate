@@ -1,7 +1,7 @@
 import { CommandBuilder } from 'yargs';
-import { listFiles } from '../../file-utils';
 import { addTranslationMark } from '../../translation-kit';
 import { readFileSync, writeFileSync } from 'fs';
+import { sync as globby } from 'globby';
 
 export const command = `mark <sourceGlob>`;
 
@@ -18,7 +18,7 @@ interface Params {
 }
 
 export const handler = function ({ sourceGlob }: Params) {
-  const files = listFiles(sourceGlob);
+  const files = globby(sourceGlob);
   for (const file of files) {
     console.log('marking: ', file);
     const content = readFileSync(file, 'utf8');
