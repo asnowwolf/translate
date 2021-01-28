@@ -126,7 +126,6 @@ export namespace html {
 
   function mergeRows(originRow: DomTableRowElement, translationRow: DomTableRowElement): void {
     if (originRow.cells.length !== translationRow.cells.length) {
-      console.warn('Origin row must have same cells count with translation row!');
       return;
     }
     for (let i = 0; i < originRow.cells.length; ++i) {
