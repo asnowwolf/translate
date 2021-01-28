@@ -5,7 +5,7 @@ import { isDeepStrictEqual } from 'util';
 import { MarkdownTranslator } from './markdown-translator';
 
 export class JsdocTranslator extends FileTranslator {
-  private markdownTranslator = new MarkdownTranslator('placeholder.ts', this.engine);
+  private readonly markdownTranslator = new MarkdownTranslator('placeholder.ts', this.engine);
 
   async translate(text: string): Promise<string> {
     const project = new Project({ manipulationSettings: { indentationText: IndentationText.TwoSpaces } });

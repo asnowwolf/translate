@@ -2,7 +2,7 @@ import { TranslationEngine } from '../engines/translation-engine';
 import { readFileSync, writeFileSync } from 'fs';
 
 export abstract class FileTranslator {
-  constructor(protected filename: string, protected engine: TranslationEngine) {
+  constructor(protected readonly filename: string, protected readonly engine: TranslationEngine) {
   }
 
   async translateFile(): Promise<void> {

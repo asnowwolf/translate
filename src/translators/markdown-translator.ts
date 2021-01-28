@@ -7,23 +7,11 @@ import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { containsChinese } from '../common';
-import { markdown } from '../markdown';
-import stringify = markdown.stringify;
-import mdToHtml = markdown.mdToHtml;
-import htmlToMd = markdown.htmlToMd;
-import parse = markdown.parse;
-
-function prettify(md: string): string {
-  return md
-    .replace(/([\w`])([\u4e00-\u9fa5])/g, '$1 $2')
-    .replace(/([\u4e00-\u9fa5])([\w`])/g, '$1 $2')
-    .replace(/\n\n+/g, '\n\n');
-}
-
+import { markdownFromHtml, markdownParse, markdownStringify, markdownToHtml } from '../markdown';
 
 export class MarkdownTranslator extends FileTranslator {
   async translate(text: string): Promise<string> {
-    const tree = parse(encodeExampleTags(text));
+    const tree = markdownParse(encodeExampleTags(text));
     const result = mapToNodePairs(tree);
     const pairs: Node[] = [];
     const yamls: YAML[] = [];
@@ -42,19 +30,19 @@ export class MarkdownTranslator extends FileTranslator {
     const translatedPairs = await this.translateNormalNodes(pairs);
     pairs.forEach((original, index) => {
       const translation = translatedPairs[index];
-      if (translation && sameExceptWhitespace(stringify(original), stringify(translation))) {
+      if (translation && sameExceptWhitespace(markdownStringify(original), markdownStringify(translation))) {
         unistRemove(result, original);
       }
       postprocess(original, translation);
     });
-    return prettify(decodeExampleTags(stringify(result)));
+    return prettify(decodeExampleTags(markdownStringify(result)));
   }
 
   async translateNormalNodes(pairs: Node[]): Promise<Node[]> {
-    const originals = pairs.map(it => mdToHtml(preprocess(it)));
+    const originals = pairs.map(it => markdownToHtml(preprocess(it)));
     const batches = chunk(originals, this.engine.batchSize);
     const translations = await Promise.all(batches.map(async (it) => this.engine.translate(it)));
-    return translations.flat().map(it => htmlToMd(it));
+    return translations.flat().map(it => markdownFromHtml(it));
   }
 
   async translateYaml(yaml: string): Promise<string> {
@@ -146,3 +134,9 @@ function shouldTranslate(node: Node, index: number, parent: Parent): boolean {
   return !isChineseNode(node);
 }
 
+function prettify(md: string): string {
+  return md
+    .replace(/([\w`])([\u4e00-\u9fa5])/g, '$1 $2')
+    .replace(/([\u4e00-\u9fa5])([\w`])/g, '$1 $2')
+    .replace(/\n\n+/g, '\n\n');
+}
