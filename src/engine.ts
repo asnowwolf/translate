@@ -4,6 +4,7 @@ import { TranslationEngineType } from './common';
 import { v3 } from '@google-cloud/translate';
 import * as translate from '@vitalets/google-translate-api';
 import { readFileSync } from 'fs';
+import { uniq } from 'lodash';
 
 export abstract class TranslationEngine {
   batchSize = 100;
@@ -15,7 +16,12 @@ export abstract class TranslationEngine {
     if (!texts.filter(it => it?.trim().length).length) {
       return texts;
     }
-    return await this.doTranslate(texts);
+    const originals = uniq(texts);
+    const translations = await this.doTranslate(originals);
+    return texts.map(it => {
+      const index = originals.indexOf(it);
+      return translations[index];
+    });
   }
 
   protected abstract async doTranslate(texts: string[]): Promise<string[]>;

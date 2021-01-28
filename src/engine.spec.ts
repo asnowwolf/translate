@@ -6,10 +6,22 @@ describe('translation engine', function () {
     const texts = await engine.translate(['<h1>Hello, world!</h1>']);
     expect(texts).toEqual(['<h1>译Hello, world!</h1>']);
   });
-  it('translate multi sentences with fake engine', async () => {
+  it('translate multi sentences with fake engine with duplicated items', async () => {
     const engine = new FakeTranslator();
-    const texts = await engine.translate(['one', 'two', 'three']);
-    expect(texts).toEqual(['[译]one', '[译]two', '[译]three']);
+    const texts = await engine.translate([
+      'one',
+      'two',
+      'two',
+      'three',
+      'one',
+    ]);
+    expect(texts).toEqual([
+      '[译]one',
+      '[译]two',
+      '[译]two',
+      '[译]three',
+      '[译]one',
+    ]);
   });
   it('translate with google translate', async () => {
     const engine = new GoogleTranslator();
