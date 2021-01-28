@@ -1,12 +1,13 @@
-import { html } from './html';
+import { Marker, restructureTable } from './marker';
 import { parseFragment } from 'parse5';
-import { treeAdapter } from './dom-tree-adapter';
-import restructureTable = html.restructureTable;
-import markAndSwapAll = html.markAndSwapAll;
-import addIdForHeaders = html.addIdForHeaders;
-import extractAll = html.extractAll;
+import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
 
-describe('html', function () {
+describe('marker', () => {
+  it('should add translation mark', () => {
+    const marker = new Marker();
+    const result = marker.mark('<h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p>');
+    expect(result).toEqual('<h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p>');
+  });
   it('should mark and restructure table', () => {
     const dom = parseFragment(`<table>
 <thead>
@@ -73,7 +74,8 @@ describe('html', function () {
 <p id="one">one</p>
 <p id="一">一</p>
 <script>const a = 1;</script>`, { treeAdapter });
-    markAndSwapAll(doc);
+    const marker = new Marker();
+    marker.markAndSwapAll(doc);
     expect(doc.toHtml()).toEqual(`<p id="a">a</p>
 <p id="one" translation-result="on">一</p><p translation-origin="off">one</p>
 
@@ -88,7 +90,8 @@ english content</h3>
 <a id="中文标题" class="anchor" href="#%E4%B8%AD%E6%96%87%E6%A0%87%E9%A2%98" aria-hidden="true">
 <span class="octicon octicon-link"></span></a>
 中文内容</h3>`, { treeAdapter });
-    markAndSwapAll(doc);
+    const marker = new Marker();
+    marker.markAndSwapAll(doc);
     expect(doc.toHtml()).toEqual(`<h3 id="english_id" translation-result="on">
 <a id="中文标题" class="anchor" href="#english_id" aria-hidden="true">
 <span class="octicon octicon-link"></span></a>
@@ -99,29 +102,8 @@ english content</h3>
   });
   it('should add id for headers', () => {
     const doc = parseFragment(`<h1>a%b -1</h1><h2>one</h2><h3>一</h3>`, { treeAdapter });
-    addIdForHeaders(doc);
+    const marker = new Marker();
+    marker.addIdForHeaders(doc);
     expect(doc.toHtml()).toEqual(`<h1 id="ab--1">a%b -1</h1><h2 id="one">one</h2><h3 id="一">一</h3>`);
-  });
-
-  it('should extract sentence pair', () => {
-    const dom = parseFragment(`<p id="a">a</p>
-<p id="one"><a aria-hidden="true"></a>one</p><p id="一">一</p>
-<script>const a = 1;</script>
-<p id="one">two</p><p id="一">二</p>`, { treeAdapter });
-    markAndSwapAll(dom);
-    const sentencePairs = extractAll(dom).map(({ english, chinese }) => ({
-      english: english.textContent!,
-      chinese: chinese.textContent!,
-    }));
-    expect(sentencePairs).toEqual([
-      {
-        'chinese': '一',
-        'english': 'one',
-      },
-      {
-        'chinese': '二',
-        'english': 'two',
-      },
-    ]);
   });
 });

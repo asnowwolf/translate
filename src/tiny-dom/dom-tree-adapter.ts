@@ -13,7 +13,7 @@ import {
   DomTableElement,
   DomTableRowElement,
   DomText,
-} from './models/dom-models';
+} from './dom-models';
 
 export interface DomTreeAdapterTypeMap extends TreeAdapterTypeMap {
   attribute: DomAttr;

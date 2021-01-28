@@ -1,11 +1,8 @@
 import { CommandBuilder } from 'yargs';
-import { TranslationKit } from '../../translation-kit';
-import { writeFileSync } from 'fs';
-import { TranslationEngineType } from '../../common';
-import { DictEntryModel } from '../../models/dict-entry.model';
-import { Dict } from '../../dict';
-import { groupBy, map, uniqBy } from 'lodash';
+import { Dict } from '../../dict/dict';
+import { groupBy, uniqBy } from 'lodash';
 import { sync as globby } from 'globby';
+import { Extractor } from '../../extractor/extractor';
 
 export const command = `extract <sourceGlob> [outFile]`;
 
@@ -19,72 +16,36 @@ export const builder: CommandBuilder = {
     description: '结果输出到的文件，不要带扩展名',
     default: 'STDOUT',
   },
-  outType: {
-    type: 'string',
-    choices: [TranslationEngineType.google, TranslationEngineType.ms, TranslationEngineType.dict, TranslationEngineType.fake],
-    default: TranslationEngineType.google,
-  },
-  pattern: {
+  filter: {
     type: 'string',
     default: '.*',
-    description: '要过滤的正则表达式',
-  },
-  unique: {
-    type: 'boolean',
-    default: false,
+    description: '过滤器的正则表达式',
   },
 };
 
 interface ExtractParams {
   sourceGlob: string;
   outFile: string;
-  unique: boolean;
-  outType: TranslationEngineType;
-  pattern: RegExp;
+  filter: string;
 }
 
-export const handler = async function ({ sourceGlob, outFile, unique, outType, pattern }: ExtractParams) {
-  const engine = new TranslationKit();
-  const regExp = new RegExp(pattern, 'i');
+export const handler = async function ({ sourceGlob, outFile, filter }: ExtractParams) {
+  const regExp = new RegExp(filter, 'i');
   const files = globby(sourceGlob);
-  const allPairs = await engine.extractPairsFromHtml(files, outType === TranslationEngineType.dict);
-  const pairs = uniqBy(allPairs.filter(it => regExp.test(it.english) || regExp.test(it.chinese)), (it) => it.english + it.chinese);
-  switch (outType) {
-    case TranslationEngineType.google:
-      const content = pairs.map(it => `${it.english}\t${it.chinese}`).join('\n');
-      writeTo(outFile, 'pair', content);
-      break;
-    case TranslationEngineType.ms:
-      writeTo(outFile, 'en', pairs.map(it => it.english).join('\n'));
-      writeTo(outFile, 'cn', pairs.map(it => it.chinese).join('\n'));
-      break;
-    case TranslationEngineType.dict:
-      const grouped = map(groupBy(pairs, it => it.file), (pairs, file) => ({ file, pairs }));
-      for (const { file, pairs } of grouped) {
-        await saveToDict(outFile, file, pairs);
-      }
-      break;
-  }
-};
-
-async function saveToDict(dictFile: string, contextFile: string, pairs: DictEntryModel[]): Promise<void> {
+  const extractor = new Extractor();
+  const allPairs = files.map(file => extractor.extractFile(file)).flat()
+    .filter(it => regExp.test(it.english) || regExp.test(it.chinese));
+  const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
+  const groups = groupBy(pairs, it => it.file);
   const dict = new Dict();
-  await dict.open(dictFile);
+  await dict.open(outFile);
   try {
-    for (const pair of pairs) {
-      await dict.createOrUpdate(contextFile, pair.english, pair.chinese, pair.xpath);
+    for (const [file, pairs] of Object.entries(groups)) {
+      for (const pair of pairs) {
+        await dict.createOrUpdate(file, pair.english, pair.chinese, pair.xpath);
+      }
     }
   } finally {
     await dict.close();
   }
-}
-
-function writeTo(filename: string, lang: 'pair' | 'en' | 'cn' | 'dict', content: string): void {
-  if (filename === 'STDOUT') {
-    process.stdout.write(content);
-  } else if (lang === 'dict') {
-    writeFileSync(filename, content);
-  } else {
-    writeFileSync(`${filename}_${lang}.txt`, content);
-  }
-}
+};

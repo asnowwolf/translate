@@ -1,7 +1,7 @@
 import { TranslationEngineType } from '../common';
 import { getTranslator } from './get-translator';
 import { readFileSync } from 'fs';
-import { getTranslationEngine } from '../engines/get-translation-engine';
+import { getTranslationEngine } from '../translation-engine/get-translation-engine';
 
 describe('file-translator', function () {
   it('translate html file', async () => {

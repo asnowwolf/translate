@@ -1,4 +1,4 @@
-import { FileTranslator } from './file-translator';
+import { Translator } from './translator';
 import { Node, Parent } from 'unist';
 import { chunk, cloneDeep } from 'lodash';
 import { safeDump, safeLoad } from 'js-yaml';
@@ -9,7 +9,7 @@ import * as unistRemove from 'unist-util-remove';
 import { containsChinese } from '../common';
 import { markdownFromHtml, markdownParse, markdownStringify, markdownToHtml } from '../markdown';
 
-export class MarkdownTranslator extends FileTranslator {
+export class MarkdownTranslator extends Translator {
   async translate(text: string): Promise<string> {
     const tree = markdownParse(encodeExampleTags(text));
     const result = mapToNodePairs(tree);

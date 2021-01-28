@@ -1,7 +1,7 @@
 import { CommandBuilder } from 'yargs';
 import { TranslationEngineType } from '../../common';
-import { getTranslationEngine } from '../../engines/get-translation-engine';
-import { getTranslator } from '../../translators/get-translator';
+import { getTranslationEngine } from '../../translation-engine/get-translation-engine';
+import { getTranslator } from '../../translator/get-translator';
 import { sync as globby } from 'globby';
 
 export const command = `translate <sourceGlobs...>`;
@@ -41,6 +41,6 @@ export const handler = async function ({ sourceGlobs, engine, dict }: Params) {
   for (const filename of filenames) {
     console.log('translating: ', filename);
     const translator = getTranslator(filename, getTranslationEngine(engine));
-    await translator.translateFile();
+    await translator.translateFile(filename);
   }
 };

@@ -1,11 +1,11 @@
-import { FileTranslator } from './file-translator';
-import { TranslationEngine } from '../engines/translation-engine';
+import { Translator } from './translator';
+import { TranslationEngine } from '../translation-engine/translation-engine';
 import { IndentationText, JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
 import { isDeepStrictEqual } from 'util';
 import { MarkdownTranslator } from './markdown-translator';
 
-export class JsdocTranslator extends FileTranslator {
-  private readonly markdownTranslator = new MarkdownTranslator('placeholder.ts', this.engine);
+export class JsdocTranslator extends Translator {
+  private readonly markdownTranslator = new MarkdownTranslator(this.engine);
 
   async translate(text: string): Promise<string> {
     const project = new Project({ manipulationSettings: { indentationText: IndentationText.TwoSpaces } });

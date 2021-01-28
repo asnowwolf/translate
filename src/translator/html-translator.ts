@@ -1,12 +1,10 @@
-import { FileTranslator } from './file-translator';
-import { DomDocument, DomElement } from '../models/dom-models';
+import { Translator } from './translator';
+import { DomDocument, DomElement } from '../tiny-dom/dom-models';
 import { parse } from 'parse5';
-import { treeAdapter } from '../dom-tree-adapter';
-import { containsChinese } from '../common';
-import { html } from '../html';
-import defaultSelectors = html.defaultSelectors;
+import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
+import { containsChinese, defaultSelectors } from '../common';
 
-export class HtmlTranslator extends FileTranslator {
+export class HtmlTranslator extends Translator {
   private selectors = defaultSelectors;
 
   async translate(text: string): Promise<string> {
