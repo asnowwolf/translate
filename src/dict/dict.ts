@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection, FindManyOptions, Repository } from 'typeorm';
-import { basename, resolve } from 'path';
+import { basename, extname, resolve } from 'path';
 import { existsSync } from 'fs';
 import { DictEntryEntity } from './dict-entry.entity';
 import { basenameWithoutExt } from '../common';
@@ -9,9 +9,12 @@ export class Dict {
   private connection: Connection;
   private dictRepo: Repository<DictEntryEntity>;
 
-  async open(filename: string): Promise<void> {
+  async open(filename = ''): Promise<void> {
     const isMemory = filename === inMemoryDbName || !filename;
-    const fileDbName = resolve(`${filename}.sqlite`);
+    if (!extname(filename)) {
+      filename += '.sqlite';
+    }
+    const fileDbName = resolve(filename);
     const options: ConnectionOptions = {
       type: 'better-sqlite3',
       database: isMemory ? inMemoryDbName : fileDbName,
