@@ -41,7 +41,7 @@ describe('extractor', () => {
     const dict = new Dict();
     await dict.openInMemory();
     await extractor.extractFilesToDict(['samples/html/extract1.html', 'samples/html/extract2.html'], dict);
-    const result = await dict.selectAll();
+    const result = await dict.findAll({ select: ['id', 'chinese', 'english', 'filename', 'path', 'xpath'] });
     expect(result).toEqual([
       {
         'chinese': '一',

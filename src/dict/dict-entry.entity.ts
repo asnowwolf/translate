@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('dict')
 export class DictEntryEntity {
@@ -14,4 +14,8 @@ export class DictEntryEntity {
   english: string;
   @Column({ type: 'nvarchar', length: 256 })
   chinese: string;
+  @CreateDateColumn({ type: 'datetime' })
+  createdAt: Date;
+  @UpdateDateColumn({ type: 'datetime' })
+  updatedAt: Date;
 }

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+import { Connection, ConnectionOptions, createConnection, FindManyOptions, Repository } from 'typeorm';
 import { basename, resolve } from 'path';
 import { existsSync } from 'fs';
 import { DictEntryEntity } from './dict-entry.entity';
@@ -36,8 +36,8 @@ export class Dict {
       matches[0];
   }
 
-  async selectAll(): Promise<DictEntryEntity[]> {
-    return await this.dictRepo.find();
+  async findAll(options?: FindManyOptions<DictEntryEntity>): Promise<DictEntryEntity[]> {
+    return await this.dictRepo.find(options);
   }
 
   async createOrUpdate(filePath: string, english: string, chinese: string, xpath: string): Promise<DictEntryEntity> {
