@@ -31,6 +31,10 @@ export const handler = async function ({ sourceGlobs, outFile, filter }: Extract
   const filenames = sourceGlobs.map(it => globby(it)).flat();
   const dict = new Dict();
   await dict.open(outFile);
-  const extractor = new Extractor();
-  await extractor.extractFilesToDict(filenames, dict, new RegExp(filter, 'i'));
+  try {
+    const extractor = new Extractor();
+    await extractor.extractFilesToDict(filenames, dict, new RegExp(filter, 'i'));
+  } finally {
+    await dict.close();
+  }
 };
