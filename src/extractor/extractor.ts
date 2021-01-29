@@ -1,7 +1,5 @@
-import { DomElement, DomParentNode } from '../tiny-dom/dom-models';
-import { parse } from 'parse5';
+import { DomDocument, DomElement, DomParentNode } from '../tiny-dom/dom-models';
 import { readFileSync } from 'fs';
-import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
 import { DictEntryModel } from '../dict/dict-entry.model';
 import { containsChinese } from '../common';
 import { Dict } from '../dict/dict';
@@ -14,7 +12,7 @@ export class Extractor {
   }
 
   extract(content: string, filename: string): DictEntryModel[] {
-    const doc = parse(content, { treeAdapter });
+    const doc = DomDocument.parse(content);
     const pairs = extractAll(doc);
     return pairs.map(pair => ({
       file: filename,

@@ -1,7 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { parseFragment } from 'parse5';
-import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
-import { DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowElement } from '../tiny-dom/dom-models';
+import { DomDocumentFragment, DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowElement } from '../tiny-dom/dom-models';
 import { containsChinese, defaultSelectors } from '../common';
 import * as slugs from 'github-slugger';
 
@@ -14,7 +12,7 @@ export class Marker {
   }
 
   mark(content: string): string {
-    const doc = parseFragment(content, { treeAdapter });
+    const doc = DomDocumentFragment.parse(content);
     this.addTranslationMark(doc);
     return doc.toHtml();
   }

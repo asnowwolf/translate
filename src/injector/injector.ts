@@ -1,6 +1,4 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { parse } from 'parse5';
-import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
 import { DomDocument, DomElement } from '../tiny-dom/dom-models';
 
 export class Injector {
@@ -19,7 +17,7 @@ export class Injector {
   }
 
   inject(content: string): string {
-    const doc = parse(content, { treeAdapter });
+    const doc = DomDocument.parse(content);
     this.injectTranslationKitToDoc(doc);
     return replaceText(doc.toHtml(), this.textMap);
   }

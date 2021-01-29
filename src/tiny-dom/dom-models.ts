@@ -1,7 +1,9 @@
-import { DocumentMode, parseFragment, serialize } from 'parse5';
-import { treeAdapter } from './dom-tree-adapter';
+import { DocumentMode, parse, parseFragment, serialize } from 'parse5';
+import { DomTreeAdapter } from './dom-tree-adapter';
 
 export class DomNode {
+  static readonly treeAdapter = DomTreeAdapter.create();
+
   nodeName: string;
   parentNode?: DomParentNode;
   childNodes?: DomChildNode[] = [];
@@ -180,7 +182,11 @@ export class DomDocument extends DomParentNode {
   }
 
   toHtml(): string {
-    return serialize(this, { treeAdapter });
+    return serialize(this, { treeAdapter: DomNode.treeAdapter });
+  }
+
+  static parse(content: string): DomDocument {
+    return parse(content, { treeAdapter: DomNode.treeAdapter });
   }
 }
 
@@ -188,7 +194,11 @@ export class DomDocumentFragment extends DomParentNode {
   nodeName: '#document-fragment' = '#document-fragment';
 
   toHtml(): string {
-    return serialize(this, { treeAdapter });
+    return serialize(this, { treeAdapter: DomNode.treeAdapter });
+  }
+
+  static parse(content: string): DomDocumentFragment {
+    return parseFragment(content, { treeAdapter: DomNode.treeAdapter });
   }
 }
 
@@ -219,11 +229,11 @@ export class DomElement extends DomParentNode implements DomChildNode {
   }
 
   get innerHTML(): string {
-    return serialize(this, { treeAdapter });
+    return serialize(this, { treeAdapter: DomNode.treeAdapter });
   }
 
   set innerHTML(html: string) {
-    this.childNodes = parseFragment(html, { treeAdapter }).childNodes;
+    this.childNodes = parseFragment(html, { treeAdapter: DomNode.treeAdapter }).childNodes;
   }
 
   get className(): string {

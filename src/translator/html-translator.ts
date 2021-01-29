@@ -1,14 +1,12 @@
 import { Translator } from './translator';
 import { DomDocument, DomElement } from '../tiny-dom/dom-models';
-import { parse } from 'parse5';
-import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
 import { containsChinese, defaultSelectors } from '../common';
 
 export class HtmlTranslator extends Translator {
   private selectors = defaultSelectors;
 
   async translate(text: string): Promise<string> {
-    const doc = parse(text, { treeAdapter });
+    const doc = DomDocument.parse(text);
     const result = await this.translateDoc(doc);
     return result.toHtml();
   }

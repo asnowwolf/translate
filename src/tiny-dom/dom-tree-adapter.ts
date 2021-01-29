@@ -174,5 +174,3 @@ export class DomTreeAdapter implements TypedTreeAdapter<DomTreeAdapterTypeMap> {
   setTemplateContent(templateElement: DomTreeAdapterTypeMap['element'], contentElement: DomTreeAdapterTypeMap['documentFragment']): void {
   }
 }
-
-export const treeAdapter = DomTreeAdapter.create();
