@@ -5,6 +5,42 @@ import { DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowEle
 import { containsChinese, defaultSelectors } from '../common';
 import * as slugs from 'github-slugger';
 
+export class Marker {
+  private readonly selectors = defaultSelectors;
+
+  markFile(filename: string): void {
+    const content = readFileSync(filename, 'utf8');
+    writeFileSync(filename, this.mark(content), 'utf8');
+  }
+
+  mark(content: string): string {
+    const doc = parseFragment(content, { treeAdapter });
+    this.addTranslationMark(doc);
+    return doc.toHtml();
+  }
+
+  addTranslationMark(doc: DomParentNode): void {
+    this.addIdForHeaders(doc);
+    this.markAndSwapAll(doc);
+  }
+
+  addIdForHeaders(body: DomParentNode): void {
+    const headers = body.querySelectorAll<DomElement>(it => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(it.nodeName));
+    const slugger = slugs();
+    headers.forEach(header => {
+      if (!header.hasAttribute('id')) {
+        header.setAttribute('id', toId(slugger, header.textContent));
+      }
+    });
+  }
+
+  markAndSwapAll(body: DomParentNode): void {
+    restructureTable(body);
+    this.selectors.forEach(selector => markAndSwap(body, selector));
+  }
+}
+
+
 function toId(slugger, text) {
   return slugger.slug(text);
 }
@@ -94,40 +130,5 @@ function mergeRows(originRow: DomTableRowElement, translationRow: DomTableRowEle
     if (originCell.innerHTML !== translationCell.innerHTML) {
       originCell.innerHTML = `<p>${originCell.innerHTML}</p><p>${translationCell.innerHTML}</p>`;
     }
-  }
-}
-
-export class Marker {
-  private readonly selectors = defaultSelectors;
-
-  markFile(filename: string): void {
-    const content = readFileSync(filename, 'utf8');
-    writeFileSync(filename, this.mark(content), 'utf8');
-  }
-
-  mark(content: string): string {
-    const doc = parseFragment(content, { treeAdapter });
-    this.addTranslationMark(doc);
-    return doc.toHtml();
-  }
-
-  addTranslationMark(doc: DomParentNode): void {
-    this.addIdForHeaders(doc);
-    this.markAndSwapAll(doc);
-  }
-
-  addIdForHeaders(body: DomParentNode): void {
-    const headers = body.querySelectorAll<DomElement>(it => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(it.nodeName));
-    const slugger = slugs();
-    headers.forEach(header => {
-      if (!header.hasAttribute('id')) {
-        header.setAttribute('id', toId(slugger, header.textContent));
-      }
-    });
-  }
-
-  markAndSwapAll(body: DomParentNode): void {
-    restructureTable(body);
-    this.selectors.forEach(selector => markAndSwap(body, selector));
   }
 }

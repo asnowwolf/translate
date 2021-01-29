@@ -1,7 +1,6 @@
 import { DocumentMode, parseFragment, serialize } from 'parse5';
 import { treeAdapter } from './dom-tree-adapter';
 
-
 export class DomNode {
   nodeName: string;
   parentNode?: DomParentNode;

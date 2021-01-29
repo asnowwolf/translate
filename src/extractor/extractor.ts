@@ -7,29 +7,6 @@ import { containsChinese } from '../common';
 import { Dict } from '../dict/dict';
 import { groupBy, uniqBy } from 'lodash';
 
-export interface SentencePair {
-  english: DomElement;
-  chinese: DomElement;
-}
-
-function clearAiraHidden(body: DomParentNode): void {
-  const hiddens = body.querySelectorAll<DomElement>(it => it.hasAttribute('aria-hidden'));
-  hiddens.forEach(element => element.remove());
-}
-
-export function extractAll(body: DomParentNode): SentencePair[] {
-  clearAiraHidden(body);
-  const resultElements = body.querySelectorAll(it => it.previousElementSibling?.hasAttribute('translation-result') && it.hasAttribute('translation-origin'));
-  const results: SentencePair[] = [];
-  resultElements.forEach(origin => {
-    const result = origin.previousElementSibling!;
-    if (!containsChinese(origin.textContent!)) {
-      results.push({ english: origin, chinese: result });
-    }
-  });
-  return results;
-}
-
 export class Extractor {
   extractFile(filename: string): DictEntryModel[] {
     const content = readFileSync(filename, 'utf8');
@@ -58,6 +35,29 @@ export class Extractor {
       }
     }
   }
+}
+
+export interface SentencePair {
+  english: DomElement;
+  chinese: DomElement;
+}
+
+function clearAiraHidden(body: DomParentNode): void {
+  const hiddens = body.querySelectorAll<DomElement>(it => it.hasAttribute('aria-hidden'));
+  hiddens.forEach(element => element.remove());
+}
+
+export function extractAll(body: DomParentNode): SentencePair[] {
+  clearAiraHidden(body);
+  const resultElements = body.querySelectorAll(it => it.previousElementSibling?.hasAttribute('translation-result') && it.hasAttribute('translation-origin'));
+  const results: SentencePair[] = [];
+  resultElements.forEach(origin => {
+    const result = origin.previousElementSibling!;
+    if (!containsChinese(origin.textContent!)) {
+      results.push({ english: origin, chinese: result });
+    }
+  });
+  return results;
 }
 
 export function getPathsTo(element: DomParentNode): string[] {
