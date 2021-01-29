@@ -10,7 +10,7 @@ export class Dict {
   private dictRepo: Repository<DictEntryEntity>;
 
   async open(filename: string): Promise<void> {
-    const isMemory = filename === inMemoryDbName;
+    const isMemory = filename === inMemoryDbName || !filename;
     const fileDbName = resolve(`${filename}.sqlite`);
     const options: ConnectionOptions = {
       type: 'better-sqlite3',
