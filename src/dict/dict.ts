@@ -3,6 +3,7 @@ import { Connection, ConnectionOptions, createConnection, FindManyOptions, Repos
 import { basename, resolve } from 'path';
 import { existsSync } from 'fs';
 import { DictEntryEntity } from './dict-entry.entity';
+import { basenameWithoutExt } from '../common';
 
 export class Dict {
   private connection: Connection;
@@ -30,10 +31,11 @@ export class Dict {
   }
 
   async find(filePath: string, english: string): Promise<DictEntryEntity> {
-    const matches = await this.dictRepo.find({ english });
-    return matches.find(it => it.path === filePath) ??
-      matches.find(it => basename(it.path) === basename(filePath)) ??
-      matches[0];
+    const entries = await this.dictRepo.find({ english });
+    return entries.find(it => it.path === filePath) ??
+      entries.find(it => basename(it.path) === basename(filePath)) ??
+      entries.find(it => basenameWithoutExt(it.path) === basenameWithoutExt(filePath)) ??
+      entries[0];
   }
 
   async findAll(options?: FindManyOptions<DictEntryEntity>): Promise<DictEntryEntity[]> {

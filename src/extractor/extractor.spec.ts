@@ -44,12 +44,12 @@ describe('extractor', () => {
     const result = await dict.findAll({ select: ['id', 'chinese', 'english', 'filename', 'path', 'xpath'] });
     expect(result).toEqual([
       {
-        'chinese': '一',
-        'english': 'One',
+        'chinese': '# 一',
+        'english': '# One',
         'filename': 'extract1.html',
         'id': 1,
         'path': 'samples/html/extract1.html',
-        'xpath': 'p/1',
+        'xpath': 'h1/1',
       },
       {
         'chinese': '二',

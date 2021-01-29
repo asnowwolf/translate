@@ -1,4 +1,5 @@
 import { DomElement } from './tiny-dom/dom-models';
+import { basename, extname } from 'path';
 
 export enum TranslationEngineType {
   google = 'google',
@@ -19,3 +20,7 @@ export function containsChinese(text?: string): boolean {
 const elementSelectors = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'].map(it => (node: DomElement) => node.isTagOf(it));
 const attributeSelector = (node: DomElement) => node.hasAttribute('ng-should-translate');
 export const defaultSelectors = [...elementSelectors, attributeSelector];
+
+export function basenameWithoutExt(filename: string): string {
+  return basename(filename, extname(filename));
+}

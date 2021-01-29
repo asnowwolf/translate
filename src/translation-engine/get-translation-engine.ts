@@ -6,8 +6,9 @@ import { DictTranslationEngine } from './dict-engine';
 import { FakeTranslationEngine } from './fake-engine';
 import { NoopTranslationEngine } from './noop-engine';
 import { TranslationEngine } from './translation-engine';
+import { Dict } from '../dict/dict';
 
-export function getTranslationEngine(engine: TranslationEngineType): TranslationEngine {
+export function getTranslationEngine(engine: TranslationEngineType, dict?: Dict): TranslationEngine {
   switch (engine) {
     case TranslationEngineType.google:
       return new GoogleTranslationEngine();
@@ -16,7 +17,7 @@ export function getTranslationEngine(engine: TranslationEngineType): Translation
     case TranslationEngineType.ms:
       return new MsTranslationEngine();
     case TranslationEngineType.dict:
-      return new DictTranslationEngine();
+      return new DictTranslationEngine(dict);
     case TranslationEngineType.fake:
       return new FakeTranslationEngine();
     case TranslationEngineType.noop:

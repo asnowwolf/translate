@@ -1,4 +1,4 @@
-import { markdownFromHtml, markdownParse, markdownStringify, markdownToHtml } from './markdown';
+import { htmlToMd, markdownFromHtml, markdownParse, markdownStringify, markdownToHtml, mdToHtml } from './markdown';
 
 describe('markdown', () => {
   it('markdown to html', () => {
@@ -61,11 +61,11 @@ title: abc
 `);
   });
   it('markdown to html to markdown', () => {
-    const sample = `- a
+    const sample = `# h1
+
+- a
 - b
 `;
-    const fromMdNode = markdownParse(sample);
-    const toMdNode = markdownFromHtml(markdownToHtml(fromMdNode));
-    expect(markdownStringify(toMdNode)).toEqual(sample);
+    expect(htmlToMd(mdToHtml(sample))).toEqual(sample);
   });
 });

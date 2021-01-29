@@ -3,6 +3,7 @@ import { TranslationEngineType } from '../../common';
 import { getTranslationEngine } from '../../translation-engine/get-translation-engine';
 import { getTranslator } from '../../translator/get-translator';
 import { sync as globby } from 'globby';
+import { Dict } from '../../dict/dict';
 
 export const command = `translate <sourceGlobs...>`;
 
@@ -36,11 +37,17 @@ interface Params {
   dict: string;
 }
 
-export const handler = async function ({ sourceGlobs, engine, dict }: Params) {
+export const handler = async function ({ sourceGlobs, engine, dict: dictfile }: Params) {
   const filenames = sourceGlobs.map(it => globby(it)).flat();
-  for (const filename of filenames) {
-    console.log('translating: ', filename);
-    const translator = getTranslator(filename, getTranslationEngine(engine));
-    await translator.translateFile(filename);
+  const dict = new Dict();
+  await dict.open(dictfile);
+  try {
+    for (const filename of filenames) {
+      console.log('translating: ', filename);
+      const translator = getTranslator(filename, getTranslationEngine(engine, dict));
+      await translator.translateFile(filename);
+    }
+  } finally {
+    await dict.close();
   }
 };

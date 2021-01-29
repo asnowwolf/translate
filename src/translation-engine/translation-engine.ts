@@ -2,9 +2,7 @@ import { uniq } from 'lodash';
 
 export abstract class TranslationEngine {
   batchSize = 100;
-
-  init(params: Record<string, any>): void {
-  }
+  context: { filename?: string } = {};
 
   async translate(texts: string[]): Promise<string[]> {
     if (!texts.filter(it => it?.trim().length).length) {
