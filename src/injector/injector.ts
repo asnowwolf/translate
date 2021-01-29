@@ -18,6 +18,10 @@ export class Injector {
 
   inject(content: string): string {
     const doc = DomDocument.parse(content);
+    // 对于文档片段，不需要注入
+    if (doc.isFragment()) {
+      return content;
+    }
     this.injectTranslationKitToDoc(doc);
     return replaceText(doc.toHtml(), this.textMap);
   }

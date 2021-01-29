@@ -182,7 +182,13 @@ export class DomDocument extends DomParentNode {
   }
 
   toHtml(): string {
-    return serialize(this, { treeAdapter: DomNode.treeAdapter });
+    // 如果是文档片段，则只序列化 body，否则序列化整个对象
+    return serialize(this.isFragment() ? this.body : this, { treeAdapter: DomNode.treeAdapter });
+  }
+
+  isFragment(): boolean {
+    // 目前看来，片段和非片段的主要差别是 mode 为 'quirks'，并且head 中没有任何东西
+    return this.mode === 'quirks' && this.head.childNodes.length === 0;
   }
 
   static parse(content: string): DomDocument {

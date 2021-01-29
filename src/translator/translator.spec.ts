@@ -12,6 +12,13 @@ describe('file-translator', function () {
     const expected = readFileSync('samples/html/demo-translated.html', 'utf8');
     expect(result.replace(/\s/g, '')).toEqual(expected.replace(/\s/g, ''));
   });
+  it('translate html fragment file', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.fake);
+    const translator = getTranslator('a.html', engine);
+    const result = await translator.translate('<p>One</p>');
+
+    expect(result).toEqual('<p translation-result="on">[译]One</p><p translation-origin="off">One</p>');
+  });
   it('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine);
