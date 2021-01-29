@@ -1,49 +1,46 @@
-import { Column, Connection, ConnectionOptions, createConnection, Entity, PrimaryGeneratedColumn, Repository } from 'typeorm';
-import { basename } from 'path';
-
-@Entity()
-export class DictEntry {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  path: string;
-  @Column()
-  filename: string;
-  @Column()
-  xpath: string;
-  @Column({ type: 'nvarchar', length: 256 })
-  english: string;
-  @Column({ type: 'nvarchar', length: 256 })
-  chinese: string;
-}
+import 'reflect-metadata';
+import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+import { basename, resolve } from 'path';
+import { existsSync } from 'fs';
+import { DictEntryEntity } from './dict-entry.entity';
 
 export class Dict {
   private connection: Connection;
-  private dictRepo: Repository<DictEntry>;
+  private dictRepo: Repository<DictEntryEntity>;
 
-  async open(filename: string) {
+  async open(filename: string): Promise<void> {
+    const isMemory = filename === inMemoryDbName;
+    const fileDbName = resolve(`${filename}.sqlite`);
     const options: ConnectionOptions = {
-      type: 'sqlite',
-      database: filename,
-      entities: [DictEntry],
-      synchronize: true,
+      type: 'better-sqlite3',
+      database: isMemory ? inMemoryDbName : fileDbName,
+      entities: [DictEntryEntity],
+      synchronize: isMemory || !existsSync(fileDbName),
     };
     this.connection = await createConnection(options);
-    this.dictRepo = this.connection.getRepository(DictEntry);
+    this.dictRepo = this.connection.getRepository(DictEntryEntity);
+  }
+
+  async openInMemory(): Promise<void> {
+    return this.open(inMemoryDbName);
   }
 
   async close() {
     return this.connection.close();
   }
 
-  async find(filePath: string, english: string): Promise<DictEntry> {
+  async find(filePath: string, english: string): Promise<DictEntryEntity> {
     const matches = await this.dictRepo.find({ english });
     return matches.find(it => it.path === filePath) ??
       matches.find(it => basename(it.path) === basename(filePath)) ??
       matches[0];
   }
 
-  async createOrUpdate(filePath: string, english: string, chinese: string, xpath: string): Promise<DictEntry> {
+  async selectAll(): Promise<DictEntryEntity[]> {
+    return await this.dictRepo.find();
+  }
+
+  async createOrUpdate(filePath: string, english: string, chinese: string, xpath: string): Promise<DictEntryEntity> {
     const entry = await this.dictRepo.findOne({ path: filePath, english });
     if (entry) {
       entry.chinese = chinese;
@@ -54,3 +51,5 @@ export class Dict {
     }
   }
 }
+
+const inMemoryDbName = ':memory:';

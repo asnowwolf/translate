@@ -1,6 +1,5 @@
 import { CommandBuilder } from 'yargs';
 import { Dict } from '../../dict/dict';
-import { groupBy, uniqBy } from 'lodash';
 import { sync as globby } from 'globby';
 import { Extractor } from '../../extractor/extractor';
 
@@ -30,22 +29,9 @@ interface ExtractParams {
 }
 
 export const handler = async function ({ sourceGlob, outFile, filter }: ExtractParams) {
-  const regExp = new RegExp(filter, 'i');
   const files = globby(sourceGlob);
-  const extractor = new Extractor();
-  const allPairs = files.map(file => extractor.extractFile(file)).flat()
-    .filter(it => regExp.test(it.english) || regExp.test(it.chinese));
-  const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
-  const groups = groupBy(pairs, it => it.file);
   const dict = new Dict();
   await dict.open(outFile);
-  try {
-    for (const [file, pairs] of Object.entries(groups)) {
-      for (const pair of pairs) {
-        await dict.createOrUpdate(file, pair.english, pair.chinese, pair.xpath);
-      }
-    }
-  } finally {
-    await dict.close();
-  }
+  const extractor = new Extractor();
+  await extractor.extractFilesToDict(files, dict, new RegExp(filter, 'i'));
 };

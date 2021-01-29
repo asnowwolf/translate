@@ -4,6 +4,8 @@ import { readFileSync } from 'fs';
 import { treeAdapter } from '../tiny-dom/dom-tree-adapter';
 import { DictEntryModel } from '../dict/dict-entry.model';
 import { containsChinese } from '../common';
+import { Dict } from '../dict/dict';
+import { groupBy, uniqBy } from 'lodash';
 
 export interface SentencePair {
   english: DomElement;
@@ -43,6 +45,18 @@ export class Extractor {
       english: textOf(pair.english),
       chinese: textOf(pair.chinese),
     }));
+  }
+
+  async extractFilesToDict(files: string[], dict: Dict, filter: RegExp = /.*/): Promise<void> {
+    const allPairs = files.map(file => this.extractFile(file)).flat()
+      .filter(it => filter.test(it.english) || filter.test(it.chinese));
+    const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
+    const groups = groupBy(pairs, it => it.file);
+    for (const [file, pairs] of Object.entries(groups)) {
+      for (const pair of pairs) {
+        await dict.createOrUpdate(file, pair.english, pair.chinese, pair.xpath);
+      }
+    }
   }
 }
 

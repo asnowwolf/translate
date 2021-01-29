@@ -1,4 +1,5 @@
 import { Extractor } from './extractor';
+import { Dict } from '../dict/dict';
 
 describe('extractor', () => {
   it('extract pairs from html', async () => {
@@ -30,6 +31,48 @@ describe('extractor', () => {
         'chinese': '四',
         'english': 'Four',
         'file': 'samples/html/extract2.html',
+        'xpath': 'div/2/p/1',
+      },
+    ]);
+  });
+
+  it('extract pairs to dict', async () => {
+    const extractor = new Extractor();
+    const dict = new Dict();
+    await dict.openInMemory();
+    await extractor.extractFilesToDict(['samples/html/extract1.html', 'samples/html/extract2.html'], dict);
+    const result = await dict.selectAll();
+    expect(result).toEqual([
+      {
+        'chinese': '一',
+        'english': 'One',
+        'filename': 'extract1.html',
+        'id': 1,
+        'path': 'samples/html/extract1.html',
+        'xpath': 'p/1',
+      },
+      {
+        'chinese': '二',
+        'english': 'Two',
+        'filename': 'extract1.html',
+        'id': 2,
+        'path': 'samples/html/extract1.html',
+        'xpath': 'div/2/p/1',
+      },
+      {
+        'chinese': '三',
+        'english': 'Three',
+        'filename': 'extract2.html',
+        'id': 3,
+        'path': 'samples/html/extract2.html',
+        'xpath': 'p/1',
+      },
+      {
+        'chinese': '四',
+        'english': 'Four',
+        'filename': 'extract2.html',
+        'id': 4,
+        'path': 'samples/html/extract2.html',
         'xpath': 'div/2/p/1',
       },
     ]);
