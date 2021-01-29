@@ -3,12 +3,12 @@ import { readFileSync } from 'fs';
 import { sync as globby } from 'globby';
 import { Injector } from '../../injector/injector';
 
-export const command = `inject <sourceGlob>`;
+export const command = `inject <sourceGlobs...>`;
 
 export const describe = '为双语 HTML 文件做后期处理，注入翻译工具';
 
 export const builder: CommandBuilder = {
-  sourceGlob: {
+  sourceGlobs: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
   styleUrls: {
@@ -40,15 +40,15 @@ export const builder: CommandBuilder = {
 };
 
 interface Params {
-  sourceGlob: string;
+  sourceGlobs: string[];
   styleUrls: string[];
   scriptUrls: string[];
   urlMap: Record<string, string>;
   textMap: Record<string, string>;
 }
 
-export const handler = function ({ sourceGlob, styleUrls, scriptUrls, urlMap, textMap }: Params) {
-  const filenames = globby(sourceGlob);
+export const handler = function ({ sourceGlobs, styleUrls, scriptUrls, urlMap, textMap }: Params) {
+  const filenames = sourceGlobs.map(it => globby(it)).flat();
   const injector = new Injector(styleUrls, scriptUrls, urlMap, textMap);
   for (const filename of filenames) {
     injector.injectFile(filename);
