@@ -45,3 +45,17 @@ export function markdownFromHtml(html: string): Node {
     .processSync(html);
   return markdownParse(markdown);
 }
+
+export function mdToHtml(md: string): string {
+  if (!md) {
+    return md;
+  }
+  return markdownToHtml(markdownParse(md));
+}
+
+export function htmlToMd(html: string): string {
+  if (!html) {
+    return html;
+  }
+  return markdownStringify(markdownFromHtml(html));
+}

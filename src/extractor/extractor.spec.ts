@@ -7,10 +7,10 @@ describe('extractor', () => {
     const entries1 = await extractor.extractFile('samples/html/extract1.html');
     expect(entries1).toEqual([
       {
-        'chinese': '一',
-        'english': 'One',
+        'chinese': '# 一',
+        'english': '# One',
         'file': 'samples/html/extract1.html',
-        'xpath': 'p/1',
+        'xpath': 'h1/1',
       },
       {
         'chinese': '二',

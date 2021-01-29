@@ -4,6 +4,7 @@ import { DictEntryModel } from '../dict/dict-entry.model';
 import { containsChinese } from '../common';
 import { Dict } from '../dict/dict';
 import { groupBy, uniqBy } from 'lodash';
+import { htmlToMd } from '../markdown';
 
 export class Extractor {
   extractFile(filename: string): DictEntryModel[] {
@@ -17,8 +18,8 @@ export class Extractor {
     return pairs.map(pair => ({
       file: filename,
       xpath: getPathsTo(pair.english).join('/'),
-      english: textOf(pair.english),
-      chinese: textOf(pair.chinese),
+      english: htmlToMd(pair.english.outerHTML).trim(),
+      chinese: htmlToMd(pair.chinese.outerHTML).trim(),
     }));
   }
 
@@ -63,8 +64,4 @@ export function getPathsTo(element: DomParentNode): string[] {
     return [];
   }
   return [...getPathsTo(element.parentElement), element.nodeName, element.indexOfElement.toString(10)];
-}
-
-function textOf(node: DomElement): string {
-  return (node.innerHTML).trim().replace(/\s+/g, ' ');
 }

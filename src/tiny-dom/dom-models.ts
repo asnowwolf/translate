@@ -242,6 +242,12 @@ export class DomElement extends DomParentNode implements DomChildNode {
     this.childNodes = parseFragment(html, { treeAdapter: DomNode.treeAdapter }).childNodes;
   }
 
+  get outerHTML(): string {
+    const node = new DomElement('div');
+    node.childNodes = [this];
+    return node.innerHTML;
+  }
+
   get className(): string {
     return this.getAttributeNode('class')?.value;
   }
