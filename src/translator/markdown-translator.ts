@@ -99,6 +99,7 @@ function markNode(root: Node, container: Node): Node {
   return root;
 }
 
+// 对 Angular 官方文档中的 code-example 和 live-example 标记做特殊处理
 function encodeExampleTags(text: string): string {
   return text.replace(/(<(code-example|live-example)\b[^>]*>[\s\S]*?<\/\2>)/g, '`$1`');
 }
