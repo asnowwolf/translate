@@ -1,8 +1,31 @@
 import { Translator } from './translator';
 import { TranslationEngine } from '../translation-engine/translation-engine';
-import { IndentationText, JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
+import { IndentationText, JSDocTag, JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
 import { isDeepStrictEqual } from 'util';
 import { MarkdownTranslator } from './markdown-translator';
+
+function getTagsWithAncestors(node: Node): JSDocTag[] {
+  if (!node) {
+    return [];
+  }
+  // 如果不是，就跳过这一层，直接返回父级的结果
+  if (!Node.isJSDocableNode(node)) {
+    return getTagsWithAncestors(node.getParent());
+  }
+  // 取当前节点的所有标记
+  const tags = node.getJsDocs().map(it => it.getTags()).flat();
+  // 合并当前节点的标记和父级节点的标记
+  return [...tags, ...getTagsWithAncestors(node.getParent())];
+}
+
+function shouldTranslate(node: Node, options: { mustIncludesTag?: string, mustExcludesTag?: string }): boolean {
+  if (!Node.isJSDocableNode(node)) {
+    return false;
+  }
+  const tags = getTagsWithAncestors(node).map(it => it.getTagName());
+  return (!options.mustIncludesTag || tags.includes(options.mustIncludesTag)) &&
+    (!options.mustExcludesTag || !tags.includes(options.mustExcludesTag));
+}
 
 export class JsdocTranslator extends Translator {
   private readonly markdownTranslator = new MarkdownTranslator(this.engine);
@@ -15,7 +38,7 @@ export class JsdocTranslator extends Translator {
   }
 
   async translateNode(node: Node, engine: TranslationEngine): Promise<void> {
-    if (Node.isJSDocableNode(node)) {
+    if (Node.isJSDocableNode(node) && shouldTranslate(node, this.options)) {
       const docs = node.getJsDocs();
       for (const doc of docs) {
         const structure = doc.getStructure();

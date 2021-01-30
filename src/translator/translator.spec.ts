@@ -27,6 +27,149 @@ describe('file-translator', function () {
     const result = await translator.translate(content);
     expect(result).toEqual(readFileSync('samples/ts/demo-translated.ts', 'utf8'));
   });
+  it('translate ts file - must includes tag', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.fake);
+    const translator = getTranslator('placeholder.ts', engine, { mustIncludesTag: 'publicApi' });
+    const result = await translator.translate(`
+/**
+ * Class1
+ * @publicApi
+ */
+export class Class1 {
+  /**
+   * foo1
+   */
+  foo1() {
+  }
+}
+
+/**
+ * Class2
+ */
+export class Class2 {
+  /**
+   * foo1
+   */
+  foo1() {
+  }
+  /**
+   * foo2
+   * @publicApi
+   */
+  foo2() {
+  }
+}
+`);
+    expect(result).toEqual(`
+/**
+ * Class1
+ *
+ * Class1[译]
+ *
+ * @publicApi
+ */
+export class Class1 {
+  /**
+   * foo1
+   *
+   * foo1[译]
+   *
+   */
+  foo1() {
+  }
+}
+
+/**
+ * Class2
+ */
+export class Class2 {
+  /**
+   * foo1
+   */
+  foo1() {
+  }
+  /**
+   * foo2
+   *
+   * foo2[译]
+   *
+   * @publicApi
+   */
+  foo2() {
+  }
+}
+`);
+  });
+  it('translate ts file - must excludes tag', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.fake);
+    const translator = getTranslator('placeholder.ts', engine, { mustExcludesTag: 'docs-private' });
+    const result = await translator.translate(`
+/**
+ * Class1
+ * @docs-private
+ */
+export class Class1 {
+  /**
+   * foo1
+   */
+  foo1() {
+  }
+}
+
+/**
+ * Class2
+ */
+export class Class2 {
+  /**
+   * foo1
+   */
+  foo1() {
+  }
+  /**
+   * foo2
+   * @docs-private
+   */
+  foo2() {
+  }
+}
+`);
+    expect(result).toEqual(`
+/**
+ * Class1
+ * @docs-private
+ */
+export class Class1 {
+  /**
+   * foo1
+   */
+  foo1() {
+  }
+}
+
+/**
+ * Class2
+ *
+ * Class2[译]
+ *
+ */
+export class Class2 {
+  /**
+   * foo1
+   *
+   * foo1[译]
+   *
+   */
+  foo1() {
+  }
+  /**
+   * foo2
+   * @docs-private
+   */
+  foo2() {
+  }
+}
+`);
+  });
   it('translate markdown file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.md', engine);
