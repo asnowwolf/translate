@@ -51,7 +51,7 @@ function isPaired(prev: DomElement, element: DomElement): boolean {
 export function markAndSwap(element: DomParentNode, selector: DomSelector): void {
   const elements = element.querySelectorAll(selector);
   elements.forEach(element => {
-    if (containsChinese(element.innerHTML)) {
+    if (containsChinese(element.innerHTML) && !element.hasAttribute('no-translate')) {
       const prev = element.previousElementSibling!;
       if (isPaired(prev, element) && !containsChinese(prev.innerHTML)) {
         element.setAttribute('translation-result', 'on');
