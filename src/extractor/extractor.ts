@@ -1,18 +1,24 @@
 import { DomDocument, DomElement, DomParentNode } from '../tiny-dom/dom-models';
 import { readFileSync } from 'fs';
-import { DictEntryModel } from '../dict/dict-entry.model';
 import { containsChinese } from '../common';
 import { Dict } from '../dict/dict';
 import { groupBy, uniqBy } from 'lodash';
 import { htmlToMd } from '../markdown';
 
+export interface DictEntry {
+  file: string;
+  xpath: string;
+  english: string;
+  chinese: string;
+}
+
 export class Extractor {
-  extractFile(filename: string): DictEntryModel[] {
+  extractFile(filename: string): DictEntry[] {
     const content = readFileSync(filename, 'utf8');
     return this.extract(content, filename);
   }
 
-  extract(content: string, filename: string): DictEntryModel[] {
+  extract(content: string, filename: string): DictEntry[] {
     const doc = DomDocument.parse(content);
     const pairs = extractAll(doc);
     return pairs.map(pair => ({

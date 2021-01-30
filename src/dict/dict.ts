@@ -50,9 +50,10 @@ export class Dict {
     if (entry) {
       entry.chinese = chinese;
       entry.xpath = xpath;
+      entry.confidence = 'Manual';
       return await this.dictRepo.save(entry);
     } else {
-      return await this.dictRepo.save({ path: filePath, xpath, english, chinese, filename: basename(filePath) });
+      return await this.dictRepo.save({ path: filePath, xpath, english, chinese, filename: basename(filePath), confidence: 'Manual' });
     }
   }
 }
