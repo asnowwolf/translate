@@ -35,10 +35,10 @@ export class Dict {
 
   async find(filePath: string, english: string): Promise<DictEntryEntity> {
     const entries = await this.dictRepo.find({ english });
-    return entries.find(it => it.path === filePath) ??
+    const entity = entries.find(it => it.path === filePath) ??
       entries.find(it => basename(it.path) === basename(filePath)) ??
-      entries.find(it => basenameWithoutExt(it.path) === basenameWithoutExt(filePath)) ??
-      entries[0];
+      entries.find(it => basenameWithoutExt(it.path) === basenameWithoutExt(filePath));
+    return entity ?? { ...entries[0], confidence: 'DictFuzzy' };
   }
 
   async findAll(options?: FindManyOptions<DictEntryEntity>): Promise<DictEntryEntity[]> {
