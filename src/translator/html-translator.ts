@@ -1,6 +1,7 @@
 import { Translator } from './translator';
 import { DomDocument, DomElement } from '../tiny-dom/dom-models';
 import { containsChinese, defaultSelectors } from '../common';
+import { htmlToMd, mdToHtml } from '../markdown';
 
 export class HtmlTranslator extends Translator {
   private selectors = defaultSelectors;
@@ -19,11 +20,12 @@ export class HtmlTranslator extends Translator {
       .map(selector => Array.from(doc.querySelectorAll(selector)))
       .flat();
 
-    const originals = elements.map(it => it.innerHTML);
+    const originals = elements.map(it => htmlToMd(it.innerHTML));
     const translations = await this.engine.translate(originals);
 
     translations.forEach((translation, index) => {
-      applyTranslation(elements[index], translation);
+      const html = mdToHtml(translation);
+      applyTranslation(elements[index], html);
     });
     return doc;
   }

@@ -7,7 +7,7 @@ import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { containsChinese } from '../common';
-import { markdownFromHtml, markdownParse, markdownStringify, markdownToHtml } from '../markdown';
+import { markdownParse, markdownStringify } from '../markdown';
 
 export class MarkdownTranslator extends Translator {
   async translate(text: string): Promise<string> {
@@ -39,10 +39,10 @@ export class MarkdownTranslator extends Translator {
   }
 
   async translateNormalNodes(pairs: Node[]): Promise<Node[]> {
-    const originals = pairs.map(it => markdownToHtml(preprocess(it)));
+    const originals = pairs.map(it => markdownStringify(preprocess(it)));
     const batches = chunk(originals, this.engine.batchSize);
     const translations = await Promise.all(batches.map(async (it) => this.engine.translate(it)));
-    return translations.flat().map(it => markdownFromHtml(it));
+    return translations.flat().map(it => markdownParse(it));
   }
 
   async translateYaml(yaml: string): Promise<string> {

@@ -2,6 +2,7 @@ import { TranslationEngineType } from '../common';
 import { getTranslator } from './get-translator';
 import { readFileSync } from 'fs';
 import { getTranslationEngine } from '../translation-engine/get-translation-engine';
+import { DomDocument } from '../tiny-dom/dom-models';
 
 describe('file-translator', function () {
   it('translate html file', async () => {
@@ -10,14 +11,14 @@ describe('file-translator', function () {
     const result = await translator.translate(readFileSync('samples/html/demo.html', 'utf8'));
 
     const expected = readFileSync('samples/html/demo-translated.html', 'utf8');
-    expect(result.replace(/\s/g, '')).toEqual(expected.replace(/\s/g, ''));
+    expect(result).toEqual(DomDocument.parse(expected).toHtml());
   });
   it('translate html fragment file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate('<p>One</p>');
 
-    expect(result).toEqual('<p translation-result="on">[译]One</p><p translation-origin="off">One</p>');
+    expect(result).toEqual('<p translation-result="on">One[译]</p><p translation-origin="off">One</p>');
   });
   it('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);

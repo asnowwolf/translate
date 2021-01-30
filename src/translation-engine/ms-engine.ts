@@ -1,6 +1,7 @@
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { TranslationEngine } from './translation-engine';
+import { mdToHtml } from '../markdown';
 
 export class MsTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
@@ -24,7 +25,7 @@ export class MsTranslationEngine extends TranslationEngine {
         'X-ClientTraceId': v4().toString(),
       },
       body: texts.map(text => ({
-        'text': text,
+        'text': mdToHtml(text),
       })),
       json: true,
     }) as TranslationResult[];

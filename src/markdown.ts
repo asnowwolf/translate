@@ -50,7 +50,8 @@ export function mdToHtml(md: string): string {
   if (!md) {
     return md;
   }
-  return markdownToHtml(markdownParse(md));
+  const html = markdownToHtml(markdownParse(md));
+  return html.trim().replace(/^<p>([\s\S]*?)<\/p>$/gi, '$1');
 }
 
 export function htmlToMd(html: string): string {

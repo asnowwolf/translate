@@ -4,8 +4,8 @@ import { FakeTranslationEngine } from './fake-engine';
 describe('translation engine', function () {
   it('translate one sentence with fake engine', async () => {
     const engine = new FakeTranslationEngine();
-    const texts = await engine.translate(['<h1>Hello, world!</h1>']);
-    expect(texts).toEqual(['<h1>译Hello, world!</h1>']);
+    const texts = await engine.translate(['# Hello, world!']);
+    expect(texts).toEqual(['# Hello, world![译]']);
   });
   it('translate multi sentences with fake engine with duplicated items', async () => {
     const engine = new FakeTranslationEngine();
@@ -17,11 +17,11 @@ describe('translation engine', function () {
       'one',
     ]);
     expect(texts).toEqual([
-      '[译]one',
-      '[译]two',
-      '[译]two',
-      '[译]three',
-      '[译]one',
+      'one[译]',
+      'two[译]',
+      'two[译]',
+      'three[译]',
+      'one[译]',
     ]);
   });
   it('translate with google translate', async () => {
