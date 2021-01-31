@@ -1,3 +1,4 @@
+/* tslint:disable:no-inferrable-types */
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('dict')
@@ -16,6 +17,8 @@ export class DictEntryEntity {
   chinese: string;
   @Column()
   confidence: DictEntryConfidence;
+  @Column({ default: false })
+  isRegExp: boolean = false;
   @CreateDateColumn({ type: 'datetime' })
   createdAt: Date;
   @UpdateDateColumn({ type: 'datetime' })

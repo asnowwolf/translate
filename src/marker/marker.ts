@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { DomDocumentFragment, DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowElement } from '../tiny-dom/dom-models';
 import { containsChinese, defaultSelectors } from '../common';
 import * as slugs from 'github-slugger';
+import { isDeepStrictEqual } from 'util';
 
 export class Marker {
   private readonly selectors = defaultSelectors;
@@ -125,7 +126,7 @@ function mergeRows(originRow: DomTableRowElement, translationRow: DomTableRowEle
   for (let i = 0; i < originRow.cells.length; ++i) {
     const originCell = originRow.cells[i];
     const translationCell = translationRow.cells[i];
-    if (originCell.innerHTML !== translationCell.innerHTML) {
+    if (isDeepStrictEqual(originCell.attrs, translationCell.attrs) && originCell.innerHTML !== translationCell.innerHTML) {
       originCell.innerHTML = `<p>${originCell.innerHTML}</p><p>${translationCell.innerHTML}</p>`;
     }
   }

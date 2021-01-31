@@ -8,6 +8,7 @@ import { basenameWithoutExt } from '../common';
 export class Dict {
   private connection: Connection;
   private dictRepo: Repository<DictEntryEntity>;
+  private regExps: DictEntryEntity[] = [];
 
   async open(filename = ''): Promise<void> {
     const isMemory = filename === inMemoryDbName || !filename;
@@ -23,6 +24,8 @@ export class Dict {
     };
     this.connection = await createConnection(options);
     this.dictRepo = this.connection.getRepository(DictEntryEntity);
+    // 支持正则匹配，如果在数据库中存在大量正则表达式，则可能出现性能问题。
+    this.regExps = await this.dictRepo.find({ isRegExp: true });
   }
 
   async openInMemory(): Promise<void> {
@@ -38,7 +41,7 @@ export class Dict {
     const entity = entries.find(it => it.path === filePath) ??
       entries.find(it => basename(it.path) === basename(filePath)) ??
       entries.find(it => basenameWithoutExt(it.path) === basenameWithoutExt(filePath));
-    return entity ?? { ...entries[0], confidence: 'DictFuzzy' };
+    return entity ?? (entries[0] ? { ...entries[0], confidence: 'DictFuzzy' } : this.findByRegExp(english));
   }
 
   async findAll(options?: FindManyOptions<DictEntryEntity>): Promise<DictEntryEntity[]> {
@@ -55,6 +58,15 @@ export class Dict {
     } else {
       return await this.dictRepo.save({ path: filePath, xpath, english, chinese, filename: basename(filePath), confidence: 'Manual' });
     }
+  }
+
+  private findByRegExp(english: string): DictEntryEntity {
+    const entry = this.regExps.find(it => new RegExp(it.english).test(english));
+    if (!entry) {
+      return;
+    }
+    const chinese = english.replace(new RegExp(entry.english, 'g'), entry.chinese);
+    return { ...entry, chinese, confidence: 'DictFuzzy' };
   }
 }
 
