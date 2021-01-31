@@ -12,6 +12,9 @@ export class GoogleCloudTranslationEngine extends TranslationEngine {
       sourceLanguageCode: 'en',
       targetLanguageCode: 'zh-cn',
       model: 'projects/ralph-gde/locations/us-central1/models/TRL9199068616738092360',
+      glossaryConfig: {
+        glossary: 'projects/ralph-gde/locations/us-central1/glossaries/programming',
+      },
     }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
   }
 }
