@@ -1,15 +1,15 @@
 import { TranslationEngine } from './translation-engine';
-import { Dict } from '../dict/dict';
+import { TranslationEngineOptions } from './translation-engine-options';
 
 export class DictTranslationEngine extends TranslationEngine {
-  constructor(private readonly dict: Dict) {
+  constructor(private readonly options: TranslationEngineOptions) {
     super();
   }
 
   protected async doTranslate(texts: string[]): Promise<string[]> {
     return Promise.all(texts.map(async (text) => {
       const english = text.trim();
-      const entry = await this.dict.find(this.context.filename, english);
+      const entry = await this.options.dict.find(this.context.filename, english);
       if (!entry || !entry.chinese) {
         return text;
       }

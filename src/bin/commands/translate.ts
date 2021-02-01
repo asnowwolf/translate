@@ -29,6 +29,26 @@ export const builder: CommandBuilder = {
     type: 'string',
     description: '当使用 dict 引擎时，指定要使用的字典目录。字典目录与被翻译目标同构，每个字典文件为一个 markdown 文件',
   },
+  parent: {
+    type: 'string',
+    description: 'GCE 中的父项目，默认为本作者的项目',
+    default: 'projects/ralph-gde/locations/us-central1',
+  },
+  model: {
+    type: 'string',
+    description: '要使用的自定义 AutoML 模型，默认为 Angular 的',
+    default: 'TRL9199068616738092360',
+  },
+  glossary: {
+    type: 'string',
+    description: '要使用的词汇表，默认为编程词汇集',
+    choices: [
+      'programming',
+      'angular',
+      'material',
+    ],
+    default: 'programming',
+  },
   mustIncludesTag: {
     type: 'string',
     description: '当进行 jsdoc 翻译时，只有具有此标签的注释及其子注释才会被翻译，比如 Angular 官方文档中，这个值是 `publicApi`',
@@ -45,6 +65,9 @@ interface Params {
   dict: string;
   mustIncludesTag: string;
   mustExcludesTag: string;
+  model: string;
+  glossary: string;
+  parent: string;
 }
 
 export const handler = async function (params: Params) {
@@ -54,7 +77,12 @@ export const handler = async function (params: Params) {
   try {
     for (const filename of filenames) {
       console.log('translating: ', filename);
-      const translator = getTranslator(filename, getTranslationEngine(params.engine, dict), params);
+      const translator = getTranslator(filename, getTranslationEngine(params.engine, {
+        dict,
+        model: params.model,
+        glossary: params.glossary,
+        parent: params.parent,
+      }), params);
       await translator.translateFile(filename);
     }
   } finally {

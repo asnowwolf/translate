@@ -6,18 +6,18 @@ import { DictTranslationEngine } from './dict-engine';
 import { FakeTranslationEngine } from './fake-engine';
 import { NoopTranslationEngine } from './noop-engine';
 import { TranslationEngine } from './translation-engine';
-import { Dict } from '../dict/dict';
+import { TranslationEngineOptions } from './translation-engine-options';
 
-export function getTranslationEngine(engine: TranslationEngineType, dict?: Dict): TranslationEngine {
+export function getTranslationEngine(engine: TranslationEngineType, options: TranslationEngineOptions): TranslationEngine {
   switch (engine) {
     case TranslationEngineType.google:
       return new GoogleTranslationEngine();
     case TranslationEngineType.gcloud:
-      return new GoogleCloudTranslationEngine();
+      return new GoogleCloudTranslationEngine(options);
     case TranslationEngineType.ms:
       return new MsTranslationEngine();
     case TranslationEngineType.dict:
-      return new DictTranslationEngine(dict);
+      return new DictTranslationEngine(options);
     case TranslationEngineType.fake:
       return new FakeTranslationEngine();
     case TranslationEngineType.noop:
