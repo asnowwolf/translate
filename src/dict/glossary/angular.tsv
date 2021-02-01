@@ -1,0 +1,89 @@
+AOT                          	预先
+Angular                      	Angular
+Angular element              	Angular 元素
+CLI                          	CLI
+DI                           	DI
+DI token                     	DI 令牌
+DSL                          	DSL
+ECMAScript                   	ECMAScript
+Ivy                          	常春藤
+JIT                          	即时
+TypeScript configuration file	TypeScript 配置文件
+View Engine                  	视图引擎
+annotation                   	注解
+app-shell                    	应用外壳
+architect                    	建筑师
+attribute directives         	属性型指令
+binding                      	绑定
+bootstrap                    	启动/引导
+builder                      	构建器
+case types                   	大小写类型
+change detection             	变更检测
+class decorator              	类装饰器
+class field decorator        	类字段装饰器
+collection                   	集合
+command-line interface       	命令行界面
+component                    	组件
+configuration                	配置
+content projection           	内容投影
+custom element               	自定义元素
+data binding                 	数据绑定
+declarable                   	可声明对象
+decoration                   	装饰器
+decorator                    	装饰器
+dependency injection         	依赖注入
+differential loading         	差异化加载
+directive                    	指令
+domain-specific language     	领域特定语言
+dynamic component loading    	动态组件加载
+eager loading                	急性加载
+element                      	元素
+entry point                  	入口点
+form control                 	表单控件
+form model                   	表单模型
+form validation              	表单验证
+immutability                 	不可变性
+inject                       	注入
+injectable                   	可注入对象
+injector                     	注入器
+interpolation                	插值
+lazy loading                 	惰性加载
+library                      	库
+lifecycle hook               	生命周期钩子
+module                       	模块
+npm package                  	npm 包
+observable                   	可观察对象
+observer                     	观察者
+pipe                         	管道
+platform                     	平台
+polyfill                     	腻子脚本
+project                      	项目
+provider                     	提供者
+reactive forms               	响应式表单
+resolver                     	解析器
+route guard                  	路由守卫
+router                       	路由器
+router outlet                	路由出口
+routing component            	路由组件
+rule                         	规则
+schematic                    	原理图
+scoped package               	范围化包
+server-side rendering        	服务端渲染
+service                      	服务
+structural directives        	结构型指令
+subscriber                   	订阅者
+target                       	目标
+template                     	模板
+template expression          	模板表达式
+template reference variable  	模板引用变量
+template-driven forms        	模板驱动表单
+token                        	令牌
+transpile                    	转译
+tree                         	目录树
+unidirectional data flow     	单向数据流
+view                         	视图
+view hierarchy               	视图树
+web component                	Web 组件
+workspace                    	工作空间
+workspace configuration      	工作空间配置
+zone                         	区域

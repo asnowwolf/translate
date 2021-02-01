@@ -1,46 +1,61 @@
 // Imports the Google Cloud Translation library
 import { TranslationServiceClient } from '@google-cloud/translate';
+import { basename } from 'path';
 
 // Instantiates a client
 const translationClient = new TranslationServiceClient();
 const projectId = 'ralph-gde';
 const region = 'us-central1';
-const glossaryId = 'programming';
 
-async function createGlossary() {
-  // Construct glossary
-  const glossary = {
-    languageCodesSet: {
-      languageCodes: ['en', 'zh-Hans'],
-    },
-    inputConfig: {
-      gcsSource: {
-        inputUri: 'gs://ng-glossaries/programming.csv',
-      },
-    },
-    name: `projects/${projectId}/locations/${region}/glossaries/${glossaryId}`,
-  };
-
-  // Construct request
-  const request = {
-    parent: `projects/${projectId}/locations/${region}`,
-    glossary: glossary,
-  };
-
-  try {
-    // Create glossary using a long-running operation
-    const [operation] = await translationClient.createGlossary(request);
-
-    // Wait for the operation to complete
-    await operation.promise();
-
-    console.log('Created glossary:');
-    console.log(`InputUri ${request.glossary.inputConfig.gcsSource.inputUri}`);
-  } catch (error) {
-    console.error(error);
+async function createGlossary(filename: string) {
+  const glossaryName = `projects/${projectId}/locations/${region}/glossaries/${(basename(filename, '.csv'))}`;
+  const existingGlossary = await translationClient.getGlossary({
+    name: glossaryName,
+  });
+  if (existingGlossary.length > 0) {
+    await translationClient.deleteGlossary({ name: glossaryName });
   }
+  // Create glossary using a long-running operation
+  const [operation] = await translationClient.createGlossary({
+    parent: `projects/${projectId}/locations/${region}`,
+    glossary: {
+      languageCodesSet: {
+        languageCodes: ['en', 'zh-Hans'],
+      },
+      inputConfig: {
+        gcsSource: {
+          inputUri: `gs://nt-glossaries/${basename(filename)}`,
+        },
+      },
+      name: glossaryName,
+    },
+  });
+
+  // Wait for the operation to complete
+  await operation.promise();
+
+  return {
+    parent: `projects/${projectId}/locations/${region}`,
+    glossary: {
+      languageCodesSet: {
+        languageCodes: ['en', 'zh-Hans'],
+      },
+      inputConfig: {
+        gcsSource: {
+          inputUri: `gs://nt-glossaries/${basename(filename)}`,
+        },
+      },
+      name: glossaryName,
+    },
+  }.glossary.inputConfig.gcsSource.inputUri;
 }
 
-createGlossary().then(result => {
-  console.log(result);
-});
+createGlossary('programming.csv')
+  .then(result => console.log(`Created glossary: InputUri ${result}`))
+  .catch((error) => console.error(error));
+createGlossary('angular.csv')
+  .then(result => console.log(`Created glossary: InputUri ${result}`))
+  .catch((error) => console.error(error));
+createGlossary('material.csv')
+  .then(result => console.log(`Created glossary: InputUri ${result}`))
+  .catch((error) => console.error(error));

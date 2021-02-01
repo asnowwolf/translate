@@ -1,0 +1,53 @@
+accessibility      	无障碍性
+autocomplete       	自动完成
+badge              	徽章
+bidirectionality   	文字方向
+bottom sheet       	底部操作表
+button             	按钮
+button toggle      	开关按钮
+card               	卡片
+cdk                	cdk
+checkbox           	检查框
+chips              	纸片
+clipboard          	剪贴板
+component harnesses	测试工具
+component harnesses	组件测试工具
+datepicker         	日期选择器
+dialog             	对话框
+divider            	分隔器
+drag and drop      	拖放
+elevation          	纵深
+expansion panel    	可展开面板
+form field         	表单字段
+grid list          	网格列表
+icon               	图标
+input              	输入框
+layout             	布局
+list               	列表
+menu               	菜单
+observers          	观察者
+outlet             	出口地标
+overlay            	浮层
+paginator          	分页器
+platform           	平台
+portal             	传送点
+progress bar       	进度条
+progress spinner   	进度圈
+radio button       	单选按钮
+ripples            	涟漪
+scrolling          	滚动
+select             	选择框
+sidenav            	侧边栏
+slide toggle       	滑块开关
+slider             	滑竿
+snackbar           	快餐栏
+sort header        	排序头
+stepper            	步进器
+stepper            	步进器
+table              	表格
+table              	表格
+tabs               	选项卡
+text field         	文本字段
+toolbar            	工具栏
+tooltip            	工具提示
+tree               	树
