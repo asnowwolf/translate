@@ -52,10 +52,12 @@ export const builder: CommandBuilder = {
   },
   mustIncludesTag: {
     type: 'string',
+    alias: 'it',
     description: '当进行 jsdoc 翻译时，只有具有此标签的注释及其子注释才会被翻译，比如 Angular 官方文档中，这个值是 `publicApi`',
   },
   mustExcludesTag: {
     type: 'string',
+    alias: 'et',
     description: '当进行 jsdoc 翻译时，只有没有此标签的注释及其子注释才会被翻译，比如 Angular Components 官方文档中，这个值是 `docs-private`',
   },
 };
