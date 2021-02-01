@@ -91,7 +91,7 @@ export const handler = async function (params: Params) {
     } finally {
       // 记录已经执行的数量，统一记录在应用目录下
       const counterFilename = `${ensureHomeDir()}/${params.engine}_count.txt`;
-      const count = existsSync(counterFilename) ? +readFileSync(counterFilename, 'utf8') : 0;
+      const count = existsSync(counterFilename) ? +readFileSync(counterFilename, 'utf8').trim() : 0;
       writeFileSync(counterFilename, (count + translationEngine.translated).toString(10), 'utf8');
     }
   } finally {
