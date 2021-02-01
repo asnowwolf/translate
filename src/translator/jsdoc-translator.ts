@@ -93,7 +93,7 @@ function isBinaryTag(tag: OptionalKind<JSDocTagStructure>): boolean {
 
 // 有一个参数且需要翻译的标记，如 @returns Some value
 function isUnaryTag(tag: OptionalKind<JSDocTagStructure>): boolean {
-  return ['returns', 'return', 'classdesc', 'description', 'desc', 'summary', 'throws'].includes(tag.tagName);
+  return ['returns', 'return', 'classdesc', 'description', 'desc', 'summary', 'throws', 'deprecated'].includes(tag.tagName);
 }
 
 function trimLastLf(translation: string) {
