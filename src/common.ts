@@ -1,5 +1,7 @@
 import { DomElement } from './tiny-dom/dom-models';
-import { basename, extname } from 'path';
+import { basename, extname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { homedir } from 'os';
 
 export enum TranslationEngineType {
   google = 'google',
@@ -23,4 +25,12 @@ export const defaultSelectors = [...elementSelectors, attributeSelector];
 
 export function basenameWithoutExt(filename: string): string {
   return basename(filename, extname(filename));
+}
+
+export function ensureHomeDir() {
+  const homeDir = join(homedir(), `.ng-translator`);
+  if (!existsSync(homeDir)) {
+    mkdirSync(homeDir);
+  }
+  return homeDir;
 }

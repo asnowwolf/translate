@@ -1,9 +1,10 @@
 import { CommandBuilder } from 'yargs';
-import { TranslationEngineType } from '../../common';
+import { ensureHomeDir, TranslationEngineType } from '../../common';
 import { getTranslationEngine } from '../../translation-engine/get-translation-engine';
 import { getTranslator } from '../../translator/get-translator';
 import { sync as globby } from 'globby';
 import { Dict } from '../../dict/dict';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 export const command = `translate <sourceGlobs...>`;
 
@@ -75,15 +76,23 @@ export const handler = async function (params: Params) {
   const dict = new Dict();
   await dict.open(params.dict);
   try {
-    for (const filename of filenames) {
-      console.log('translating: ', filename);
-      const translator = getTranslator(filename, getTranslationEngine(params.engine, {
-        dict,
-        model: params.model,
-        glossary: params.glossary,
-        parent: params.parent,
-      }), params);
-      await translator.translateFile(filename);
+    const translationEngine = getTranslationEngine(params.engine, {
+      dict,
+      model: params.model,
+      glossary: params.glossary,
+      parent: params.parent,
+    });
+    try {
+      for (const filename of filenames) {
+        console.log('translating: ', filename);
+        const translator = getTranslator(filename, translationEngine, params);
+        await translator.translateFile(filename);
+      }
+    } finally {
+      // 记录已经执行的数量，统一记录在应用目录下
+      const counterFilename = `${ensureHomeDir()}/${params.engine}_count.txt`;
+      const count = existsSync(counterFilename) ? +readFileSync(counterFilename, 'utf8') : 0;
+      writeFileSync(counterFilename, (count + translationEngine.translated).toString(10), 'utf8');
     }
   } finally {
     await dict.close();
