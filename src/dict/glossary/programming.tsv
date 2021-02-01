@@ -111,6 +111,7 @@ angle bracket                             	尖括号
 annotation                                	注解
 app domain                                	应用域
 appearance                                	外观
+append                                    	追加
 append                                    	附加
 application                               	应用程序
 application framework                     	应用程序框架
@@ -169,6 +170,7 @@ bitwise                                   	按位
 bitwise copy                              	按位复制
 bitwise operation                         	按位运算
 block                                     	块
+blur                                      	失焦
 bookkeeping                               	簿记
 boolean                                   	布尔
 bootstrap                                 	引导
@@ -332,6 +334,7 @@ declaration                               	声明
 declarative referential integrity         	声明引用完整性
 decoration                                	装饰
 decorator                                 	装饰器
+decrement                                 	递减
 deduction                                 	推导
 default                                   	默认
 default constraint                        	默认约束
@@ -467,6 +470,7 @@ fragmentation                             	碎片
 framework                                 	框架
 full specialization                       	完全特化
 function                                  	函数
+function                                  	函数
 function call operator                    	函数调用操作符
 function object                           	函数对象
 function overloaded resolution            	函数重载解决
@@ -533,6 +537,7 @@ implicit                                  	隐式
 implicit transaction                      	隐式事务
 import                                    	导入
 in-place active                           	现场激活
+increment                                 	递增
 increment operator                        	递增操作符
 incremental update                        	增量更新
 independent set                           	独立集
@@ -576,7 +581,7 @@ iterate                                   	迭代
 iteration                                 	迭代
 iterative                                 	迭代式
 iterator                                  	迭代器
-job scheduling                            	工程安排
+job scheduling                            	工作安排
 kd-tree                                   	k-d树
 key                                       	键
 key column                                	键列
@@ -755,6 +760,7 @@ polymorphism                              	多态
 pooling                                   	池化
 pop up                                    	弹出式
 port                                      	端口
+position                                  	位置
 postfix                                   	后缀
 precedence                                	优先次序
 prefix                                    	前缀
@@ -769,6 +775,7 @@ printer                                   	打印机
 priority                                  	优先级
 priority queue                            	优先队列
 procedural                                	过程式的
+procedure                                 	过程
 procedure                                 	过程
 process                                   	进程
 profile                                   	评测
@@ -833,6 +840,7 @@ retrieve data                             	检索数据
 return                                    	返回
 return type                               	返回类型
 return value                              	返回值
+reuse                                     	复用
 revoke                                    	撤销
 right outer join                          	右外联接
 ripple                                    	涟漪

@@ -7,14 +7,16 @@ card               	卡片
 cdk                	cdk
 checkbox           	检查框
 chip               	纸片
-harnesses          	测试工具
 component harnesses	组件测试工具
 datepicker         	日期选择器
 divider            	分隔器
+drop               	投放
+drop list          	投放列表
 elevation          	纵深
 expansion panel    	可展开面板
 form field         	表单字段
 grid list          	网格列表
+harnesses          	测试工具
 observer           	观察者
 outlet             	出口地标
 portal             	传送点
