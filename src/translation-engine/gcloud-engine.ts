@@ -12,8 +12,8 @@ export class GoogleCloudTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
     const client = new v3.TranslationServiceClient();
     const parent = this.options.parent;
-    const model = join(parent, 'models', this.options.model);
-    const glossary = join(parent, 'glossaries', this.options.glossary);
+    const model = this.options.model === 'none' ? join(parent, 'models', this.options.model) : undefined;
+    const glossary = this.options.glossary === 'none' ? join(parent, 'glossaries', this.options.glossary) : undefined;
     return client.translateText({
       parent,
       contents: texts.map(it => mdToHtml(it)),

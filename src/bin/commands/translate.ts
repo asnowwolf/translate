@@ -37,12 +37,12 @@ export const builder: CommandBuilder = {
   },
   model: {
     type: 'string',
-    description: '要使用的自定义 AutoML 模型，默认为 Angular 的',
+    description: '要使用的自定义 AutoML 模型，默认为 Angular 的。none 表示不用任何模型',
     default: 'TRL9199068616738092360',
   },
   glossary: {
     type: 'string',
-    description: '要使用的词汇表，默认为编程词汇集',
+    description: '要使用的词汇表，默认为编程词汇集。none 表示不用任何词汇表',
     choices: [
       'programming',
       'angular',
