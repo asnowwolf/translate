@@ -5,13 +5,9 @@ ADO                                       	ADO
 API                                       	API
 ASP                                       	ASP
 ASP.NET worker process                    	ASP.NET工作进程
-Approximate String Matching               	模糊匹配
-Arbitrary Precision Arithmetic            	高精度计算
-Arbitrary-Precision Arithmetic            	高精度计算
+AST                                       	AST
 B2B integration                           	B2B集成
 BCL                                       	BCL
-Bandwidth Reduction                       	带宽压缩
-Bin Packing                               	集装优化
 CIL                                       	CIR
 CLI                                       	CLI
 CLS                                       	CLS
@@ -20,157 +16,78 @@ COM                                       	COM
 CORBA                                     	CORBA
 CRTP                                      	CRTP
 CTS                                       	CTS
-Calendrical Calculation                   	日历计算
-Clique                                    	最大团
-Combinatorial Problem                     	组合问题
-Computational Geometry                    	计算几何
-Connected Component                       	连通分支
-Constrained and Unconstrained Optimization	最值问题
-Convex Hull                               	凸包
-Cryptography                              	密码学
 DBMS                                      	DBMS
 DCOM                                      	DCOM
-DEFAULT constraint                        	默认约束
 DHTML                                     	DHTML
+DI                                        	DI
 DIME                                      	DIME
 DISCO                                     	DISCO
 DISPID                                    	DISPID
 DNA                                       	DNA
 DOM                                       	DOM
+DSL                                       	DSL
 DTD                                       	DTD
-Data Structure                            	数据结构
-Data source                               	数据源
-Definition Language                       	数据定义语言
-Determinants and Permanents               	行列式
-Dictionary                                	字典
-Discrete Fourier Transform                	离散 Fourier 变换
-Drawing Graph                             	图的描绘
-Drawing Tree                              	树的描绘
-Dynamic Programming                       	动态规划
 EAI                                       	EAI
 EBCO                                      	EBCO
+ECMAScript                                	ECMAScript
 EDI                                       	EDI
-Edge Coloring                             	边染色
-Edge and Vertex                           	割边与割点
-Eulerian Cycle                            	中国邮路
-Factoring and Primality Testing           	因子分解与质数判定
-Finite State Machine Minimization         	有穷自动机简化
 GAC                                       	GAC
 GC                                        	GC
 GUI                                       	GUI
 GUID                                      	GUID
-Generating Subset                         	子集生成
-Generating Graph                          	图的生成
-Generating Partition                      	划分生成
-Generating Permutation                    	排列生成
-Graph Data Structure                      	图数据结构
-Graph Isomorphism                         	图的同构
-Graph Partition                           	图的划分
 HTML                                      	HTML
 HTTP                                      	HTTP
 HTTP pipeline                             	HTTP管道
-Hamiltonian Cycle                         	Hamilton回路
-Host                                      	宿主
 IDE                                       	IDE
 IDL                                       	IDL
 IL                                        	IL
 IME                                       	IME
-Illinois                                  	伊利诺斯
-Independent Set                           	独立集
-Intersection Detection                    	碰撞测试
+JIT                                       	即时
 JIT compilation                           	JIT编译
-Job Scheduling                            	工程安排
-Kd-Tree                                   	k-d树
-Knapsack Problem                          	背包问题
-Linear Programming                        	线性规划
-Longest Common Substring                  	最长公共子串
-Maintaining Line Arrangement              	平面分割
-Managed Extension                         	托管扩展
-Match                                     	匹配
-Matrix Multiplication                     	矩阵乘法
-Medial-Axis Transformation                	中轴变换
-Median and Selection                      	中位数
-Minimum Spanning Tree                     	最小生成树
-Minkowski Sum                             	Minkowski和
-Motion Planning                           	运动规划
-Native Image Generator                    	本地映像生成器
-Nearest Neighbor Search                   	最近点对查询
-Network Flow                              	网络流
-Numerical Problem                         	数值问题
 ODBC data source                          	ODBC数据源
 ODBC driver                               	ODBC驱动程序
 ODR                                       	ODR
-OLE Automation object                     	OLE自动化对象
-OLE Automation server                     	OLE自动化服务器
 OLE DB consumer                           	OLE DB使用者
 OLE DB for OLAP                           	用于OLAP 的OLE DB
 OLE DB provider                           	OLE DB提供者
-Open Data Service                         	开放式数据服务
-Open Database Connectivity                	开放式数据库连接
+OLE automation object                     	OLE自动化对象
+OLE automation server                     	OLE自动化服务器
+P invoke                                  	平台调用
 PDA                                       	PDA
 PE file                                   	PE文件
-P Invoke                                  	平台调用
 POD                                       	POD
 POI                                       	POI
-Planarity Detection and Embedding         	平面性检测和嵌入
-Point Location                            	位置查询
-Polygon Partitioning                      	多边形分割
-Priority Queue                            	优先队列
 RPC                                       	RPC
-Random Number Generation                  	随机数生成
-Range Search                              	范围查询
 SAX                                       	SAX
 SDK                                       	SDK
 SMTP                                      	SMTP
 SOAP                                      	SOAP
 SQL                                       	SQL
 STL                                       	STL
-Satisfiability                            	可满足性
-Set Cover                                 	集合覆盖
-Set Data Structure                        	集合数据结构
-Set Packing                               	集合配置
-Set and String Problem                    	集合与串的问题
-Shape Similarity                          	相似多边形
-Shortest Common Super string              	最短公共父串
-Shortest Path                             	最短路径
-Simplifying Polygon                       	多边形化简
-Solving Linear Equations                  	线性方程组
-Sorting                                   	排序
-Steiner Tree                              	Steiner 树
-String Matching                           	字符串匹配
 TCP                                       	TCP
-Text Compression                          	文本压缩
-Topological Sorting                       	拓扑排序
-Transitive Closure and Reduction          	传递闭包
-Traveling Salesman Problem                	旅行商问题
-Triangulation                             	三角剖分
 UDDI                                      	UDDI
 UML                                       	UML
 UNIQUE constraint                         	唯一性约束
 URI                                       	URI
 URL                                       	URL
-Union query                               	联合查询
+UUID                                      	UUID
 VEE                                       	VEE
-Vertex Coloring                           	点染色
-Vertex Cover                              	点覆盖
-Feedback Edge/Vertex Set                  	最大无环子图
-Voronoi Diagram                           	Voronoi 图
 WHERE clause                              	WHERE子句
 WSDL                                      	WSDL
-Web Service                               	Web 服务
-Windows authentication                    	Windows 身份验证
 XML                                       	XML
-XML Message Interface                     	XML 消息接口
+XML message interface                     	XML 消息接口
 XSD                                       	XSD
 XSL                                       	XSL
 XSLT                                      	XSLT
 abstract                                  	抽象的
 abstract baseclass                        	抽象基类
 abstract class                            	抽象类
+abstract syntax tree                      	抽象语法树
 abstraction                               	抽象
 access                                    	访问
 access function                           	访问函数
 access level                              	访问级别
+accessibility                             	无障碍性
 account                                   	账户
 action                                    	动作
 activate                                  	激活
@@ -183,9 +100,11 @@ address space                             	地址空间
 address-of operator                       	取地址操作符
 advanced                                  	高级的
 aggregation                               	聚合
+ahead-of-time                             	预先
 algorithm                                 	算法
 alias                                     	别名
 align                                     	对齐
+alignment                                 	对齐
 allocate                                  	分配
 allocator                                 	分配器
 angle bracket                             	尖括号
@@ -195,6 +114,9 @@ appearance                                	外观
 append                                    	附加
 application                               	应用程序
 application framework                     	应用程序框架
+approximate string matching               	模糊匹配
+arbitrary precision arithmetic            	高精度计算
+arbitrary-precision arithmetic            	高精度计算
 architecture                              	架构
 archive file                              	归档文件
 argument                                  	参数
@@ -216,6 +138,7 @@ attribute                                 	属性
 audio                                     	音频
 authentication service                    	验证服务
 authorization                             	授权
+autocomplete                              	自动完成
 background                                	后台
 background color                          	背景色
 background image                          	背景图
@@ -223,12 +146,15 @@ backup                                    	备份
 backup device                             	备份设备
 backup file                               	备份文件
 backward compatible                       	向下兼容
+badge                                     	徽章
 bandwidth                                 	带宽
+bandwidth reduction                       	带宽压缩
 base class                                	基类
 base type                                 	基础类型
 batch                                     	批处理
 benefit                                   	收益
 best viable function                      	最佳可行函数
+bin packing                               	集装优化
 binary                                    	二进制
 binary function                           	双参函数
 binary large object                       	二进制大对象
@@ -245,6 +171,7 @@ bitwise operation                         	按位运算
 block                                     	块
 bookkeeping                               	簿记
 boolean                                   	布尔
+bootstrap                                 	引导
 border                                    	边框
 bounds checking                           	边界检查
 boxing                                    	装箱
@@ -256,16 +183,18 @@ browser-accessible application            	可浏览应用
 bug                                       	BUG
 build                                     	构建
 build-in                                  	内置
+builder                                   	构建器
 built-in                                  	内置
 bus                                       	总线
 business                                  	业务
-business Logic                            	业务逻辑
+business logic                            	业务逻辑
 business rule                             	业务规则
 button                                    	按钮
 by through                                	通过
 byte                                      	字节
 cache                                     	高速缓存
 calendar                                  	日历
+calendrical calculation                   	日历计算
 call                                      	调用
 call operator                             	调用操作符
 call-level interface                      	调用级接口
@@ -274,6 +203,7 @@ candidate function                        	候选函数
 candidate key                             	候选键
 cascading delete                          	级联删除
 cascading update                          	级联更新
+case type                                 	大小写类型
 casting                                   	类型转换
 catalog                                   	目录
 chain                                     	链
@@ -307,10 +237,12 @@ client area                               	客户区
 client cursor                             	客户端游标
 client-server                             	客户/服务器
 clipboard                                 	剪贴板
+clique                                    	最大团
 clone                                     	克隆
 code access security                      	代码访问安全
 code page                                 	代码页
 collection                                	集合
+combinatorial problem                     	组合问题
 combo box                                 	组合框
 command line                              	命令行
 comment                                   	注释
@@ -324,6 +256,7 @@ component                                 	组件
 composite index                           	复合索引
 composite key                             	复合键
 composition                               	组合
+computational geometry                    	计算几何
 computer                                  	电脑
 concept                                   	概念
 concrete                                  	具体的
@@ -331,11 +264,13 @@ concrete class                            	具体类
 concurrency                               	并发
 concurrent                                	并发
 configuration                             	配置
+connected component                       	连通分支
 connection                                	连接
 connection pooling                        	连接池
 console                                   	控制台
 const                                     	常数
 constant                                  	常数
+constrained and unconstrained optimization	最值问题
 constraint                                	约束
 construct                                 	构造
 constructor                               	构造函数
@@ -343,22 +278,26 @@ container                                 	容器
 containment                               	包容
 context                                   	上下文
 control                                   	控件
+convex hull                               	凸包
 cookie                                    	cookie
 copy                                      	复制
 cover                                     	覆盖
 create                                    	创建
 creation                                  	创建
 cross tab query                           	交叉表查询
+cryptography                              	密码学
 ctor                                      	构造函数
 cube                                      	多维数据集
 curly brace                               	花括号
 cursor                                    	光标
 custom                                    	定制
 data                                      	数据
+data binding                              	数据绑定
 data connection                           	数据连接
 data dictionary                           	数据字典
 data dictionary view                      	数据字典视图
 data file                                 	数据文件
+data flow                                 	数据流
 data integrity                            	数据完整性
 data manipulation language                	数据操作语言
 data mart                                 	数据集市
@@ -391,17 +330,22 @@ decay                                     	退化
 decision support                          	决策支持
 declaration                               	声明
 declarative referential integrity         	声明引用完整性
+decoration                                	装饰
+decorator                                 	装饰器
 deduction                                 	推导
 default                                   	默认
+default constraint                        	默认约束
 default database                          	默认数据库
 default instance                          	默认实例
 default result set                        	默认结果集
 defer                                     	推迟
 define                                    	定义
 definition                                	定义
+definition language                       	数据定义语言
 delegate                                  	委托
 delegation                                	委托
 demarshal                                 	反编列
+dependency injection                      	依赖注入
 dependent name                            	依赖名字
 deploy                                    	部署
 dereference                               	解引用
@@ -411,8 +355,10 @@ design by contract                        	契约式设计
 design pattern                            	设计模式
 destroy                                   	销毁
 destructor                                	析构函数
+determinants and permanents               	行列式
 device                                    	设备
 dialog                                    	对话框
+dictionary                                	字典
 digest                                    	摘要
 digital                                   	数字的
 directive                                 	指令
@@ -420,13 +366,18 @@ directory                                 	目录
 dirty page                                	脏页
 dirty read                                	脏读
 disassembler                              	反汇编器
+discrete fourier transform                	离散 fourier 变换
 disk                                      	磁盘
-dispatch                                  	分派
+dispatch                                  	派发
 distributed computing                     	分布式计算
 distributed query                         	分布式查询
 document                                  	文档
+domain-specific language                  	领域特定语言
 dot operator                              	点操作符
 double-byte character set                 	双字节字符集
+drag and drop                             	拖放
+drawing graph                             	图的描绘
+drawing tree                              	树的描绘
 driver                                    	驱动
 dtor                                      	析构函数
 dump                                      	转储
@@ -437,17 +388,23 @@ dynamic binding                           	动态绑定
 dynamic cursor                            	动态游标
 dynamic filter                            	动态筛选
 dynamic locking                           	动态锁定
+dynamic programming                       	动态规划
 dynamic recovery                          	动态恢复
 dynamic snapshot                          	动态快照
 e-business                                	电子商务
+eager loading                             	急性加载
+edge and vertex                           	割边与割点
+edge coloring                             	边染色
 efficiency                                	效率
 efficient                                 	高效
+element                                   	元素
 encapsulation                             	封装
 enclosing class                           	外围类
 end user                                  	最终用户
 end-to-end authentication                 	端到端身份验证
 engine                                    	引擎
 entity                                    	实体
+entry point                               	入口点
 enum                                      	枚举
 enumerator                                	枚举器
 equal                                     	相等
@@ -458,6 +415,7 @@ equivalent                                	等价
 error log                                 	错误日志
 escape character                          	转义字符
 escape code                               	转义码
+eulerian cycle                            	中国邮路
 evaluate                                  	求值
 event                                     	事件
 event driven                              	事件驱动的
@@ -477,8 +435,10 @@ export                                    	导出
 expression                                	表达式
 facility                                  	设施
 factor                                    	算子
+factoring and primality testing           	因子分解与质数判定
 fat client                                	胖客户端
 feature                                   	特性
+feedback edge/vertex set                  	最大无环子图
 fetch                                     	获取
 field                                     	字段
 field length                              	字段长度
@@ -486,6 +446,7 @@ file                                      	文件
 filter                                    	筛选
 finalization                              	终结
 finalizer                                 	终结器
+finite state machine minimization         	有穷自动机简化
 firewall                                  	防火墙
 firmware                                  	固件
 flag                                      	标志
@@ -493,7 +454,6 @@ flash memory                              	闪存
 flexibility                               	灵活性
 flush                                     	刷新
 font                                      	字体
-GUI                                       	界面
 foreign key                               	外键
 form                                      	表单
 formal parameter                          	形式参数
@@ -515,6 +475,10 @@ functionality                             	功能
 functor                                   	仿函数
 game                                      	游戏
 generate                                  	生成
+generating graph                          	图的生成
+generating partition                      	划分生成
+generating permutation                    	排列生成
+generating subset                         	子集生成
 generic                                   	泛型
 generic algorithm                         	通用算法
 genericity                                	泛型
@@ -524,9 +488,13 @@ global object                             	全局对象
 global scope resolution operator          	全局范围解析操作符
 grant                                     	授权
 granularity                               	粒度
+graph data structure                      	图数据结构
+graph isomorphism                         	图的同构
+graph partition                           	图的划分
 group                                     	组
 group box                                 	分组框
 guard clause                              	卫语句
+hamiltonian cycle                         	hamilton回路
 hand shaking                              	握手
 handle                                    	识别号
 handler                                   	处理函数
@@ -542,19 +510,22 @@ hierarchical                              	层次式
 hierarchical data                         	层次式数据
 hierarchy                                 	层次结构
 high level                                	高层
-hook                                      	钩子
-hook                                      	挂钩
+home                                      	home
+hook                                      	挂钩            	verb
+hook                                      	钩子            	noun
+host                                      	宿主
 hot key                                   	热键
 hyperlink                                 	超链接
 icon                                      	图标
 identifier                                	标识符
 idle time                                 	空闲时间
 if and only if                            	当且仅当
+illinois                                  	伊利诺斯
 image                                     	图象
-immediate updating                        	即时更新
 immediate base                            	直接基类
 immediate derived                         	直接派生类
-immutability                              	不变性
+immediate updating                        	即时更新
+immutability                              	不可变性
 immutable                                 	不可变
 implement                                 	实现
 implementation                            	实现
@@ -564,15 +535,20 @@ import                                    	导入
 in-place active                           	现场激活
 increment operator                        	递增操作符
 incremental update                        	增量更新
+independent set                           	独立集
 index                                     	索引
-infinite recursive                        	无限递归
 infinite loop                             	无限循环
+infinite recursive                        	无限递归
 information                               	信息
 infrastructure                            	基础设施
 inheritance                               	继承
 initialization                            	初始化
 initialization list                       	初始值列表
 initialize                                	初始化
+initialized                               	已初始化的
+inject                                    	注入
+injectable                                	可注入对象
+injector                                  	注入器
 inline                                    	内联
 inline expansion                          	内联展开
 inner class                               	内嵌类
@@ -587,8 +563,10 @@ integrity constraint                      	完整性约束
 interact                                  	交互
 interface                                 	接口
 interoperability                          	互操作性
+interpolation                             	插值
 interpreter                               	解释器
 interprocess communication                	进程间通讯
+intersection detection                    	碰撞测试
 introspection                             	自省
 invariant                                 	不变式
 invoke                                    	调用
@@ -598,14 +576,21 @@ iterate                                   	迭代
 iteration                                 	迭代
 iterative                                 	迭代式
 iterator                                  	迭代器
+job scheduling                            	工程安排
+kd-tree                                   	k-d树
 key                                       	键
 key column                                	键列
+knapsack problem                          	背包问题
 laser                                     	激光
 late binding                              	延迟绑定
+layout                                    	布局
+lazy loading                              	惰性加载
 left outer join                           	左外联接
 level                                     	层
 library                                   	库
+license                                   	license
 lifetime                                  	生命周期
+linear programming                        	线性规划
 link                                      	链接
 linkage                                   	链接
 linker                                    	连接器
@@ -622,6 +607,7 @@ lock                                      	锁
 log                                       	日志
 login                                     	登录
 login security mode                       	登录安全模式
+longest common substring                  	最长公共子串
 lookup table                              	查阅表
 loop                                      	循环
 loose coupling                            	松耦合
@@ -630,7 +616,9 @@ machine code                              	机器码
 macro                                     	宏
 magic number                              	魔数
 maintain                                  	维护
+maintaining line arrangement              	平面分割
 managed code                              	托管代码
+managed extension                         	托管扩展
 managed object                            	托管对象
 mangled name                              	托管名
 manifest                                  	清单
@@ -638,7 +626,11 @@ manipulator                               	操纵器
 many-to-many relationship                 	多对多关系
 many-to-one relationship                  	多对一关系
 marshal                                   	编列
+match                                     	匹配
+matrix multiplication                     	矩阵乘法
 mechanism                                 	机制
+medial-axis transformation                	中轴变换
+median and selection                      	中位数
 member                                    	成员
 member access operator                    	成员存取操作符
 member function                           	成员函数
@@ -659,12 +651,15 @@ method                                    	方法
 micro                                     	微
 middle tier                               	中间层
 middleware                                	中间件
+minimum spanning tree                     	最小生成树
+minkowski sum                             	minkowski和
 modeling                                  	建模
 modeling language                         	建模语言
 modem                                     	调制解调器
 modifier                                  	修饰符
 module                                    	模块
 most derived class                        	最底层的派生类
+motion planning                           	运动规划
 mouse                                     	鼠标
 multi threaded server application         	多线程服务端应用
 multi-tasking                             	多任务
@@ -679,12 +674,17 @@ named pipe                                	命名管道
 namespace                                 	命名空间
 native                                    	原生的
 native code                               	原生代码
+native image generator                    	本地映像生成器
+nearest neighbor search                   	最近点对查询
 nested class                              	嵌套类
 nested query                              	嵌套查询
 nested table                              	嵌套表
 network                                   	网络
 network card                              	网卡
+network flow                              	网络流
+nominal type                              	名义类型
 non dependent name                        	非依赖名字
+numerical problem                         	数值问题
 object                                    	对象
 object based                              	基于对象的
 object file                               	目标文件
@@ -698,6 +698,8 @@ online analytical processing              	在线分析处理
 online redo log                           	在线回放日志
 online transaction processing             	在线事务处理
 opaque                                    	不透明的
+open data service                         	开放式数据服务
+open database connectivity                	开放式数据库连接
 operand                                   	操作数
 operating system                          	操作系统
 operation                                 	操作
@@ -708,6 +710,7 @@ ordinary                                  	常规的
 outer join                                	外联接
 overflow                                  	溢出
 overhead                                  	额外开销
+overlay                                   	浮层
 overload                                  	重载
 overload resolution                       	重载解析
 overloaded function                       	重载的函数
@@ -716,6 +719,7 @@ overloaded set                            	重载集
 override                                  	改写
 package                                   	包
 packaging                                 	打包
+paginator                                 	分页器
 pair                                      	对
 palette                                   	调色版
 pane                                      	窗格
@@ -735,13 +739,18 @@ pass by value                             	值传递
 pattern                                   	模式
 performance                               	性能
 persistence                               	持久性
+pipe                                      	管道
 pixel                                     	像素
 placeholder                               	占位符
 placement delete                          	占位符删除
 placement new                             	占位符新增
+planarity detection and embedding         	平面性检测和嵌入
 platform                                  	平台
+point location                            	位置查询
 pointer                                   	指针
 poll                                      	轮询
+polyfill                                  	腻子脚本
+polygon partitioning                      	多边形分割
 polymorphism                              	多态
 pooling                                   	池化
 pop up                                    	弹出式
@@ -758,6 +767,7 @@ primitive type                            	原始类型
 print                                     	打印
 printer                                   	打印机
 priority                                  	优先级
+priority queue                            	优先队列
 procedural                                	过程式的
 procedure                                 	过程
 process                                   	进程
@@ -767,6 +777,7 @@ program                                   	程序
 programmer                                	程序员
 programming                               	编程
 progress bar                              	进度条
+progress spinner                          	进度圈
 project                                   	项目
 property                                  	属性
 protocol                                  	协议
@@ -781,32 +792,35 @@ radian                                    	弧度
 radio button                              	单选按钮
 raise                                     	引发
 random number                             	随机数
+random number generation                  	随机数生成
 range                                     	区间
+range search                              	范围查询
 rank                                      	等级
 raw                                       	原始的
 re-direction                              	重定向
-readonly                                  	只读
+reactive                                  	响应式
 read only                                 	只读
 read-only                                 	只读
+readonly                                  	只读
 record                                    	记录
 recordset                                 	记录集
 recursion                                 	递归
 recursive                                 	递归
 refactoring                               	重构
-refer                                     	参考
-refer                                     	指向
+refer                                     	参考            	noun
+refer                                     	指向            	verb
 refer to                                  	指向
-reference                                 	参考
-reference                                 	引用
+reference                                 	参考            	noun
+reference                                 	引用            	verb
 reference counting                        	引用计数
 referential integrity                     	引用完整性
 reflection                                	反射
 refresh data                              	刷新数据
-register                                  	寄存器
-register                                  	注册
-regular expression                        	正则表达式
 regex                                     	正则表达式
 regexp                                    	正则表达式
+register                                  	寄存器           	noun
+register                                  	注册            	verb
+regular expression                        	正则表达式
 relational database                       	关系数据库
 remote                                    	远程
 remote request                            	远程请求
@@ -821,17 +835,21 @@ return type                               	返回类型
 return value                              	返回值
 revoke                                    	撤销
 right outer join                          	右外联接
+ripple                                    	涟漪
 robust                                    	健壮
 robustness                                	健壮性
 roll back                                 	回滚
 roll forward                              	前滚
+router                                    	路由器
 routine                                   	例程
 row                                       	行
 row lock                                  	行锁
 row set                                   	行集
 rowset                                    	行集
+rule                                      	规则
 runtime                                   	运行时
 rvalue                                    	右值
+satisfiability                            	可满足性
 save                                      	保存
 savepoint                                 	保存点
 scalable                                  	可伸缩的
@@ -854,20 +872,35 @@ serialization                             	序列化
 serialize                                 	序列化
 server                                    	服务端
 server cursor                             	服务端游标
+server-side rendering                     	服务端渲染
+service                                   	服务
 session                                   	会话
+set and string problem                    	集合与串的问题
+set cover                                 	集合覆盖
+set data structure                        	集合数据结构
+set packing                               	集合配置
 setter                                    	setter
+shape similarity                          	相似多边形
 shared lock                               	共享锁
+shortest common super string              	最短公共父串
+shortest path                             	最短路径
 sibling                                   	同级
 side effect                               	副作用
 signal                                    	信号
 signature                                 	签名
+simplifying polygon                       	多边形化简
 single-threaded                           	单线程
+size                                      	大小
+slice                                     	切片
 slider                                    	滑块
 slot                                      	槽
 smart pointer                             	智能指针
 snapshot                                  	快照
 software                                  	软件
 solution                                  	解决方案
+solving linear equations                  	线性方程组
+sort                                      	排序
+sorting                                   	排序
 source                                    	源
 source code                               	源码
 specialization                            	特化
@@ -883,17 +916,20 @@ statement                                 	语句
 static SQL statement                      	静态SQL语句
 static cursor                             	静态游标
 status bar                                	状态栏
+steiner tree                              	steiner 树
 stored procedure                          	存储过程
 stream                                    	流
 string                                    	字符串
+string literal                            	字符串字面量
+string matching                           	字符串匹配
+structural type                           	结构类型
 stub                                      	桩
 sub object                                	子对象
 sub query                                 	子查询
-subobject                                 	子对象
+sub routine                               	子例程
 subobject                                 	子对象
 subquery                                  	子查询
 subroutine                                	子例程
-sub routine                               	子例程
 subscript operator                        	下标操作符
 subset                                    	子集
 subtype                                   	子类型
@@ -903,7 +939,8 @@ symbol                                    	记号
 syntax                                    	语法
 system database                           	系统数据库
 system table                              	系统表
-table                                     	表
+tab                                       	选项卡
+table                                     	表格
 table lock                                	表锁
 table-level constraint                    	表级约束
 tag                                       	标记
@@ -918,6 +955,8 @@ template-id                               	模板ID
 temporary object                          	临时对象
 temporary table                           	临时表
 text                                      	文本
+text compression                          	文本压缩
+text field                                	文本字段
 text file                                 	文本文件
 thin client                               	瘦客户端
 third-party                               	第三方
@@ -925,13 +964,22 @@ thread                                    	线程
 thread-safe                               	线程安全的
 throw                                     	抛出
 token                                     	令牌
+toolbar                                   	工具栏
+tooltip                                   	工具提示
+topological sorting                       	拓扑排序
 trace                                     	跟踪
+trait                                     	trait
 transaction                               	事务
 transaction log                           	事务日志
 transaction rollback                      	事务回滚
 transactional replication                 	事务复制
+transitive closure and reduction          	传递闭包
 translation unit                          	翻译单元
+transpile                                 	转译
+traveling salesman problem                	旅行商问题
 traverse                                  	遍历
+tree                                      	树
+triangulation                             	三角剖分
 trigger                                   	触发器
 tuple                                     	元组
 two-phase commit                          	两阶段提交
@@ -941,6 +989,7 @@ unary function                            	单参函数
 unary operator                            	一元操作符
 unboxing                                  	拆箱
 underflow                                 	下溢
+union query                               	联合查询
 unique index                              	唯一索引
 unmanaged code                            	非托管代码
 unmarshal                                 	反编列
@@ -951,21 +1000,27 @@ value type                                	值类型
 variable                                  	变量
 vector                                    	向量
 vendor                                    	厂商
+vertex coloring                           	点染色
+vertex cover                              	点覆盖
 viable                                    	可行的
 video                                     	视频
 view                                      	视图
 virtual function                          	虚函数
 virtual machine                           	虚拟机
 virtual memory                            	虚拟内存
+voronoi diagram                           	voronoi 图
 vowel                                     	元音字母
+web service                               	web 服务
 wildcard character                        	通配符字符
 wildcard search                           	通配符搜索
 window                                    	窗口
 window function                           	窗口函数
 window procedure                          	窗口过程
+windows authentication                    	windows 身份验证
 wizard                                    	向导
 word                                      	单词
 word processor                            	字处理器
+workspace                                 	工作空间
 wrapper                                   	包装器
 write enable                              	写启用
 write-ahead log                           	预写日志

@@ -1,0 +1,23 @@
+arity                        	数量
+associated item              	关联条目
+blanket implementation       	全面实现
+bound                        	界
+cargo                        	cargo
+combinator                   	组合器
+crate                        	crate
+dynamically sized type       	动态大小类型
+free item                    	自由条目
+fundamental trait            	基本特征
+fundamental type constructors	基本类型构造函数
+inhabited                    	可实例化的
+inherent implementation      	固有实现
+inherent method              	固有方法
+local trait                  	局部特征
+local type                   	本地类型
+object safe trait            	对象安全特征
+prelude                      	序曲
+scrutinee                    	检查点
+string slice                 	字符串切片
+uncovered type               	未揭示类型
+undefined behavior           	未定义行为
+uninhabited                  	不可实例化的
