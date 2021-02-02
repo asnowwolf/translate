@@ -19,7 +19,7 @@ export class GoogleCloudTranslationEngine extends TranslationEngine {
       contents: texts.map(it => mdToHtml(it)),
       mimeType: 'text/html', // mime types: text/plain, text/html
       sourceLanguageCode: 'en',
-      targetLanguageCode: 'zh-cn',
+      targetLanguageCode: 'zh-Hans',
       model,
       glossaryConfig: {
         glossary,
