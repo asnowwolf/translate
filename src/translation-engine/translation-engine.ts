@@ -9,7 +9,7 @@ export abstract class TranslationEngine {
     if (!texts.filter(it => it?.trim().length).length) {
       return texts;
     }
-    const originals = uniq(texts);
+    const originals = uniq(texts.filter(it => it.length > 2));
     this.translated += originals.join().length;
     const translations = await this.doTranslate(originals);
     return texts.map(it => {

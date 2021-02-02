@@ -21,7 +21,7 @@ export function getTranslationEngine(engine: TranslationEngineType, options: Tra
     case TranslationEngineType.fake:
       return new FakeTranslationEngine();
     case TranslationEngineType.noop:
-      return new NoopTranslationEngine();
+      return new NoopTranslationEngine(options);
     default:
       throw new Error('Unknown Translation Engine type');
   }

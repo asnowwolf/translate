@@ -60,7 +60,7 @@ export class Dict {
     }
   }
 
-  private findByRegExp(english: string): DictEntryEntity {
+  findByRegExp(english: string): DictEntryEntity {
     const entry = this.regExps.find(it => new RegExp(it.english).test(english));
     if (!entry) {
       return;
