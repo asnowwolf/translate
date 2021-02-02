@@ -17,6 +17,7 @@ export class Dict {
     }
     const fileDbName = resolve(filename);
     const options: ConnectionOptions = {
+      name: fileDbName,
       type: 'better-sqlite3',
       database: isMemory ? inMemoryDbName : fileDbName,
       entities: [DictEntryEntity],
@@ -58,6 +59,10 @@ export class Dict {
     } else {
       return await this.dictRepo.save({ path: filePath, xpath, english, chinese, filename: basename(filePath), confidence: 'Manual' });
     }
+  }
+
+  async save(entry: DictEntryEntity): Promise<DictEntryEntity> {
+    return this.dictRepo.save(entry);
   }
 
   findByRegExp(english: string): DictEntryEntity {

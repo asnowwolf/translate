@@ -1,4 +1,4 @@
-import { uniq } from 'lodash';
+import { chunk, uniq } from 'lodash';
 
 export abstract class TranslationEngine {
   batchSize = 100;
@@ -10,8 +10,9 @@ export abstract class TranslationEngine {
       return texts;
     }
     const originals = uniq(texts.filter(it => it.length > 2));
-    this.translated += originals.join().length;
-    const translations = await this.doTranslate(originals);
+    const batches = chunk(originals, this.batchSize);
+    const chunks = await Promise.all(batches.map(async (it) => this.doTranslate(it)));
+    const translations = chunks.flat();
     return texts.map(it => {
       const index = originals.indexOf(it);
       return translations[index];

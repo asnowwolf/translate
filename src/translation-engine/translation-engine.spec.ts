@@ -10,6 +10,7 @@ describe('translation engine', function () {
   });
   it('translate multi sentences with fake engine with duplicated items', async () => {
     const engine = new FakeTranslationEngine();
+    engine.batchSize = 2;
     const texts = await engine.translate([
       'one',
       'two',

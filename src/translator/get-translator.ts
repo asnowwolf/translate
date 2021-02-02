@@ -4,10 +4,13 @@ import { extname } from 'path';
 import { HtmlTranslator } from './html-translator';
 import { MarkdownTranslator } from './markdown-translator';
 import { JsdocTranslator } from './jsdoc-translator';
+import { DbTranslator } from './db-translator';
 
 export function getTranslator(filename: string, engine: TranslationEngine, options: Record<string, any> = {}): Translator {
   const extension = extname(filename);
   switch (extension) {
+    case '.sqlite':
+      return new DbTranslator(engine, options);
     case '.html':
     case '.htm':
       return new HtmlTranslator(engine, options);
