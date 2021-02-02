@@ -1,6 +1,6 @@
 import { v3 } from '@google-cloud/translate';
 import { TranslationEngine } from './translation-engine';
-import { mdToHtml } from '../markdown';
+import { htmlToMd, mdToHtml } from '../markdown';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { join } from 'path';
 
@@ -24,6 +24,6 @@ export class GoogleCloudTranslationEngine extends TranslationEngine {
       glossaryConfig: {
         glossary,
       },
-    }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
+    }).then(it => it[0]!.translations!.map(it => htmlToMd(it.translatedText!!)));
   }
 }

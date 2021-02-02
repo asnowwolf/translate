@@ -1,5 +1,6 @@
 import { GoogleTranslationEngine } from './google-engine';
 import { FakeTranslationEngine } from './fake-engine';
+import { GoogleCloudTranslationEngine } from './gcloud-engine';
 
 describe('translation engine', function () {
   it('translate one sentence with fake engine', async () => {
@@ -28,5 +29,15 @@ describe('translation engine', function () {
     const engine = new GoogleTranslationEngine();
     const texts = await engine.translate(['one', 'two', 'three']);
     expect(texts).toEqual(['一', '二', '三']);
+  });
+
+  it('translate with gcloud translate', async () => {
+    const engine = new GoogleCloudTranslationEngine({
+      parent: 'projects/ralph-gde/locations/us-central1',
+      model: 'TRL9199068616738092360',
+      glossary: 'angular',
+    });
+    const texts = await engine.translate(['a`b`c*d*<a href="e">e</a>']);
+    expect(texts).toEqual(['a `b` c *d* [e](e)\n']);
   });
 });

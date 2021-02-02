@@ -1,7 +1,7 @@
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { TranslationEngine } from './translation-engine';
-import { mdToHtml } from '../markdown';
+import { htmlToMd, mdToHtml } from '../markdown';
 
 export class MsTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {
@@ -29,7 +29,7 @@ export class MsTranslationEngine extends TranslationEngine {
       })),
       json: true,
     }) as TranslationResult[];
-    return results[0].translations.map(it => it.text);
+    return results[0].translations.map(it => htmlToMd(it.text));
   }
 }
 
