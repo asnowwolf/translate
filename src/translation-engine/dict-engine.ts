@@ -8,7 +8,7 @@ export class DictTranslationEngine extends TranslationEngine {
 
   protected async doTranslate(texts: string[]): Promise<string[]> {
     return Promise.all(texts.map(async (text) => {
-      const english = text.trim();
+      const english = text.trim().replace(/\n */g, ' ');
       const entry = await this.options.dict.find(this.context.filename, english);
       if (!entry || !entry.chinese) {
         return text;
