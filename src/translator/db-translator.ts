@@ -12,6 +12,7 @@ export class DbTranslator extends Translator {
       for (let i = 0; i < translations.length; ++i) {
         const entry = newEntries[i];
         entry.chinese = translations[i].trim();
+        entry.confidence = 'Engine';
         await dict.save(entry);
       }
     } finally {
