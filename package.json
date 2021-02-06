@@ -1,13 +1,13 @@
 {
   "name": "@awesome-fe/translate",
-  "description": "Translate utils (ts only)",
-  "main": "./dist/index.js",
+  "description": "Translation utils",
+  "main": "./index.js",
   "bin": {
-    "nt": "dist/bin/index.js"
+    "nt": "./bin/index.js"
   },
   "version": "1.0.0",
   "author": "Zhicheng Wang<asnowwolf@gmail.com>",
-  "homepage": "https://github.com/asnowwolf/translate",
+  "homepage": "https://blog.ralph.wang",
   "repository": {
     "type": "git",
     "url": "https://github.com/asnowwolf/translate.git"
@@ -19,7 +19,7 @@
   "scripts": {
     "test": "mocha --require ts-node/register src/**/*.ts",
     "prelink": "rm -fr dist && tsc",
-    "prepublish": "rm -fr dist && tsc"
+    "prepublish": "rm -fr dist && tsc && ts-node ./tools/prepublish.ts"
   },
   "devDependencies": {
     "@google-cloud/storage": "^5.7.3",
