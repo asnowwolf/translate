@@ -1,6 +1,5 @@
 import { Marker, restructureTable } from './marker';
-import { DomDocumentFragment } from '../tiny-dom/dom-models';
-import { defaultSelectors } from '../common';
+import { defaultSelectors, DomDocumentFragment } from '../tiny-dom/dom-models';
 
 describe('marker', () => {
   it('should add translation mark', () => {

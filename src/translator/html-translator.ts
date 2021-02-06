@@ -1,6 +1,6 @@
 import { Translator } from './translator';
-import { DomDocument, DomElement } from '../tiny-dom/dom-models';
-import { containsChinese, defaultSelectors } from '../common';
+import { defaultSelectors, DomDocument, DomElement } from '../tiny-dom/dom-models';
+import { containsChinese } from '../common';
 import { htmlToMd, mdToHtml } from '../markdown';
 
 export class HtmlTranslator extends Translator {

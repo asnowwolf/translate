@@ -111,8 +111,6 @@ export class DomChildNode extends DomNode {
   }
 }
 
-export type DomSelector = (node: DomElement) => boolean;
-
 export class DomParentNode extends DomChildNode {
   get children(): DomElement[] {
     return this.childNodes.filter(it => it instanceof DomElement) as DomElement[];
@@ -324,3 +322,8 @@ export class DomTableRowElement extends DomElement {
     return this.children.filter(it => it.isTagOf('td') || it.isTagOf('th'));
   }
 }
+
+export type DomSelector = (node: DomElement) => boolean;
+const elementSelectors: DomSelector[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'].map(it => (node: DomElement) => node.isTagOf(it));
+const attributeSelector: DomSelector = (node: DomElement) => node.hasAttribute('ng-should-translate');
+export const defaultSelectors: DomSelector[] = [...elementSelectors, attributeSelector];

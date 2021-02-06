@@ -1,6 +1,14 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { DomDocumentFragment, DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowElement } from '../tiny-dom/dom-models';
-import { containsChinese, defaultSelectors } from '../common';
+import {
+  defaultSelectors,
+  DomDocumentFragment,
+  DomElement,
+  DomParentNode,
+  DomSelector,
+  DomTableElement,
+  DomTableRowElement,
+} from '../tiny-dom/dom-models';
+import { containsChinese } from '../common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
 

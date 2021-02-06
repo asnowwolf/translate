@@ -1,4 +1,3 @@
-import { DomElement } from './tiny-dom/dom-models';
 import { basename, extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { homedir } from 'os';
@@ -18,11 +17,6 @@ export function containsChinese(text?: string): boolean {
   }
   return text.search(/[\u4e00-\u9fa5]/gm) !== -1;
 }
-
-export type DomSelector = (node: DomElement) => boolean;
-const elementSelectors: DomSelector[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'].map(it => (node: DomElement) => node.isTagOf(it));
-const attributeSelector: DomSelector = (node: DomElement) => node.hasAttribute('ng-should-translate');
-export const defaultSelectors: DomSelector[] = [...elementSelectors, attributeSelector];
 
 export function basenameWithoutExt(filename: string): string {
   return basename(filename, extname(filename));
