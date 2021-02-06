@@ -5,7 +5,10 @@ import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
 
 export class Marker {
-  private readonly selectors = defaultSelectors;
+  constructor(
+    private readonly selectors: ((node: DomElement) => boolean)[] = defaultSelectors,
+  ) {
+  }
 
   markFile(filename: string): void {
     const content = readFileSync(filename, 'utf8');

@@ -1,5 +1,6 @@
 import { Marker, restructureTable } from './marker';
 import { DomDocumentFragment } from '../tiny-dom/dom-models';
+import { defaultSelectors } from '../common';
 
 describe('marker', () => {
   it('should add translation mark', () => {
@@ -104,5 +105,11 @@ english content</h3>
     const marker = new Marker();
     marker.addIdForHeaders(doc);
     expect(doc.toHtml()).toEqual(`<h1 id="ab--1">a%b -1</h1><h2 id="one">one</h2><h3 id="一">一</h3>`);
+  });
+  it('support custom selector', () => {
+    const doc = DomDocumentFragment.parse(`<header>a%b -1</header><header>one</header><header>一</header><h2 id="one">one</h2><h2 id="一">一</h2>`);
+    const marker = new Marker([...defaultSelectors, (node) => node.isTagOf('header')]);
+    marker.markAndSwapAll(doc);
+    expect(doc.toHtml()).toEqual('<header>a%b -1</header><header translation-result="on">一</header><header translation-origin="off">one</header><h2 id="one" translation-result="on">一</h2><h2 translation-origin="off">one</h2>');
   });
 });
