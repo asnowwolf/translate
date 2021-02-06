@@ -1,6 +1,7 @@
 {
   "name": "@awesome-fe/translate",
   "description": "Translation utils",
+  "private": "true",
   "main": "./index.js",
   "bin": {
     "nt": "./bin/index.js"
