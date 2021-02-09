@@ -4,8 +4,8 @@ import { defaultSelectors, DomDocumentFragment } from '../tiny-dom/dom-models';
 describe('marker', () => {
   it('should add translation mark', () => {
     const marker = new Marker();
-    const result = marker.mark('<h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p>');
-    expect(result).toEqual('<h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p>');
+    const result = marker.mark('<!DOCTYPE html><html><head><title>abc</title></head><body class="abc"><h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p></body></html>');
+    expect(result).toEqual('<!DOCTYPE html><html><head><title>abc</title></head><body class="abc"><h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p></body></html>');
   });
   it('should mark and restructure table', () => {
     const dom = DomDocumentFragment.parse(`<table>

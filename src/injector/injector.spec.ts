@@ -16,7 +16,7 @@ describe('injector', () => {
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
-<body>
+<body class="abc">
 <p>one</p>
 <p>一</p>
 <h1>two</h1>
@@ -28,7 +28,7 @@ describe('injector', () => {
   <link rel="stylesheet" href="/assets/css/Source_Sans_Pro.css">
   <link rel="stylesheet" href="/assets/css/Material_Icons.css">
 <link href="/assets/css/translator.css" rel="stylesheet"></head>
-<body>
+<body class="abc">
 <p>one</p>
 <p>一</p>
 <h1>two</h1>

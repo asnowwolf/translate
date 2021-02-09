@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import {
   defaultSelectors,
-  DomDocumentFragment,
+  DomDocument,
   DomElement,
   DomParentNode,
   DomSelector,
@@ -24,7 +24,7 @@ export class Marker {
   }
 
   mark(content: string): string {
-    const doc = DomDocumentFragment.parse(content);
+    const doc = DomDocument.parse(content);
     this.addTranslationMark(doc);
     return doc.toHtml();
   }
