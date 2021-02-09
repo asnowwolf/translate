@@ -8,7 +8,7 @@ import { NoopTranslationEngine } from './noop-engine';
 import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 
-export function getTranslationEngine(engine: TranslationEngineType, options: TranslationEngineOptions): TranslationEngine {
+export function getTranslationEngine(engine: TranslationEngineType, options: TranslationEngineOptions = {}): TranslationEngine {
   switch (engine) {
     case TranslationEngineType.google:
       return new GoogleTranslationEngine();

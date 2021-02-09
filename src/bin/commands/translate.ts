@@ -50,6 +50,11 @@ export const builder: CommandBuilder = {
     ],
     default: 'programming',
   },
+  jsonProperties: {
+    type: 'array',
+    description: '当进行 json 翻译时，要翻译的属性名称，会自动进行递归查找。',
+    default: [],
+  },
   mustIncludesTag: {
     type: 'string',
     alias: 'it',
@@ -68,6 +73,7 @@ interface Params {
   dict: string;
   mustIncludesTag: string;
   mustExcludesTag: string;
+  jsonProperties: string[];
   model: string;
   glossary: string;
   parent: string;
