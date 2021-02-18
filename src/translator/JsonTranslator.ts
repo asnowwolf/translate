@@ -21,7 +21,7 @@ export class JsonTranslator extends Translator {
         const value = obj[key];
         if (this.options.jsonProperties.includes(key) && typeof value === 'string' && !containsChinese(value)) {
           const translations = await this.engine.translate([value]);
-          const translation = translations[0].trim();
+          const translation = translations[0]?.trim();
           if (value !== translation) {
             obj[key] = `${value}\n\n${translation}`;
           }
