@@ -16,6 +16,7 @@ export const builder: CommandBuilder = {
   },
   engine: {
     type: 'string',
+    description: '要使用的翻译引擎',
     choices: [
       TranslationEngineType.google,
       TranslationEngineType.gcloud,
@@ -28,7 +29,7 @@ export const builder: CommandBuilder = {
   },
   dict: {
     type: 'string',
-    description: '当使用 dict 引擎时，指定要使用的字典目录。字典目录与被翻译目标同构，每个字典文件为一个 markdown 文件',
+    description: '当使用 dict 引擎时，指定要使用的字典文件，目前只支持 sqlite 格式。',
   },
   parent: {
     type: 'string',

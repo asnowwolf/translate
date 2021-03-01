@@ -12,7 +12,7 @@ export const builder: CommandBuilder = {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
   outFile: {
-    description: '结果输出到的文件，不要带扩展名',
+    description: '结果输出到的文件，不用带扩展名',
   },
   filter: {
     type: 'string',
