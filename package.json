@@ -6,7 +6,7 @@
   "bin": {
     "nt": "./bin/index.js"
   },
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Zhicheng Wang<asnowwolf@gmail.com>",
   "homepage": "https://blog.ralph.wang",
   "repository": {
@@ -20,7 +20,7 @@
   "scripts": {
     "test": "mocha --require ts-node/register src/**/*.ts",
     "prelink": "rm -fr dist && tsc",
-    "publish": "rm -fr dist && tsc && ts-node ./tools/prepublish.ts && npm publish dist"
+    "publish": "rm -fr dist && tsc && ts-node ./tools/prepublish.ts && cd dist && npm publish && cd -"
   },
   "devDependencies": {
     "@google-cloud/storage": "^5.7.3",
