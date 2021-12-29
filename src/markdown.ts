@@ -8,6 +8,7 @@ import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
 import { Node } from 'unist';
 import * as stringWidth from 'string-width';
+import { plainHTMLBlocks } from './translator/plain-html-block-plugin';
 
 const stringifyOptions = {
   emphasis: '*',
@@ -22,6 +23,7 @@ const stringifyOptions = {
 export function markdownParse(markdown: VFileCompatible): Node {
   return unified().use(remarkParse)
     .use(frontmatter)
+    .use(plainHTMLBlocks)
     .parse(markdown);
 }
 

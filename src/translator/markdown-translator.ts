@@ -11,7 +11,7 @@ import { markdownParse, markdownStringify } from '../markdown';
 
 export class MarkdownTranslator extends Translator {
   async translate(text: string): Promise<string> {
-    const tree = markdownParse(encodeExampleTags(text));
+    const tree = markdownParse(text);
     const result = mapToNodePairs(tree);
     const pairs: Node[] = [];
     const yamls: YAML[] = [];
@@ -35,7 +35,7 @@ export class MarkdownTranslator extends Translator {
       }
       postprocess(original, translation);
     });
-    return prettify(decodeExampleTags(markdownStringify(result)));
+    return prettify(markdownStringify(result));
   }
 
   async translateNormalNodes(pairs: Node[]): Promise<Node[]> {
@@ -97,15 +97,6 @@ function markNode(root: Node, container: Node): Node {
     }
   }
   return root;
-}
-
-// 对 Angular 官方文档中的 code-example 和 live-example 标记做特殊处理
-function encodeExampleTags(text: string): string {
-  return text.replace(/(<(code-example|live-example)\b[^>]*>[\s\S]*?<\/\2>)/g, '`$1`');
-}
-
-function decodeExampleTags(text: string): string {
-  return text.replace(/`(<(code-example|live-example)\b[^>]*>[\s\S]*?<\/\2>)`/g, '$1');
 }
 
 function sameExceptWhitespace(s1: string, s2: string): boolean {

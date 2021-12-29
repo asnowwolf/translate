@@ -68,4 +68,16 @@ title: abc
 `;
     expect(htmlToMd(mdToHtml(sample))).toEqual(sample);
   });
+  it('parse markdown with <code-example>...</code-example>', () => {
+    const markdown = `a
+
+  <code-example>
+    123
+    3344
+  </code-example>
+
+b`;
+    const tree = markdownParse(markdown);
+    expect(markdownStringify(tree).trim()).toEqual(markdown.trim());
+  });
 });
