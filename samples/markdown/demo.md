@@ -27,10 +27,11 @@ Test
 
 > > d11
 
-| a11 | a12 |
-|-----|-----|
-| b11 | b12 |
-| c11 | c12 |
+| a11          | a12 |
+|--------------|-----|
+| b11          | b12 |
+| no-translate | b12 |
+| c11          | c12 |
 
 <code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
 

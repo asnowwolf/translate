@@ -1,5 +1,6 @@
 ---
-title$$origin: abc title: 'abc[译]'
+title$$origin: abc
+title: 'abc[译]'
 
 ---
 
@@ -76,6 +77,8 @@ Test[译]
 | a11[译] | a12[译] |
 | b11 | b12 |
 | b11[译] | b12[译] |
+| no-translate | b12 |
+| no-translate | b12[译] |
 | c11 | c12 |
 | c11[译] | c12[译] |
 

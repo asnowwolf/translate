@@ -40,7 +40,7 @@ export class MarkdownTranslator extends Translator {
     const translatedPairs = await this.translateNormalNodes(pairs);
     pairs.forEach((original, index) => {
       const translation = translatedPairs[index];
-      if (translation && sameExceptWhitespace(markdownStringify(original), markdownStringify(translation))) {
+      if (translation && !original.tableCell && sameExceptWhitespace(markdownStringify(original), markdownStringify(translation))) {
         unistRemove(result, original);
       }
       applyTranslation(original, translation);
