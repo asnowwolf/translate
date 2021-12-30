@@ -12,6 +12,16 @@ import { markdownParse, markdownStringify } from '../markdown';
 export class MarkdownTranslator extends Translator {
   async translate(text: string): Promise<string> {
     const tree = markdownParse(text);
+    unistVisit(tree, (node) => {
+      if (node.tableCell) {
+        node.type = 'paragraph';
+      }
+      if (node.type === 'linkReference') {
+        node.type = 'link';
+        node.savedType = 'linkReference';
+        node.url = node.identifier;
+      }
+    });
     const result = mapToNodePairs(tree);
     const pairs: Node[] = [];
     const yamls: YAML[] = [];
@@ -33,7 +43,14 @@ export class MarkdownTranslator extends Translator {
       if (translation && sameExceptWhitespace(markdownStringify(original), markdownStringify(translation))) {
         unistRemove(result, original);
       }
-      postprocess(original, translation);
+      applyTranslation(original, translation);
+    });
+    unistVisit(result, (node) => {
+      if (node.type === 'link' && node.savedType === 'linkReference') {
+        node.type = node.savedType as string;
+        delete node.savedType;
+        node.identifier = node.url;
+      }
     });
     return prettify(markdownStringify(result));
   }
@@ -74,7 +91,7 @@ function preprocess(node: Node): Node {
   return node;
 }
 
-function postprocess(node: Node, translation: Node): Node {
+function applyTranslation(node: Node, translation: Node): Node {
   if (node.tableCell) {
     translation.type = 'tableCell';
   }

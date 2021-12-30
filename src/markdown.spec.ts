@@ -80,4 +80,16 @@ b`;
     const tree = markdownParse(markdown);
     expect(markdownStringify(tree).trim()).toEqual(markdown.trim());
   });
+
+  it('support reference links', () => {
+    const markdown = `# section 1
+
+[one][1]
+
+# section 2
+
+[1]: http://www.1.com`;
+    const tree = markdownParse(markdown);
+    expect(markdownStringify(tree).trim()).toEqual(markdown);
+  });
 });
