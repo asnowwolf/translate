@@ -6,8 +6,9 @@ export const hastToMastHandlers = {
   li: (h, node) => h(node, 'listItem', { marker: node.properties['nt__marker'] }, all(h, node)),
   a: (h, node) => {
     const href = node.properties['href'];
-    if (node.properties['nt__type'] === 'linkReference') {
-      return h(node, 'linkReference', { identifier: href, label: href }, all(h, node));
+    if (href.startsWith('linkRef:')) {
+      const url = href.replace(/^linkRef:/, '');
+      return h(node, 'linkReference', { identifier: url, label: url }, all(h, node));
     } else {
       return h(node, 'link', { url: href }, all(h, node));
     }

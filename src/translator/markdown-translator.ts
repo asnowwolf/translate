@@ -18,8 +18,7 @@ export class MarkdownTranslator extends Translator {
       }
       if (node.type === 'linkReference') {
         node.type = 'link';
-        node.savedType = 'linkReference';
-        node.url = node.identifier;
+        node.url = 'linkRef:' + node.identifier;
       }
     });
     const result = mapToNodePairs(tree);
@@ -46,10 +45,9 @@ export class MarkdownTranslator extends Translator {
       applyTranslation(original, translation);
     });
     unistVisit(result, (node) => {
-      if (node.type === 'link' && node.savedType === 'linkReference') {
-        node.type = node.savedType as string;
-        delete node.savedType;
-        node.identifier = node.url;
+      if (node.type === 'link' && node.url?.startsWith('linkRef:')) {
+        node.type = 'linkReference';
+        node.identifier = node.url.replace(/^linkRef:/, '');
       }
     });
     return prettify(markdownStringify(result));
