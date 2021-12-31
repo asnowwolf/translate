@@ -63,10 +63,21 @@ title: abc
   it('markdown to html to markdown', () => {
     const sample = `# h1
 
-- a
-- b
+_a_ __a__ ***a***
+
+11. a
+12. b
+
+* a
+* b
+
+## h2
+
+* a
+* b
 `;
-    expect(htmlToMd(mdToHtml(sample))).toEqual(sample);
+    const html = mdToHtml(sample);
+    expect(htmlToMd(html)).toEqual(sample);
   });
   it('parse markdown with <code-example>...</code-example>', () => {
     const markdown = `a
@@ -89,6 +100,12 @@ b`;
 # section 2
 
 [1]: http://www.1.com`;
+    const tree = markdownParse(markdown);
+    expect(markdownStringify(tree).trim()).toEqual(markdown);
+  });
+
+  it('should rebuild markdown exactly', () => {
+    const markdown = `*a*_b_`;
     const tree = markdownParse(markdown);
     expect(markdownStringify(tree).trim()).toEqual(markdown);
   });

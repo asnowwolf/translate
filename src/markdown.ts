@@ -8,7 +8,10 @@ import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
 import { Node } from 'unist';
 import * as stringWidth from 'string-width';
-import { plainHTMLBlocks } from './translator/plain-html-block-plugin';
+import { customParser } from './remark-plugins/custom-parser-plugin';
+import { customCompiler } from './remark-plugins/custom-compiler-plugin';
+import { mastToHastHandlers } from './remark-plugins/mast-to-hast-handlers';
+import { hastToMastHandlers } from './remark-plugins/hast-to-mast-handlers';
 
 const stringifyOptions = {
   emphasis: '*',
@@ -23,27 +26,30 @@ const stringifyOptions = {
 export function markdownParse(markdown: VFileCompatible): Node {
   return unified().use(remarkParse)
     .use(frontmatter)
-    .use(plainHTMLBlocks)
+    .use(customParser)
     .parse(markdown);
 }
 
 export function markdownStringify(tree: Node): string {
   return unified().use(remarkStringify, stringifyOptions)
     .use(frontmatter)
+    .use(customCompiler)
     .stringify(tree);
 }
 
 export function markdownToHtml(ast: Node): string {
   return unified().use(remarkParse)
     .use(frontmatter)
-    .use(remarkHtml)
+    .use(customParser)
+    .use(remarkHtml, { handlers: mastToHastHandlers })
     .processSync(markdownStringify(ast)).contents.toString();
 }
 
 export function markdownFromHtml(html: string): Node {
   const markdown = unified().use(rehypeParse)
-    .use(rehypeRemark)
+    .use(rehypeRemark, { handlers: hastToMastHandlers })
     .use(remarkStringify, stringifyOptions)
+    .use(customCompiler)
     .processSync(html);
   return markdownParse(markdown);
 }
