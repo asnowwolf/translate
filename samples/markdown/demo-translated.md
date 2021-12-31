@@ -16,6 +16,10 @@ title: 'abc[译]'
 
 [two](2)[译]
 
+<a name="1"></a>
+
+<a name="1"></a>[译]
+
 Test
 
 Test[译]
