@@ -4,4 +4,12 @@ export const hastToMastHandlers = {
   em: (h, node) => h(node, 'emphasis', { marker: node.properties['nt__marker'] }, all(h, node)),
   strong: (h, node) => h(node, 'strong', { marker: node.properties['nt__marker'] }, all(h, node)),
   li: (h, node) => h(node, 'listItem', { marker: node.properties['nt__marker'] }, all(h, node)),
+  a: (h, node) => {
+    const href = node.properties['href'];
+    if (node.properties['nt__type'] === 'linkReference') {
+      return h(node, 'linkReference', { identifier: href, label: href }, all(h, node));
+    } else {
+      return h(node, 'link', { url: href }, all(h, node));
+    }
+  },
 };
