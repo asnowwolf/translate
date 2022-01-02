@@ -68,6 +68,14 @@ _a_ __a__ ***a***
 11. a
 12. b
 
+<code-example language="html">
+  &lt;nav [style.background-color]="expression"&gt;&lt;/nav&gt;
+
+  &lt;nav [style.backgroundColor]="expression"&gt;&lt;/nav&gt;
+</code-example>
+
+{@a top}
+
 [a][1][b](2)
 
 * a
