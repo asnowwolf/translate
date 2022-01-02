@@ -1,5 +1,5 @@
 export function anchorTokenizer(this: { file: { fail: (message: string) => void } }, eat, value, silent) {
-  const matches = /^{@a (.*?)}$/.exec(value);
+  const matches = /^{@a (.*?)}/.exec(value);
   if (matches) {
     try {
       if (silent || !matches) {

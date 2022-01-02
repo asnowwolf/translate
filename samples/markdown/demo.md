@@ -35,6 +35,13 @@ Test
 | no-translate | b12 |
 | c11          | c12 |
 
-<code-example src="/abc"></code-example>a<live-example src="/def">abc</live-example>c
+<code-example src="/abc"></code-example>
 
+<code-example language="html">
+  &lt;nav [style.background-color]="expression"&gt;&lt;/nav&gt;
+
+&lt;nav [style.backgroundColor]="expression"&gt;&lt;/nav&gt;
+</code-example>
+
+{@a top}
 [1]: http://www.google.com
