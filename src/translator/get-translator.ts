@@ -5,7 +5,7 @@ import { HtmlTranslator } from './html-translator';
 import { MarkdownTranslator } from './markdown-translator';
 import { JsdocTranslator } from './jsdoc-translator';
 import { DbTranslator } from './db-translator';
-import { JsonTranslator } from './JsonTranslator';
+import { JsonTranslator } from './json-translator';
 
 export function getTranslator(filename: string, engine: TranslationEngine, options: Record<string, any> = {}): Translator {
   const extension = extname(filename);
