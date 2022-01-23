@@ -1,7 +1,5 @@
-import { Dict } from '../dict/dict';
-
 export interface TranslationEngineOptions {
-  dict?: Dict;
+  dict?: string;
   parent?: string;
   model?: string;
   glossary?: string;

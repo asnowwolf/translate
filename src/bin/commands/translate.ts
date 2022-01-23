@@ -3,7 +3,6 @@ import { ensureHomeDir, TranslationEngineType } from '../../common';
 import { getTranslationEngine } from '../../translation-engine/get-translation-engine';
 import { getTranslator } from '../../translator/get-translator';
 import { sync as globby } from 'globby';
-import { Dict } from '../../dict/dict';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 export const command = `translate <sourceGlobs...>`;
@@ -86,28 +85,24 @@ export const handler = async function (params: Params) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
   }
-  const dict = new Dict();
-  await dict.open(params.dict);
+  const translationEngine = getTranslationEngine(params.engine, {
+    dict: params.dict,
+    model: params.model,
+    glossary: params.glossary,
+    parent: params.parent,
+  });
+  await translationEngine.init();
   try {
-    const translationEngine = getTranslationEngine(params.engine, {
-      dict,
-      model: params.model,
-      glossary: params.glossary,
-      parent: params.parent,
-    });
-    try {
-      for (const filename of filenames) {
-        console.log('translating: ', filename);
-        const translator = getTranslator(filename, translationEngine, params);
-        await translator.translateFile(filename);
-      }
-    } finally {
-      // 记录已经执行的数量，统一记录在应用目录下
-      const counterFilename = `${ensureHomeDir()}/${params.engine}_count.txt`;
-      const count = existsSync(counterFilename) ? +readFileSync(counterFilename, 'utf8').trim() : 0;
-      writeFileSync(counterFilename, (count + translationEngine.translated).toString(10), 'utf8');
+    for (const filename of filenames) {
+      console.log('translating: ', filename);
+      const translator = getTranslator(filename, translationEngine, params);
+      await translator.translateFile(filename);
     }
   } finally {
-    await dict.close();
+    // 记录已经执行的数量，统一记录在应用目录下
+    const counterFilename = `${ensureHomeDir()}/${params.engine}_count.txt`;
+    const count = existsSync(counterFilename) ? +readFileSync(counterFilename, 'utf8').trim() : 0;
+    writeFileSync(counterFilename, (count + translationEngine.translated).toString(10), 'utf8');
+    await translationEngine.dispose();
   }
 };
