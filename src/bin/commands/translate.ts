@@ -82,6 +82,10 @@ interface Params {
 
 export const handler = async function (params: Params) {
   const filenames = params.sourceGlobs.map(it => globby(it)).flat();
+  if (filenames.length === 0) {
+    console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
+    return;
+  }
   const dict = new Dict();
   await dict.open(params.dict);
   try {

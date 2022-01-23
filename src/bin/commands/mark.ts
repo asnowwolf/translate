@@ -18,6 +18,10 @@ interface Params {
 
 export const handler = function ({ sourceGlobs }: Params) {
   const filenames = sourceGlobs.map(it => globby(it)).flat();
+  if (filenames.length === 0) {
+    console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
+    return;
+  }
   for (const filename of filenames) {
     console.log('marking: ', filename);
     const marker = new Marker();

@@ -49,6 +49,10 @@ interface Params {
 
 export const handler = function ({ sourceGlobs, styleUrls, scriptUrls, urlMap, textMap }: Params) {
   const filenames = sourceGlobs.map(it => globby(it)).flat();
+  if (filenames.length === 0) {
+    console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
+    return;
+  }
   const injector = new Injector(styleUrls, scriptUrls, urlMap, textMap);
   for (const filename of filenames) {
     injector.injectFile(filename);
