@@ -8,6 +8,7 @@ import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { containsChinese } from '../common';
 import { markdownParse, markdownStringify } from '../markdown';
+import { sameExceptWhitespace } from './same-except-whitespace';
 
 export class MarkdownTranslator extends Translator {
   async translate(text: string): Promise<string> {
@@ -112,10 +113,6 @@ function markNode(root: Node, container: Node): Node {
     }
   }
   return root;
-}
-
-function sameExceptWhitespace(s1: string, s2: string): boolean {
-  return s1.replace(/\s/g, '') === s2.replace(/\s/g, '');
 }
 
 function alreadyTranslated(nextNode: Node, node: Node) {

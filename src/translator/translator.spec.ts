@@ -20,6 +20,14 @@ describe('file-translator', function () {
 
     expect(result).toEqual('<p translation-result="on">One译</p>\n<p translation-origin="off">One</p>');
   });
+
+  it('translate html fragment file with noop engine', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.noop);
+    const translator = getTranslator('a.html', engine);
+    const result = await translator.translate('<p>&#8220;One&mdash;&#8221;</p>');
+
+    expect(result).toEqual('<p translation-origin="off">“One—”</p>');
+  });
   it('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine);

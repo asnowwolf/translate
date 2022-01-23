@@ -16,7 +16,7 @@ export const builder: CommandBuilder = {
   },
   engine: {
     type: 'string',
-    description: '要使用的翻译引擎',
+    description: '要使用的翻译引擎。使用 noop 引擎相当于对 HTML 进行预处理，以减少变更',
     choices: [
       TranslationEngineType.google,
       TranslationEngineType.gcloud,

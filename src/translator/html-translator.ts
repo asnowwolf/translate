@@ -2,6 +2,8 @@ import { Translator } from './translator';
 import { defaultSelectors, DomDocument, DomElement, DomText } from '../tiny-dom/dom-models';
 import { containsChinese } from '../common';
 import { htmlToMd, mdToHtml } from '../markdown';
+import { NoopTranslationEngine } from '../translation-engine/noop-engine';
+import { sameExceptWhitespace } from './same-except-whitespace';
 
 export class HtmlTranslator extends Translator {
   private selectors = defaultSelectors;
@@ -25,29 +27,31 @@ export class HtmlTranslator extends Translator {
 
     translations.forEach((translation, index) => {
       const html = mdToHtml(translation);
-      applyTranslation(elements[index], html);
+      this.applyTranslation(elements[index], html);
     });
     return doc;
   }
-}
 
-function applyTranslation(element: DomElement, translation: string): void {
-  if (shouldIgnore(element)) {
-    return;
+  applyTranslation(element: DomElement, translation: string): void {
+    if (shouldIgnore(element)) {
+      return;
+    }
+    if (!(this.engine instanceof NoopTranslationEngine) && !sameExceptWhitespace(element.innerHTML, translation)) {
+      const resultNode = new DomElement(element.tagName);
+      resultNode.innerHTML = translation;
+      element.parentNode.insertBefore(resultNode, element);
+      const node = new DomText('\n');
+      element.parentNode.insertBefore(node, element);
+      // 交换 id
+      const id = element.getAttribute('id');
+      if (id) {
+        resultNode.setAttribute('id', id);
+        element.removeAttribute('id');
+      }
+      resultNode.setAttribute('translation-result', 'on');
+    }
+    element.setAttribute('translation-origin', 'off');
   }
-  const resultNode = new DomElement(element.tagName);
-  resultNode.innerHTML = translation;
-  element.parentNode.insertBefore(resultNode, element);
-  const node = new DomText('\n');
-  element.parentNode.insertBefore(node, element);
-// 交换 id
-  const id = element.getAttribute('id');
-  if (id) {
-    resultNode.setAttribute('id', id);
-    element.removeAttribute('id');
-  }
-  resultNode.setAttribute('translation-result', 'on');
-  element.setAttribute('translation-origin', 'off');
 }
 
 function shouldIgnore(element: DomElement): boolean {

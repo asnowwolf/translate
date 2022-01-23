@@ -11,7 +11,7 @@ export class NoopTranslationEngine extends TranslationEngine {
     const dict = this.options.dict;
     texts.forEach(text => {
       const english = htmlToMd(mdToHtml(text)).trim();
-      if (!dict.findByRegExp(english)) {
+      if (dict && !dict.findByRegExp(english)) {
         dict.createOrUpdate(this.context.filename, english, '', '');
       }
     });
