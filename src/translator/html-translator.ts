@@ -1,5 +1,5 @@
 import { Translator } from './translator';
-import { defaultSelectors, DomDocument, DomElement } from '../tiny-dom/dom-models';
+import { defaultSelectors, DomDocument, DomElement, DomText } from '../tiny-dom/dom-models';
 import { containsChinese } from '../common';
 import { htmlToMd, mdToHtml } from '../markdown';
 
@@ -38,6 +38,8 @@ function applyTranslation(element: DomElement, translation: string): void {
   const resultNode = new DomElement(element.tagName);
   resultNode.innerHTML = translation;
   element.parentNode.insertBefore(resultNode, element);
+  const node = new DomText('\n');
+  element.parentNode.insertBefore(node, element);
 // 交换 id
   const id = element.getAttribute('id');
   if (id) {
