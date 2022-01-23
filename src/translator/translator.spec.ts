@@ -18,7 +18,7 @@ describe('file-translator', function () {
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate('<p>One</p>');
 
-    expect(result).toEqual('<p translation-result="on">One[译]</p><p translation-origin="off">One</p>');
+    expect(result).toEqual('<p translation-result="on">One译</p>\n<p translation-origin="off">One</p>');
   });
   it('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
@@ -64,7 +64,7 @@ export class Class2 {
 /**
  * Class1
  *
- * Class1[译]
+ * Class1 译
  *
  * @publicApi
  */
@@ -72,7 +72,7 @@ export class Class1 {
   /**
    * foo1
    *
-   * foo1[译]
+   * foo1 译
    *
    */
   foo1() {
@@ -91,7 +91,7 @@ export class Class2 {
   /**
    * foo2
    *
-   * foo2[译]
+   * foo2 译
    *
    * @publicApi
    */
@@ -149,14 +149,14 @@ export class Class1 {
 /**
  * Class2
  *
- * Class2[译]
+ * Class2 译
  *
  */
 export class Class2 {
   /**
    * foo1
    *
-   * foo1[译]
+   * foo1 译
    *
    */
   foo1() {

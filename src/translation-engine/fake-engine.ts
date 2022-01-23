@@ -7,7 +7,7 @@ export class FakeTranslationEngine extends TranslationEngine {
         if (text === 'no-translate') {
           return 'no-translate';
         }
-        return text.trim() + '[译]';
+        return text.trim() + '译';
       } else {
         return text;
       }
