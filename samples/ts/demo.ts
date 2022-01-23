@@ -29,12 +29,14 @@ export class Demo {
    *
    * @param {Number} p1 Js Doc for parameter 1
    * @param p2 Js Doc for parameter 2
+   * @param {String} [p3] Js Doc for parameter 3
+   * @param {(string|string[])} [p4=John Doe] - Somebody's name, or an array of names.
    * @see bar
    * @see
    * http://github.com|GitHub
    * @returns Js Doc for Return value
    */
-  foo1(p1: number, p2: string): number {
+  foo1(p1: number, p2: string, p3: string, p4: string): number {
     return 1;
   }
 

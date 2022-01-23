@@ -66,7 +66,7 @@ export class JsdocTranslator extends Translator {
     const text = tag.text as string;
 
     if (isBinaryTag(tag)) {
-      const [, name, description] = (text ?? '').match(/^((?:{.*?}\s*)?[\w.]+\s+)([\s\S]*)$/) ?? [];
+      const [, name, description] = (text ?? '').match(/^((?:{.*?}\s*)?(?:[\w.\[\]]+|\[.*?])\s+)([\s\S]*)$/) ?? [];
       if (description?.trim()) {
         const translation = await this.markdownTranslator.translate(description);
         if (translation.trim() !== description.trim()) {
