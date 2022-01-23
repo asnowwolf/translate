@@ -40,11 +40,11 @@ var b = 2;
   });
 
   it('markdown escaped text to html', () => {
-    expect(markdownToHtml(markdownParse(`<p>中文&mdash;</p>`))).toEqual(`<p>中文&mdash;</p>\n`);
+    expect(markdownToHtml(markdownParse(`&#8220;中文&mdash;&#8221;`))).toEqual(`<p>“中文—”</p>\n`);
   });
 
   it('html escaped text to markdown', () => {
-    expect(markdownStringify(markdownFromHtml(`<p>中文&mdash;</p>`))).toEqual('中文—\n');
+    expect(markdownStringify(markdownFromHtml(`<p>&#8220;中文&mdash;&#8221;</p>`))).toEqual('“中文—”\n');
   });
 
   it('yaml', () => {
