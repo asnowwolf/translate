@@ -16,7 +16,7 @@ describe('file-translator', function () {
   it('translate html fragment file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
-    const result = await translator.translate('<p>One</p>');
+    const result = await translator.translate('<p translation-origin="off">One</p>');
 
     expect(result).toEqual('<p translation-result="on">One译</p>\n<p translation-origin="off">One</p>');
   });
