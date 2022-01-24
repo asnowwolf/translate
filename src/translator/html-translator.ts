@@ -18,6 +18,10 @@ export class HtmlTranslator extends Translator {
     const titles = await this.engine.translate([doc.title]);
     doc.title = titles[0];
 
+    if (!doc.body) {
+      return doc;
+    }
+
     this.restructureTextOnlyLiToP(doc.body);
 
     const elements = this.selectors
