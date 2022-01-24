@@ -13,12 +13,23 @@ describe('file-translator', function () {
     const expected = readFileSync('samples/html/demo-translated.html', 'utf8');
     expect(result).toEqual(DomDocument.parse(expected).toHtml());
   });
-  it('translate html fragment file', async () => {
+
+  it('translate html fragment file with noop engine', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.noop);
+    const translator = getTranslator('a.html', engine);
+    const result = await translator.translate('<li>One</li>');
+
+    expect(result).toEqual(`<li>
+  <p translation-origin="off">One</p>
+</li>`);
+  });
+
+  it('translate html fragment file with fake engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate('<p translation-origin="off">One</p>');
 
-    expect(result).toEqual('<p translation-result="on">One译</p>\n<p translation-origin="off">One</p>');
+    expect(result).toEqual('<p translation-result="on">One译</p><p translation-origin="off">One</p>');
   });
 
   it('translate html fragment file with noop engine', async () => {

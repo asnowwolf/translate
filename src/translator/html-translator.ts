@@ -34,25 +34,28 @@ export class HtmlTranslator extends Translator {
     return doc;
   }
 
-  applyTranslation(element: DomElement, translation: string): void {
-    if (shouldIgnore(element)) {
+  applyTranslation(origin: DomElement, translation: string): void {
+    if (shouldIgnore(origin)) {
       return;
     }
-    if (!(this.engine instanceof NoopTranslationEngine) && !sameExceptWhitespace(element.innerHTML, translation)) {
-      const resultNode = new DomElement(element.tagName);
+    if (!(this.engine instanceof NoopTranslationEngine) && !sameExceptWhitespace(origin.innerHTML, translation)) {
+      const spaces = origin.previousSibling()?.textContent || '';
+      const resultNode = new DomElement(origin.tagName);
       resultNode.innerHTML = translation;
-      element.parentNode.insertBefore(resultNode, element);
-      const node = new DomText('\n');
-      element.parentNode.insertBefore(node, element);
+      origin.parentNode.insertBefore(resultNode, origin);
+      if (!spaces.trim()) {
+        const node = new DomText(spaces);
+        origin.parentNode.insertBefore(node, origin);
+      }
       // 交换 id
-      const id = element.getAttribute('id');
+      const id = origin.getAttribute('id');
       if (id) {
         resultNode.setAttribute('id', id);
-        element.removeAttribute('id');
+        origin.removeAttribute('id');
       }
       resultNode.setAttribute('translation-result', 'on');
     }
-    element.setAttribute('translation-origin', 'off');
+    origin.setAttribute('translation-origin', 'off');
   }
 
   private restructureTextOnlyLiToP(body: DomElement) {
@@ -60,10 +63,19 @@ export class HtmlTranslator extends Translator {
     li.forEach(it => {
       it.childNodes.forEach((value, index) => {
         if (value instanceof DomText && value.textContent.trim()) {
-          const p = new DomElement('p');
-          p.innerHTML = `${value.textContent}`;
-          p.parentNode = it;
-          it.childNodes[index] = p;
+          const leadingSpaces = value.previousSibling()?.textContent;
+          const tailingSpaces = value.nextSibling()?.textContent;
+          const parentLeadingSpaces = it.previousSibling()?.textContent?.replace(/^\n/, '') ?? '';
+          const wrapper = new DomElement('p');
+          wrapper.innerHTML = value.textContent;
+          wrapper.parentNode = it;
+          it.childNodes[index] = wrapper;
+          if (!leadingSpaces) {
+            it.insertBefore(new DomText(`\n${parentLeadingSpaces}  `), wrapper);
+          }
+          if (!tailingSpaces) {
+            it.insertAfter(new DomText(`\n${parentLeadingSpaces}`), wrapper);
+          }
         }
       });
     });

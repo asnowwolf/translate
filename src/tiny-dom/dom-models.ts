@@ -77,7 +77,7 @@ export class DomNode {
     return this.parentNode?.childNodes[this.index - 1];
   }
 
-  nextSibling(): DomNode {
+  nextSibling(): DomChildNode {
     if (this.index === -1) {
       return;
     }
@@ -94,6 +94,11 @@ export class DomNode {
   insertBefore(newNode: DomChildNode, referenceNode: DomChildNode) {
     newNode.remove();
     this.childNodes.splice(referenceNode.index, 0, newNode);
+  }
+
+  insertAfter(newNode: DomChildNode, referenceNode: DomChildNode) {
+    newNode.remove();
+    this.childNodes.splice(referenceNode.index + 1, 0, newNode);
   }
 }
 
