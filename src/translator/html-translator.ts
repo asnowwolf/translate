@@ -18,6 +18,8 @@ export class HtmlTranslator extends Translator {
     const titles = await this.engine.translate([doc.title]);
     doc.title = titles[0];
 
+    this.restructureTextOnlyLiToP(doc.body);
+
     const elements = this.selectors
       .map(selector => Array.from(doc.querySelectorAll(selector)))
       .flat();
@@ -51,6 +53,20 @@ export class HtmlTranslator extends Translator {
       resultNode.setAttribute('translation-result', 'on');
     }
     element.setAttribute('translation-origin', 'off');
+  }
+
+  private restructureTextOnlyLiToP(body: DomElement) {
+    const li = body.querySelectorAll((it) => it.isTagOf('li'));
+    li.forEach(it => {
+      it.childNodes.forEach((value, index) => {
+        if (value instanceof DomText && value.textContent.trim()) {
+          const p = new DomElement('p');
+          p.innerHTML = `${value.textContent}`;
+          p.parentNode = it;
+          it.childNodes[index] = p;
+        }
+      });
+    });
   }
 }
 
