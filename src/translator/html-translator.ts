@@ -16,7 +16,7 @@ export class HtmlTranslator extends Translator {
 
   async translateDoc(doc: DomDocument): Promise<DomDocument> {
     const titles = await this.engine.translate([doc.title]);
-    doc.title = titles[0];
+    doc.title = titles[0]?.trim() ?? '';
 
     if (!doc.body) {
       return doc;
