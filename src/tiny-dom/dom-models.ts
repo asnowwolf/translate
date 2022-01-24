@@ -26,6 +26,10 @@ export class DomNode {
     return this.childNodes?.[0];
   }
 
+  get lastChild(): DomChildNode {
+    return this.childNodes?.[this.childNodes.length - 1];
+  }
+
   get textContent(): string {
     let result = '';
     if (this instanceof DomText) {

@@ -14,17 +14,39 @@ describe('file-translator', function () {
     expect(result).toEqual(DomDocument.parse(expected).toHtml());
   });
 
-  it('translate html fragment file with noop engine', async () => {
+  it('translate complex html fragment file with noop engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.noop);
     const translator = getTranslator('a.html', engine);
-    const result = await translator.translate('<li>One</li>');
+    const result = await translator.translate(`<li>
+  a<a href="/1">One</a>b
+  <p>Two</p>
+  <p>Three</p>
+  <ul>
+    <li>Four</li>
+  </ul>
+</li>`);
 
     expect(result).toEqual(`<li>
-  <p translation-origin="off">One</p>
+  <p translation-origin="off">a<a href="/1">One</a>b</p>
+  <p translation-origin="off">Two</p>
+  <p translation-origin="off">Three</p>
+  <ul>
+    <li>
+      <p translation-origin="off">Four</p>
+    </li>
+  </ul>
 </li>`);
   });
 
-  it('translate html fragment file with fake engine', async () => {
+  it('translate simple html fragment file with noop engine', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.noop);
+    const translator = getTranslator('a.html', engine);
+    const result = await translator.translate('<p>&#8220;One&mdash;&#8221;</p>');
+
+    expect(result).toEqual('<p translation-origin="off">“One—”</p>');
+  });
+
+  it('translate simple html fragment file with fake engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate('<p translation-origin="off">One</p>');
@@ -32,13 +54,48 @@ describe('file-translator', function () {
     expect(result).toEqual('<p translation-result="on">One译</p><p translation-origin="off">One</p>');
   });
 
-  it('translate html fragment file with noop engine', async () => {
-    const engine = getTranslationEngine(TranslationEngineType.noop);
+  it('translate complex html fragment file with fake engine', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
-    const result = await translator.translate('<p>&#8220;One&mdash;&#8221;</p>');
+    const result = await translator.translate(`<li>
+  a<a href="/1">One</a>b
+  <p>Two</p>
+  <p>Three</p>
+  <ul>
+    <li>Four</li>
+  </ul>
+</li>`);
 
-    expect(result).toEqual('<p translation-origin="off">“One—”</p>');
+    expect(result).toEqual(`<li>
+  <p translation-result="on">a<a href="/1">One</a>b译</p>
+  <p translation-origin="off">a<a href="/1">One</a>b</p>
+  <p translation-result="on">Two译</p>
+  <p translation-origin="off">Two</p>
+  <p translation-result="on">Three译</p>
+  <p translation-origin="off">Three</p>
+  <ul>
+    <li>
+      <p translation-result="on">Four译</p>
+      <p translation-origin="off">Four</p>
+    </li>
+  </ul>
+</li>`);
   });
+
+  it('only translate one time', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.fake);
+    const translator = getTranslator('a.html', engine);
+    const result = await translator.translate(`<li>
+<p translation-result="on">One译</p>
+<p translation-origin="off">One</p>
+</li>`);
+
+    expect(result).toEqual(`<li>
+<p translation-result="on">One译</p>
+<p translation-origin="off">One</p>
+</li>`);
+  });
+
   it('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine);
