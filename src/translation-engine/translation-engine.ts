@@ -15,13 +15,13 @@ export abstract class TranslationEngine {
     if (!texts.filter(it => it?.trim().length).length) {
       return texts;
     }
-    const originals = uniq(texts.filter(it => it.length > 2));
+    const originals = uniq(texts.filter(it => it?.trim()));
     const batches = chunk(originals, this.batchSize);
     const chunks = await Promise.all(batches.map(async (it) => this.doTranslate(it)));
     const translations = chunks.flat();
     return texts.map(it => {
       const index = originals.indexOf(it);
-      return translations[index];
+      return translations[index] ?? it;
     });
   }
 
