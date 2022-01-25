@@ -42,7 +42,12 @@ export class HtmlTranslator extends Translator {
     if (shouldIgnore(origin)) {
       return;
     }
-    if (!(this.engine instanceof NoopTranslationEngine) && !sameExceptWhitespace(origin.innerHTML, translation)) {
+    if (!(this.engine instanceof NoopTranslationEngine)) {
+      // 如果译文和原文相同，则摘除原有的 translation-origin 属性，以免被错误的隐藏
+      if (sameExceptWhitespace(origin.innerHTML, translation)) {
+        origin.removeAttribute('translation-origin');
+        return;
+      }
       const spaces = origin.previousSibling()?.textContent || '';
       const resultNode = new DomElement(origin.tagName);
       resultNode.innerHTML = translation;

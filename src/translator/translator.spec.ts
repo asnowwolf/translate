@@ -96,6 +96,18 @@ describe('file-translator', function () {
 </li>`);
   });
 
+  it('does not change when the original and the translation are the same', async () => {
+    const engine = getTranslationEngine(TranslationEngineType.fake);
+    const translator = getTranslator('a.html', engine);
+    const result = await translator.translate(`<li>
+<p>no translate</p>
+</li>`);
+
+    expect(result).toEqual(`<li>
+<p>no translate</p>
+</li>`);
+  });
+
   it('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine);
