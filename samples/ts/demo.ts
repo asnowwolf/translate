@@ -1,46 +1,46 @@
 /**
  * @license
- * Copyright
+ * One
  */
 
-/** Js Doc for standalone variable */
+/** Two */
 let nextUniqueId = 0;
 
 // comment
 /**
- * Js Doc with {@link CdkMenu})
+ * Three {@link CdkMenu})
  *
- * The second line with *markdown*
+ * **Four**
  */
 export class Demo {
   constructor(
-    /** Js Doc for parameter as property */
+    /** Five */
     public a: string,
   ) {
   }
 
-  /** Js Doc for property */
+  /** Six */
   b: string;
 
   /**
-   * Js Doc for Method 1.
+   * Seven.
    *
-   * The second line
+   * Eight
    *
-   * @param {Number} p1 Js Doc for parameter 1
-   * @param p2 Js Doc for parameter 2
-   * @param {String} [p3] Js Doc for parameter 3
-   * @param {(string|string[])} [p4=John Doe] - Somebody's name, or an array of names.
+   * @param {Number} p1 Eight One
+   * @param p2 Eight Two
+   * @param {String} [p3] Eight Three
+   * @param {(string|string[])} [p4=Eight Four] - Eight Five
    * @see bar
    * @see
-   * http://github.com|GitHub
-   * @returns Js Doc for Return value
+   * http://github.com|Nine
+   * @returns One
    */
   foo1(p1: number, p2: string, p3: string, p4: string): number {
     return 1;
   }
 
-  /** Single line Js Doc for Method 2. */
+  /** Two */
   foo2(): void {
   }
 }

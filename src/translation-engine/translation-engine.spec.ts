@@ -5,8 +5,8 @@ import { GoogleCloudTranslationEngine } from './gcloud-engine';
 describe('translation engine', function () {
   it('translate one sentence with fake engine', async () => {
     const engine = new FakeTranslationEngine();
-    const texts = await engine.translate(['# Hello, world!']);
-    expect(texts).toEqual(['# Hello, world!译']);
+    const texts = await engine.translate(['# One, Two!']);
+    expect(texts).toEqual(['# 一, 二!']);
   });
   it('translate multi sentences with fake engine with duplicated items', async () => {
     const engine = new FakeTranslationEngine();
@@ -19,11 +19,11 @@ describe('translation engine', function () {
       'one',
     ]);
     expect(texts).toEqual([
-      'one译',
-      'two译',
-      'two译',
-      'three译',
-      'one译',
+      '一',
+      '二',
+      '二',
+      '三',
+      '一',
     ]);
   });
   xit('translate with google translate', async () => {

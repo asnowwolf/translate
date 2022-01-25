@@ -1,78 +1,75 @@
 /**
  * @license
- * Copyright
+ * One
  */
 
 /**
- * Js Doc for standalone variable
+ * Two
  *
- * Js Doc for standalone variable 译
+ * 二
  *
  */
 let nextUniqueId = 0;
 
 // comment
 /**
- * Js Doc with {@link CdkMenu})
+ * Three {@link CdkMenu})
  *
- * Js Doc with {@link CdkMenu})译
+ * 三 {@link CdkMenu})
  *
- * The second line with *markdown*
+ * **Four**
  *
- * The second line with *markdown*译
+ * **四**
  *
  */
 export class Demo {
   constructor(
-    /** Js Doc for parameter as property */
+    /** Five */
     public a: string,
   ) {
   }
 
   /**
-   * Js Doc for property
+   * Six
    *
-   * Js Doc for property 译
+   * 六
    *
    */
   b: string;
 
   /**
-   * Js Doc for Method 1.
+   * Seven.
    *
-   * Js Doc for Method 1.译
+   * 七.
    *
-   * The second line
+   * Eight
    *
-   * The second line 译
+   * 八
    *
-   * @param {Number} p1 Js Doc for parameter 1
+   * @param {Number} p1 Eight One
    *
-   * Js Doc for parameter 1 译
+   * 八 一
    *
-   * @param p2 Js Doc for parameter 2
+   * @param p2 Eight Two
    *
-   * Js Doc for parameter 2 译
+   * 八 二
    *
-   * @param {String} [p3] Js Doc for parameter 3
+   * @param {String} [p3] Eight Three
    *
-   * Js Doc for parameter 3 译
+   * 八 三
    *
-   * @param {(string|string[])} [p4=John Doe] - Somebody's name, or an array of names.
+   * @param {(string|string[])} [p4=Eight Four] - Eight Five
    *
-   *   Somebody's name, or an array of names.译
+   *   八 五
    *
    * @see bar
+   * @see <http://github.com|Nine>
    *
-   * bar 译
+   * <http://github.com|九>
    *
-   * @see <http://github.com|GitHub>
+   * @returns One
    *
-   * <http://github.com|GitHub>译
-   *
-   * @returns Js Doc for Return value
-   *
-   * Js Doc for Return value 译
+   * 一
    *
    */
   foo1(p1: number, p2: string, p3: string, p4: string): number {
@@ -80,9 +77,9 @@ export class Demo {
   }
 
   /**
-   * Single line Js Doc for Method 2.
+   * Two
    *
-   * Single line Js Doc for Method 2.译
+   * 二
    *
    */
   foo2(): void {

@@ -51,7 +51,7 @@ describe('file-translator', function () {
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate('<p translation-origin="off">One</p>');
 
-    expect(result).toEqual('<p translation-result="on">One译</p><p translation-origin="off">One</p>');
+    expect(result).toEqual('<p translation-result="on">一</p><p translation-origin="off">One</p>');
   });
 
   it('translate complex html fragment file with fake engine', async () => {
@@ -67,15 +67,15 @@ describe('file-translator', function () {
 </li>`);
 
     expect(result).toEqual(`<li>
-  <p translation-result="on">a<a href="/1">One</a>b译</p>
+  <p translation-result="on">a<a href="/1">一</a>b</p>
   <p translation-origin="off">a<a href="/1">One</a>b</p>
-  <p translation-result="on">Two译</p>
+  <p translation-result="on">二</p>
   <p translation-origin="off">Two</p>
-  <p translation-result="on">Three译</p>
+  <p translation-result="on">三</p>
   <p translation-origin="off">Three</p>
   <ul>
     <li>
-      <p translation-result="on">Four译</p>
+      <p translation-result="on">四</p>
       <p translation-origin="off">Four</p>
     </li>
   </ul>
@@ -108,28 +108,28 @@ describe('file-translator', function () {
     const translator = getTranslator('placeholder.ts', engine, { mustIncludesTag: 'publicApi' });
     const result = await translator.translate(`
 /**
- * Class1
+ * Class One
  * @publicApi
  */
 export class Class1 {
   /**
-   * foo1
+   * two
    */
   foo1() {
   }
 }
 
 /**
- * Class2
+ * Class Two
  */
 export class Class2 {
   /**
-   * foo1
+   * three
    */
   foo1() {
   }
   /**
-   * foo2
+   * four
    * @publicApi
    */
   foo2() {
@@ -138,17 +138,17 @@ export class Class2 {
 `);
     expect(result).toEqual(`
 /**
- * Class1
+ * Class One
  *
- * Class1 译
+ * Class 一
  *
  * @publicApi
  */
 export class Class1 {
   /**
-   * foo1
+   * two
    *
-   * foo1 译
+   * 二
    *
    */
   foo1() {
@@ -156,18 +156,18 @@ export class Class1 {
 }
 
 /**
- * Class2
+ * Class Two
  */
 export class Class2 {
   /**
-   * foo1
+   * three
    */
   foo1() {
   }
   /**
-   * foo2
+   * four
    *
-   * foo2 译
+   * 四
    *
    * @publicApi
    */
@@ -181,28 +181,28 @@ export class Class2 {
     const translator = getTranslator('placeholder.ts', engine, { mustExcludesTag: 'docs-private' });
     const result = await translator.translate(`
 /**
- * Class1
+ * Class One
  * @docs-private
  */
 export class Class1 {
   /**
-   * foo1
+   * two
    */
   foo1() {
   }
 }
 
 /**
- * Class2
+ * Class Two
  */
 export class Class2 {
   /**
-   * foo1
+   * three
    */
   foo1() {
   }
   /**
-   * foo2
+   * four
    * @docs-private
    */
   foo2() {
@@ -211,34 +211,34 @@ export class Class2 {
 `);
     expect(result).toEqual(`
 /**
- * Class1
+ * Class One
  * @docs-private
  */
 export class Class1 {
   /**
-   * foo1
+   * two
    */
   foo1() {
   }
 }
 
 /**
- * Class2
+ * Class Two
  *
- * Class2 译
+ * Class 二
  *
  */
 export class Class2 {
   /**
-   * foo1
+   * three
    *
-   * foo1 译
+   * 三
    *
    */
   foo1() {
   }
   /**
-   * foo2
+   * four
    * @docs-private
    */
   foo2() {

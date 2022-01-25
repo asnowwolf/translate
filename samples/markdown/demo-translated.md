@@ -1,90 +1,88 @@
 ---
-title$$origin: abc
-title: abc 译
+title$$origin: one
+title: 一
 
 ---
 
-# Head 1
+# Head One
 
-# Head 1 译
+# Head 一
 
 [one][1]
 
-[one][1]译
+[一][1]
 
 [two](2)
 
-[two](2)译
+[二](2)
 
 <a name="1"></a>
 
-<a name="1"></a>译
+Three
 
-Test
+三
 
-Test 译
+1. One 11
 
-1. a11
+   一 11
 
-   a11 译
+1. One 11
 
-1. b11
+   一 11
 
-   b11 译
+1. Two 12
 
-1. b12
+   二 12
 
-   b12 译
+1. Two 21
 
-1. b21
+   二 21
 
-   b21 译
+1. Two 31
 
-1. b31
+   二 31
 
-   b31 译
+- One 11
 
-- a11
+  一 11
 
-  a11 译
+  - Two 11
 
-  - b11
+    二 11
 
-    b11 译
+  - Three 11
 
-  - c11
+    三 11
 
-    c11 译
-
-> a11
+> One 11
 >
-> a11 译
+> 一 11
 >
 >
-> b11
+> Two 11
 >
-> b11 译
+> 二 11
 >
 >
-> > c11
+> > Three 11
 > >
-> > c11 译
+> > 三 11
 > >
 >
-> > d11
+> > Four 11
 > >
-> > d11 译
+> > 四 11
 > >
 
-| a11 | a12 |
-| --- | --- |
-| a11 译 | a12 译 |
-| b11 | b12 |
-| b11 译 | b12 译 |
-| no-translate | b12 |
-| no-translate | b12 译 |
-| c11 | c12 |
-| c11 译 | c12 译 |
+| One 11 | One 12 |
+| ------ | ------ |
+| 一 11 | 一 12 |
+| Two 11 | Two 12 |
+| 二 11 | 二 12 |
+| no-translate | Two 12 |
+| no-translate | 二 12 |
+| Three 11 | Three 12 |
+| 三 11 | 三 12 |
 
 <code-example src="/abc"></code-example>
 
