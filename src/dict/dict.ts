@@ -3,7 +3,7 @@ import { Connection, ConnectionOptions, createConnection, FindManyOptions, Repos
 import { basename, extname, resolve } from 'path';
 import { existsSync } from 'fs';
 import { DictEntryEntity } from './dict-entry.entity';
-import { basenameWithoutExt } from '../common';
+import { basenameWithoutExt } from '../utils/common';
 
 export class Dict {
   private connection: Connection;

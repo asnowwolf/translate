@@ -1,8 +1,9 @@
 import { CommandBuilder } from 'yargs';
 import { Dict } from '../../dict/dict';
-import { basenameWithoutExt, TranslationEngineType } from '../../common';
+import { basenameWithoutExt } from '../../utils/common';
 import { Exporter } from '../../exporter/exporter';
 import { writeFileSync } from 'fs';
+import { TranslationEngineType } from '../../translation-engine/translation-engine-type';
 
 export const command = `export <dictFile>`;
 

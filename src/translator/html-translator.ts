@@ -1,7 +1,7 @@
 import { Translator } from './translator';
 import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../tiny-dom/dom-models';
-import { containsChinese } from '../common';
-import { htmlToMd, mdToHtml } from '../markdown';
+import { containsChinese } from '../utils/common';
+import { htmlToMd, mdToHtml } from '../utils/markdown';
 import { NoopTranslationEngine } from '../translation-engine/noop-engine';
 import { sameExceptWhitespace } from './same-except-whitespace';
 

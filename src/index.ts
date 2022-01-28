@@ -1,5 +1,5 @@
-export * from './common';
-export * from './markdown';
+export * from './utils/common';
+export * from './utils/markdown';
 export * from './extractor/extractor';
 export * from './injector/injector';
 export * from './marker/marker';
@@ -15,3 +15,4 @@ export * from './translation-engine/google-engine';
 export * from './translation-engine/ms-engine';
 export * from './translation-engine/noop-engine';
 export * from './translator/translator';
+export { TranslationEngineType } from './translation-engine/translation-engine-type';

@@ -1,4 +1,4 @@
-import { mdToHtml } from '../markdown';
+import { mdToHtml } from '../utils/markdown';
 import { htmlToText } from '../tiny-dom/dom-utils';
 
 export class Exporter {

@@ -1,4 +1,3 @@
-import { TranslationEngineType } from '../common';
 import { GoogleTranslationEngine } from './google-engine';
 import { GoogleCloudTranslationEngine } from './gcloud-engine';
 import { MsTranslationEngine } from './ms-engine';
@@ -7,6 +6,7 @@ import { FakeTranslationEngine } from './fake-engine';
 import { NoopTranslationEngine } from './noop-engine';
 import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
+import { TranslationEngineType } from './translation-engine-type';
 
 export function getTranslationEngine(engine: TranslationEngineType, options: TranslationEngineOptions = {}): TranslationEngine {
   switch (engine) {

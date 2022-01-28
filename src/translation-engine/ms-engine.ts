@@ -1,7 +1,7 @@
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { TranslationEngine } from './translation-engine';
-import { htmlToMd, mdToHtml } from '../markdown';
+import { htmlToMd, mdToHtml } from '../utils/markdown';
 
 export class MsTranslationEngine extends TranslationEngine {
   protected async doTranslate(texts: string[]): Promise<string[]> {

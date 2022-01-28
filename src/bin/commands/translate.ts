@@ -1,9 +1,10 @@
 import { CommandBuilder } from 'yargs';
-import { ensureHomeDir, TranslationEngineType } from '../../common';
+import { ensureHomeDir } from '../../utils/common';
 import { getTranslationEngine } from '../../translation-engine/get-translation-engine';
 import { getTranslator } from '../../translator/get-translator';
 import { sync as globby } from 'globby';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { TranslationEngineType } from '../../translation-engine/translation-engine-type';
 
 export const command = `translate <sourceGlobs...>`;
 

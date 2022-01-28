@@ -1,6 +1,6 @@
 import { v3 } from '@google-cloud/translate';
 import { TranslationEngine } from './translation-engine';
-import { htmlToMd, mdToHtml } from '../markdown';
+import { htmlToMd, mdToHtml } from '../utils/markdown';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { join } from 'path';
 

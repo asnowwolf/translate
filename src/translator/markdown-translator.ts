@@ -6,8 +6,8 @@ import { ListItem, YAML } from 'mdast';
 import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
-import { containsChinese } from '../common';
-import { markdownParse, markdownStringify } from '../markdown';
+import { containsChinese } from '../utils/common';
+import { markdownParse, markdownStringify } from '../utils/markdown';
 import { sameExceptWhitespace } from './same-except-whitespace';
 
 export class MarkdownTranslator extends Translator {

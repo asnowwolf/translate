@@ -2,15 +2,6 @@ import { basename, extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { homedir } from 'os';
 
-export enum TranslationEngineType {
-  google = 'google',
-  gcloud = 'gcloud',
-  ms = 'ms',
-  dict = 'dict',
-  fake = 'fake',
-  noop = 'noop',
-}
-
 export function containsChinese(text?: string): boolean {
   if (!text) {
     return false;
