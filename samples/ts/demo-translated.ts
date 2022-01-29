@@ -65,7 +65,7 @@ export class Demo {
    * @see bar
    * @see <http://github.com|Nine>
    *
-   * <http://github.com|九>
+   * [http://github.com|九](http://github.com%7CNine)
    *
    * @returns One
    *

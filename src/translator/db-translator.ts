@@ -8,7 +8,7 @@ export class DbTranslator extends Translator {
     try {
       const allEntries = await dict.findAll();
       const newEntries = allEntries.filter(it => !it.isRegExp && !it.chinese);
-      const translations = await this.engine.translate(newEntries.map(it => it.english));
+      const translations = await this.engine.translateHtml(newEntries.map(it => it.english));
       for (let i = 0; i < translations.length; ++i) {
         const entry = newEntries[i];
         entry.chinese = translations[i].trim();

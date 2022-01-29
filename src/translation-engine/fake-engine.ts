@@ -1,7 +1,7 @@
 import { TranslationEngine } from './translation-engine';
 
 export class FakeTranslationEngine extends TranslationEngine {
-  protected async doTranslate(texts: string[]): Promise<string[]> {
+  protected async doTranslateHtml(texts: string[]): Promise<string[]> {
     return texts.map(text => {
       return text
         .replace(/\bone\b/gi, '一')

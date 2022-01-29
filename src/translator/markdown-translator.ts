@@ -57,7 +57,7 @@ export class MarkdownTranslator extends Translator {
   async translateNormalNodes(pairs: Node[]): Promise<Node[]> {
     const originals = pairs.map(it => markdownStringify(preprocess(it)));
     const batches = chunk(originals, this.engine.batchSize);
-    const translations = await Promise.all(batches.map(async (it) => this.engine.translate(it)));
+    const translations = await Promise.all(batches.map(async (it) => this.engine.translateMd(it)));
     return translations.flat().map(it => markdownParse(it));
   }
 
@@ -65,7 +65,7 @@ export class MarkdownTranslator extends Translator {
     const frontMatter = (safeLoad(yaml as string) as object) || {};
     const result = {};
     const entries = Object.entries(frontMatter);
-    const translations = await this.engine.translate(entries.map(([, value]) => value));
+    const translations = await this.engine.translateMd(entries.map(([, value]) => value));
     entries.forEach(([key, value], index) => {
       result[`${key}$$origin`] = value;
       result[key] = translations[index];

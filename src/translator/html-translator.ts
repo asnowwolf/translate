@@ -1,7 +1,6 @@
 import { Translator } from './translator';
 import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../tiny-dom/dom-models';
 import { containsChinese } from '../utils/common';
-import { htmlToMd, mdToHtml } from '../utils/markdown';
 import { NoopTranslationEngine } from '../translation-engine/noop-engine';
 import { sameExceptWhitespace } from './same-except-whitespace';
 
@@ -15,7 +14,7 @@ export class HtmlTranslator extends Translator {
   }
 
   async translateDoc(doc: DomDocument): Promise<DomDocument> {
-    const titles = await this.engine.translate([doc.title]);
+    const titles = await this.engine.translateHtml([doc.title]);
     doc.title = titles[0]?.trim() ?? '';
 
     if (!doc.body) {
@@ -28,12 +27,11 @@ export class HtmlTranslator extends Translator {
       .map(selector => Array.from(doc.querySelectorAll(selector)))
       .flat().filter(node => !node.previousElementSibling?.hasAttribute('translation-result'));
 
-    const originals = elements.map(it => htmlToMd(it.innerHTML));
-    const translations = await this.engine.translate(originals);
+    const originals = elements.map(it => it.innerHTML);
+    const translations = await this.engine.translateHtml(originals);
 
     translations.forEach((translation, index) => {
-      const html = mdToHtml(translation);
-      this.applyTranslation(elements[index], html);
+      this.applyTranslation(elements[index], translation);
     });
     return doc;
   }

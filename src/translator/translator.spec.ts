@@ -64,6 +64,12 @@ describe('file-translator', function () {
   <ul>
     <li>Four</li>
   </ul>
+  <table>
+    <tr>
+      <td>Five</td>
+      <td>Six</td>
+    </tr>
+  </table>
 </li>`);
 
     expect(result).toEqual(`<li>
@@ -79,6 +85,18 @@ describe('file-translator', function () {
       <p translation-origin="off">Four</p>
     </li>
   </ul>
+  <table>
+    <tbody><tr>
+      <td>
+        <p translation-result="on">五</p>
+        <p translation-origin="off">Five</p>
+      </td>
+      <td>
+        <p translation-result="on">六</p>
+        <p translation-origin="off">Six</p>
+      </td>
+    </tr>
+  </tbody></table>
 </li>`);
   });
 

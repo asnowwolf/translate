@@ -1,4 +1,5 @@
 import { chunk, uniq } from 'lodash';
+import { htmlToMd, mdToHtml } from '../utils/markdown';
 
 export abstract class TranslationEngine {
   batchSize = 100;
@@ -11,13 +12,18 @@ export abstract class TranslationEngine {
   async dispose(): Promise<void> {
   }
 
-  async translate(texts: string[]): Promise<string[]> {
+  async translateMd(texts: string[]): Promise<string[]> {
+    const result = await this.translateHtml(texts.map(text => mdToHtml(text.trim())));
+    return result.map(html => htmlToMd(html).trim());
+  }
+
+  async translateHtml(texts: string[]): Promise<string[]> {
     if (!texts.filter(it => it?.trim().length).length) {
       return texts;
     }
     const originals = uniq(texts.filter(it => it?.trim()));
     const batches = chunk(originals, this.batchSize);
-    const chunks = await Promise.all(batches.map(async (it) => this.doTranslate(it)));
+    const chunks = await Promise.all(batches.map(async (it) => this.doTranslateHtml(it)));
     const translations = chunks.flat();
     return texts.map(it => {
       const index = originals.indexOf(it);
@@ -25,5 +31,5 @@ export abstract class TranslationEngine {
     });
   }
 
-  protected abstract async doTranslate(texts: string[]): Promise<string[]>;
+  protected abstract async doTranslateHtml(texts: string[]): Promise<string[]>;
 }

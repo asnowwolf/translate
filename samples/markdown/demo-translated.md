@@ -18,6 +18,8 @@ title: 一
 
 <a name="1"></a>
 
+{@a 1}
+
 Three
 
 三
