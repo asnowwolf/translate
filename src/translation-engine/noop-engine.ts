@@ -1,5 +1,5 @@
 import { TranslationEngine } from './translation-engine';
-import { htmlToMd, mdToHtml } from '../utils/markdown';
+import { htmlToMd, mdToHtml } from '../unified/markdown';
 
 export class NoopTranslationEngine extends TranslationEngine {
   protected async doTranslateHtml(texts: string[]): Promise<string[]> {

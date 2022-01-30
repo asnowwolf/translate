@@ -1,7 +1,7 @@
 import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { Dict } from '../dict/dict';
-import { htmlToMd, mdToHtml } from '../utils/markdown';
+import { htmlToMd, mdToHtml } from '../unified/markdown';
 
 export class DictTranslationEngine extends TranslationEngine {
   private dict: Dict;

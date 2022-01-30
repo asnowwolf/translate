@@ -1,5 +1,5 @@
 import { chunk, uniq } from 'lodash';
-import { htmlToMd, mdToHtml } from '../utils/markdown';
+import { htmlToMd, mdToHtml } from '../unified/markdown';
 
 export abstract class TranslationEngine {
   batchSize = 100;

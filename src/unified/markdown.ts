@@ -8,10 +8,10 @@ import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
 import { Node } from 'unist';
 import * as stringWidth from 'string-width';
-import { customParser } from '../remark-plugins/custom-parser-plugin';
-import { customCompiler } from '../remark-plugins/custom-compiler-plugin';
-import { mastToHastHandlers } from '../remark-plugins/mast-to-hast-handlers';
-import { hastToMastHandlers } from '../remark-plugins/hast-to-mast-handlers';
+import { customParser } from './remark-plugins/custom-parser-plugin';
+import { customCompiler } from './remark-plugins/custom-compiler-plugin';
+import { mastToHastHandlers } from './remark-plugins/mast-to-hast-handlers';
+import { hastToMastHandlers } from './remark-plugins/hast-to-mast-handlers';
 
 const stringifyOptions = {
   emphasis: '*',

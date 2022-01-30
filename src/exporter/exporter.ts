@@ -1,5 +1,5 @@
-import { mdToHtml } from '../utils/markdown';
-import { htmlToText } from '../tiny-dom/dom-utils';
+import { mdToHtml } from '../unified/markdown';
+import { htmlToText } from '../utils/tiny-dom/dom-utils';
 
 export class Exporter {
   export(entries: { english: string, chinese: string }[]): { english: string, chinese: string }[] {

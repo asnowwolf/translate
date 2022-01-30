@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { DomDocument, DomElement } from '../tiny-dom/dom-models';
+import { DomDocument, DomElement } from '../utils/tiny-dom/dom-models';
 
 export class Injector {
   constructor(

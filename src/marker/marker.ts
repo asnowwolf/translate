@@ -7,7 +7,7 @@ import {
   DomSelector,
   DomTableElement,
   DomTableRowElement,
-} from '../tiny-dom/dom-models';
+} from '../utils/tiny-dom/dom-models';
 import { containsChinese } from '../utils/common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';

@@ -1,5 +1,5 @@
 import { Translator } from './translator';
-import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../tiny-dom/dom-models';
+import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../utils/tiny-dom/dom-models';
 import { containsChinese } from '../utils/common';
 import { NoopTranslationEngine } from '../translation-engine/noop-engine';
 import { sameExceptWhitespace } from './same-except-whitespace';

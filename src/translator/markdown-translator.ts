@@ -7,7 +7,7 @@ import * as unistMap from 'unist-util-flatmap';
 import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { containsChinese } from '../utils/common';
-import { markdownParse, markdownStringify } from '../utils/markdown';
+import { markdownParse, markdownStringify } from '../unified/markdown';
 import { sameExceptWhitespace } from './same-except-whitespace';
 
 export class MarkdownTranslator extends Translator {
