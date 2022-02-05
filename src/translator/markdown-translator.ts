@@ -1,6 +1,6 @@
 import { Translator } from './translator';
 import { Node, Parent } from 'unist';
-import { chunk, cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { safeDump, safeLoad } from 'js-yaml';
 import { ListItem, YAML } from 'mdast';
 import * as unistMap from 'unist-util-flatmap';
@@ -23,28 +23,39 @@ export class MarkdownTranslator extends Translator {
       }
     });
     const result = mapToNodePairs(tree);
-    const pairs: Node[] = [];
-    const yamls: YAML[] = [];
-    unistVisit(result, (node) => {
-      if (node.type === 'yaml') {
-        yamls.push(node);
-      } else if (node.translation) {
-        pairs.push(node);
-      }
+    const { nodes, frontMatters } = this.extractNodesAndFrontMatters(result);
+
+    frontMatters.forEach(yaml => {
+      const frontMatter = (safeLoad(yaml.value) as object) || {};
+      const result = {};
+      const entries = Object.entries(frontMatter);
+      const tasks = entries.map(item => {
+        const [key, value] = item;
+        result[`${key}$$origin`] = value;
+        return this.engine.translateMd(value).then((translation) => {
+          result[key] = translation.trim();
+        });
+      });
+      Promise.all(tasks).then(() => {
+        yaml.value = safeDump(result);
+      });
     });
 
-    for (const node of yamls) {
-      node.value = await this.translateYaml(node.value);
-    }
-
-    const translatedPairs = await this.translateNormalNodes(pairs);
-    pairs.forEach((original, index) => {
-      const translation = translatedPairs[index];
-      if (translation && !original.tableCell && sameExceptWhitespace(markdownStringify(original), markdownStringify(translation))) {
-        unistRemove(result, original);
-      }
-      applyTranslation(original, translation);
+    nodes.forEach(original => {
+      this.engine.translateMd(markdownStringify(preprocess(original)))
+        .then(translation => markdownParse(translation))
+        .then(translation => {
+          if (translation && !original.tableCell && sameExceptWhitespace(markdownStringify(original), markdownStringify(translation))) {
+            unistRemove(result, original);
+          }
+          if (original.tableCell) {
+            translation.type = 'tableCell';
+          }
+          Object.assign(original, translation);
+        });
     });
+    await this.engine.flush();
+
     unistVisit(result, (node) => {
       if (node.type === 'link' && node.url?.startsWith('linkRef:')) {
         node.type = 'linkReference';
@@ -54,23 +65,18 @@ export class MarkdownTranslator extends Translator {
     return prettify(markdownStringify(result));
   }
 
-  async translateNormalNodes(pairs: Node[]): Promise<Node[]> {
-    const originals = pairs.map(it => markdownStringify(preprocess(it)));
-    const batches = chunk(originals, this.engine.batchSize);
-    const translations = await Promise.all(batches.map(async (it) => this.engine.translateMd(it)));
-    return translations.flat().map(it => markdownParse(it));
-  }
+  private extractNodesAndFrontMatters(result): { nodes: Node[]; frontMatters: YAML[] } {
+    const nodes: Node[] = [];
+    const frontMatters: YAML[] = [];
 
-  async translateYaml(yaml: string): Promise<string> {
-    const frontMatter = (safeLoad(yaml as string) as object) || {};
-    const result = {};
-    const entries = Object.entries(frontMatter);
-    const translations = await this.engine.translateMd(entries.map(([, value]) => value));
-    entries.forEach(([key, value], index) => {
-      result[`${key}$$origin`] = value;
-      result[key] = translations[index];
+    unistVisit(result, (node) => {
+      if (node.type === 'yaml') {
+        frontMatters.push(node);
+      } else if (node.translation) {
+        nodes.push(node);
+      }
     });
-    return safeDump(result);
+    return { nodes, frontMatters };
   }
 }
 
@@ -87,14 +93,6 @@ function preprocess(node: Node): Node {
   if (node.tableCell) {
     node.type = 'paragraph';
   }
-  return node;
-}
-
-function applyTranslation(node: Node, translation: Node): Node {
-  if (node.tableCell) {
-    translation.type = 'tableCell';
-  }
-  Object.assign(node, translation);
   return node;
 }
 

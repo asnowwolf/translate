@@ -1,33 +1,33 @@
 import { Translator } from './translator';
 import { containsChinese } from '../utils/common';
-
-function isEqualObject(obj1: object, obj2: object): boolean {
-  return JSON.stringify(obj1) === JSON.stringify(obj2);
-}
+import { isDeepStrictEqual } from 'util';
 
 export class JsonTranslator extends Translator {
   async translate(text: string): Promise<string> {
     const obj = JSON.parse(text);
-    await this.translateObject(obj);
-    if (isEqualObject(obj, JSON.parse(text))) {
+    this.translateObject(obj);
+    await this.engine.flush();
+    if (isDeepStrictEqual(obj, JSON.parse(text))) {
       return text;
     }
     return JSON.stringify(obj, null, 2);
   }
 
-  async translateObject(obj: Object): Promise<void> {
+  translateObject(obj: Object): void {
     for (let key in obj) {
       if (obj.hasOwnProperty(key)) {
         const value = obj[key];
         if (this.options.jsonProperties.includes(key) && typeof value === 'string' && !containsChinese(value)) {
-          const translations = await this.engine.translateHtml([value]);
-          const translation = translations[0]?.trim();
-          if (value !== translation) {
-            obj[key] = `${value}\n\n${translation}`;
-          }
+          this.engine.translateHtml(value)
+            .then((it) => it.trim())
+            .then((translation) => {
+              if (value !== translation) {
+                obj[key] = `${value}\n\n${translation}`;
+              }
+            });
         }
         if (value instanceof Object) {
-          await this.translateObject(value);
+          this.translateObject(value);
         }
       }
     }

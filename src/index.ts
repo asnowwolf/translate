@@ -16,3 +16,5 @@ export * from './translation-engine/ms-engine';
 export * from './translation-engine/noop-engine';
 export * from './translator/translator';
 export { TranslationEngineType } from './translation-engine/translation-engine-type';
+export { PromiseMaker } from './utils/promise-maker';
+export { delay } from './utils/delay';

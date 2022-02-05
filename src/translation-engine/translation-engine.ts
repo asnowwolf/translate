@@ -1,5 +1,7 @@
-import { chunk, uniq } from 'lodash';
 import { htmlToMd, mdToHtml } from '../unified/markdown';
+import { chunk } from 'lodash';
+import { PromiseMaker } from '../utils/promise-maker';
+import { delay } from '../utils/delay';
 
 export abstract class TranslationEngine {
   batchSize = 100;
@@ -12,23 +14,37 @@ export abstract class TranslationEngine {
   async dispose(): Promise<void> {
   }
 
-  async translateMd(texts: string[]): Promise<string[]> {
-    const result = await this.translateHtml(texts.map(text => mdToHtml(text.trim())));
-    return result.map(html => htmlToMd(html).trim());
+  translateMd(text: string): Promise<string> {
+    return this.translateHtml(mdToHtml(text.trim())).then(html => htmlToMd(html));
   }
 
-  async translateHtml(texts: string[]): Promise<string[]> {
-    if (!texts.filter(it => it?.trim().length).length) {
-      return texts;
+  private buffer: { html: string, result$: PromiseMaker<string> }[] = [];
+
+  translateHtml(html: string): Promise<string> {
+    if (!html?.trim()) {
+      return Promise.resolve(html);
     }
-    const originals = uniq(texts.filter(it => it?.trim()));
-    const batches = chunk(originals, this.batchSize);
-    const chunks = await Promise.all(batches.map(async (it) => this.doTranslateHtml(it)));
-    const translations = chunks.flat();
-    return texts.map(it => {
-      const index = originals.indexOf(it);
-      return translations[index] ?? it;
+
+    const result$ = new PromiseMaker<string>();
+    this.buffer.push({ html, result$ });
+    return result$.promise;
+  }
+
+  flush(): Promise<void> {
+    const chunks = chunk(this.buffer, this.batchSize);
+    chunks.forEach(chunk => {
+      this.doTranslateHtml(chunk.map(it => it.html)).then(translations => {
+        chunk.forEach(({ result$ }, index) => {
+          result$.resolve(translations[index]);
+        });
+      });
     });
+
+    const tasks = this.buffer.map(({ result$ }) => result$.promise);
+    return Promise.all(tasks)
+      .then(() => this.buffer = [])
+      // add a small delay to ensure that all derived promises(such as Promise.all) are resolved
+      .then(() => delay(100));
   }
 
   protected abstract async doTranslateHtml(texts: string[]): Promise<string[]>;

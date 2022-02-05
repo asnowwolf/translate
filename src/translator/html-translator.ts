@@ -14,8 +14,9 @@ export class HtmlTranslator extends Translator {
   }
 
   async translateDoc(doc: DomDocument): Promise<DomDocument> {
-    const titles = await this.engine.translateHtml([doc.title]);
-    doc.title = titles[0]?.trim() ?? '';
+    this.engine.translateHtml(doc.title).then(title => {
+      doc.title = title?.trim() ?? '';
+    });
 
     if (!doc.body) {
       return doc;
@@ -28,11 +29,13 @@ export class HtmlTranslator extends Translator {
       .flat().filter(node => !node.previousElementSibling?.hasAttribute('translation-result'));
 
     const originals = elements.map(it => it.innerHTML);
-    const translations = await this.engine.translateHtml(originals);
-
-    translations.forEach((translation, index) => {
-      this.applyTranslation(elements[index], translation);
+    originals.forEach((original, index) => {
+      this.engine.translateHtml(original).then(translation => {
+        this.applyTranslation(elements[index], translation);
+      });
     });
+
+    await this.engine.flush();
     return doc;
   }
 

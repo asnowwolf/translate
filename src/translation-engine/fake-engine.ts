@@ -1,8 +1,9 @@
 import { TranslationEngine } from './translation-engine';
+import { delay } from '../utils/delay';
 
 export class FakeTranslationEngine extends TranslationEngine {
   protected async doTranslateHtml(texts: string[]): Promise<string[]> {
-    return texts.map(text => {
+    const result = texts.map(text => {
       return text
         .replace(/\bone\b/gi, '一')
         .replace(/\btwo\b/gi, '二')
@@ -15,5 +16,6 @@ export class FakeTranslationEngine extends TranslationEngine {
         .replace(/\bnine\b/gi, '九')
         ;
     });
+    return delay(200).then(() => result);
   }
 }
