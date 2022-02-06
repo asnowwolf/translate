@@ -22,7 +22,7 @@ export class JsonTranslator extends Translator {
             .then((it) => it.trim())
             .then((translation) => {
               if (value !== translation) {
-                obj[key] = `${value}\n\n${translation}`;
+                obj[`${key}Cn`] = translation;
               }
             });
         }
