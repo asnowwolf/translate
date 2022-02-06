@@ -1,9 +1,7 @@
 import { CommandBuilder } from 'yargs';
-import { ensureHomeDir } from '../../utils/common';
 import { getTranslationEngine } from '../../translation-engine/get-translation-engine';
 import { getTranslator } from '../../translator/get-translator';
 import { sync as globby } from 'globby';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../translation-engine/translation-engine-type';
 
 export const command = `translate <sourceGlobs...>`;
@@ -100,10 +98,6 @@ export const handler = async function (params: Params) {
       await translator.translateFile(filename);
     }
   } finally {
-    // 记录已经执行的数量，统一记录在应用目录下
-    const counterFilename = `${ensureHomeDir()}/${params.engine}_count.txt`;
-    const count = existsSync(counterFilename) ? +readFileSync(counterFilename, 'utf8').trim() : 0;
-    writeFileSync(counterFilename, (count + translationEngine.translated).toString(10), 'utf8');
     await translationEngine.dispose();
   }
 };

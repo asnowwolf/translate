@@ -6,7 +6,6 @@ import { delay } from '../utils/delay';
 export abstract class TranslationEngine {
   batchSize = 100;
   context: { filename?: string } = {};
-  translated = 0;
 
   async init(): Promise<void> {
   }
