@@ -1,0 +1,14 @@
+import { AdocNode, BlockNodeRenderer } from './block-node-renderer';
+
+interface SectionNode extends AdocNode {
+  getLevel(): number;
+}
+
+export class SectionRenderer extends BlockNodeRenderer<SectionNode> {
+  ignoredAttributes = ['style', 'title'];
+
+  renderBody(node: SectionNode): string {
+    const title = node.getTitle();
+    return title && `${'='.repeat(node.getLevel() + 1)} ${title}\n`;
+  }
+}
