@@ -9,6 +9,7 @@ import { ListRenderer } from './renderers/list-renderer';
 import { PageBreakRenderer } from './renderers/page-break-renderer';
 import { ThematicBreakRenderer } from './renderers/thematic-break-renderer';
 import { InlineIndextermRenderer } from './renderers/inline-indexterm-renderer';
+import { DescriptionListRenderer } from './renderers/description-list-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -17,7 +18,7 @@ export class AdocConverter {
     'section': new SectionRenderer(),
     'ulist': new ListRenderer(),
     'olist': new ListRenderer(),
-    'dlist': new ListRenderer(),
+    'dlist': new DescriptionListRenderer(),
     'list_item': new ListItemRenderer(),
     'thematic_break': new ThematicBreakRenderer(),
     'page_break': new PageBreakRenderer(),

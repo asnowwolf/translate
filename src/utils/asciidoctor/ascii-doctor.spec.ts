@@ -97,12 +97,22 @@ To create a new git repository,`;
 * NetBSD`;
     expect(rebuild(content)).toEqual(content);
   });
-  it('description lists', () => {
+  it('description lists - simple', () => {
     const content = `CPU:: The brain of the computer.
 Hard drive:: Permanent storage for operating system and/or user files.
-Mouse::
-  A device that provides input to a computer.
+Mouse:: A device that provides input to a computer.
 Monitor:: Displays information in visual form using text and graphics.`;
+    expect(rebuild(content)).toEqual(content);
+  });
+
+  it('description lists - complex', () => {
+    const content = `Dairy::
+* Milk
+* Eggs
+Bakery::
+* Bread
+Produce::
+* Bananas`;
     expect(rebuild(content)).toEqual(content);
   });
 });

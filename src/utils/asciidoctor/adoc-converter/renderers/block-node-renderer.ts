@@ -15,6 +15,8 @@ export interface AdocNode {
 
   convert(): string;
 
+  blocks: AdocNode[];
+
   attributes: { $$keys: (string | { key: number, value: string })[] };
 }
 
@@ -29,8 +31,8 @@ export class BlockNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
   render(node: T): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
-    const content = this.renderChildren(node);
-    return [[header, body].filter(it => !!it).join('\n'), content].filter(it => !!it).join('\n');
+    const children = this.renderChildren(node);
+    return [[header, body].filter(it => !!it).join('\n'), children].filter(it => !!it).join('\n');
   }
 
   protected renderHeader(node: T): string {
@@ -78,14 +80,22 @@ export class BlockNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
 
   protected renderChildren(node: T): string {
     const content = node.getContent?.();
-    if (!content || content.constructor.name === '$NilClass') {
-      return '';
-    }
+    return renderContent(content);
+  }
+}
 
-    if (typeof content === 'string') {
-      return content;
-    } else if (content instanceof Array) {
-      return content.map(it => it.convert?.() ?? it).filter(it => !!it).join('\n');
-    }
+function renderContent(content: string | AdocNode | AdocNode[] | AdocNode[][]): string {
+  if (!content || content.constructor.name === '$NilClass') {
+    return '';
+  }
+
+  if (typeof content === 'string') {
+    return content;
+  }
+  if ('convert' in content) {
+    return content.convert();
+  } else if (content instanceof Array) {
+    return (content as [AdocNode | AdocNode[]]).map(it => renderContent(it))
+      .filter(it => !!it).join('\n');
   }
 }
