@@ -11,6 +11,6 @@ export class ListItemRenderer extends BlockNodeRenderer<ListItemNode> {
   renderBody(item: ListItemNode): string {
     const attributes = item.getAttributes();
     const checkbox = attributes.checkbox === '' ? attributes.checked === '' ? '[x]' : '[ ]' : '';
-    return [[item.marker, checkbox, item.getText()].filter(it => !!it?.trim?.()).join(' ')].filter(it => !!it?.trim?.()).join('\n');
+    return [item.marker, checkbox, item.getText()].filter(it => !!it?.trim?.()).join(' ');
   }
 }

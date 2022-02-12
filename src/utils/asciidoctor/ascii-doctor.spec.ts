@@ -81,6 +81,18 @@ To create a new git repository,`;
 * [x] Bill Bryson`;
     expect(rebuild(content)).toEqual(content);
   });
+
+  it('unordered list - complex', () => {
+    const content = `abc
+
+* [ ] Edgar Allan Poe
+** Sheri S. Tepper
+* [x] Bill Bryson
+
+def`;
+    expect(rebuild(content)).toEqual(content);
+  });
+
   it('ordered list', () => {
     const content = `[start=4,%reversed]
 .Title
@@ -197,11 +209,7 @@ This URL has repeating underscores {link-with-underscores}.`;
     it('footnotes', () => {
       const content = `The hail-and-rainbow protocol can be initiated at five levels:
 
-. doublefootnote:[The double hail-and-rainbow level makes my toes tingle.]
-. tertiary
-. supernumerary
-. supermassive
-. apocalyptic
+doublefootnote:[The double hail-and-rainbow level makes my toes tingle.]
 
 A bold statement!footnote:disclaimer[Opinions are my own.]
 

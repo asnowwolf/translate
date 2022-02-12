@@ -1,6 +1,8 @@
 export interface AdocNode {
   getId(): string;
 
+  getParent(): AdocNode;
+
   getContent(): string | any;
 
   getNodeName(): string;
