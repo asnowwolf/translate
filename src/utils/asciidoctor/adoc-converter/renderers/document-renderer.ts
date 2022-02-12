@@ -1,6 +1,7 @@
-import { AdocNode, NodeRenderer } from './block-node-renderer';
 import { map, omitBy } from 'lodash';
 import * as asciidoctor from 'asciidoctor.js';
+import { NodeRenderer } from './node-renderer';
+import { AdocNode } from './adoc-node';
 
 export interface Author {
   getName(): string;

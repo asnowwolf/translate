@@ -1,5 +1,6 @@
-import { AdocNode, BlockNodeRenderer } from './block-node-renderer';
+import { BlockNodeRenderer } from './block-node-renderer';
 import { addQuotes } from '../utils/add-quotes';
+import { AdocNode } from './adoc-node';
 
 interface InlineIndexTermNode extends AdocNode {
   getAttributes(): { terms: string[] };

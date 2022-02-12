@@ -1,4 +1,5 @@
-import { AdocNode, BlockNodeRenderer } from './block-node-renderer';
+import { BlockNodeRenderer } from './block-node-renderer';
+import { AdocNode } from './adoc-node';
 
 interface ThematicBreakNode extends AdocNode {
 }

@@ -115,4 +115,16 @@ Produce::
 * Bananas`;
     expect(rebuild(content)).toEqual(content);
   });
+
+  it('text formats - simple', () => {
+    const content = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!`;
+    const rebuilt = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ *unconstrained strong* stuff!`;
+    expect(rebuild(content)).toEqual(rebuilt);
+  });
+
+  it('text formats - mixed', () => {
+    const content = '`*_monospace bold italic phrase_*` & ``*__char__*``acter``*__s__*``';
+    const rebuilt = '`*_monospace bold italic phrase_*` &amp; `*_char_*`acter`*_s_*`';
+    expect(rebuild(content)).toEqual(rebuilt);
+  });
 });

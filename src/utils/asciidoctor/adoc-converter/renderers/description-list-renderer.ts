@@ -1,5 +1,6 @@
-import { AdocNode, BlockNodeRenderer } from './block-node-renderer';
+import { BlockNodeRenderer } from './block-node-renderer';
 import { ListItemNode } from './list-item-renderer';
+import { AdocNode } from './adoc-node';
 
 interface DescriptionListNode extends AdocNode {
   getItems(): [[ListItemNode], ListItemNode][];

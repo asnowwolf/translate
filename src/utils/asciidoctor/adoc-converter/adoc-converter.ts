@@ -3,13 +3,15 @@ import { SectionRenderer } from './renderers/section-renderer';
 import { ParagraphRenderer } from './renderers/paragraph-renderer';
 import { InlineAnchorRenderer } from './renderers/inline-anchor-renderer';
 import { FallbackRenderer } from './renderers/fallback-renderer';
-import { AdocNode, NodeRenderer } from './renderers/block-node-renderer';
 import { ListItemRenderer } from './renderers/list-item-renderer';
 import { ListRenderer } from './renderers/list-renderer';
 import { PageBreakRenderer } from './renderers/page-break-renderer';
 import { ThematicBreakRenderer } from './renderers/thematic-break-renderer';
 import { InlineIndextermRenderer } from './renderers/inline-indexterm-renderer';
 import { DescriptionListRenderer } from './renderers/description-list-renderer';
+import { NodeRenderer } from './renderers/node-renderer';
+import { AdocNode } from './renderers/adoc-node';
+import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -23,6 +25,7 @@ export class AdocConverter {
     'thematic_break': new ThematicBreakRenderer(),
     'page_break': new PageBreakRenderer(),
     'paragraph': new ParagraphRenderer(),
+    'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_indexterm': new InlineIndextermRenderer(),
   };

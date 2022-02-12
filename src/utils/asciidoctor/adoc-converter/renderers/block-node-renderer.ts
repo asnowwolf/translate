@@ -1,28 +1,6 @@
 import { addQuotes } from '../utils/add-quotes';
-
-export interface AdocNode {
-  getContent(): string | any;
-
-  getNodeName(): string;
-
-  getAttributes(): Record<string, any>;
-
-  getAttribute(name: string): string;
-
-  getTitle(): string;
-
-  getText(): string;
-
-  convert(): string;
-
-  blocks: AdocNode[];
-
-  attributes: { $$keys: (string | { key: number, value: string })[] };
-}
-
-export interface NodeRenderer<T extends AdocNode> {
-  render(node: T): string;
-}
+import { NodeRenderer } from './node-renderer';
+import { AdocNode } from './adoc-node';
 
 export class BlockNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
   defaultAttributes: { [name: string]: any } = {};
