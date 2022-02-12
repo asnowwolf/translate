@@ -7,6 +7,6 @@ interface InlineNode extends AdocNode {
 
 export class InlineNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
   render(node: InlineNode): string {
-    return '';
+    return node.getText();
   }
 }

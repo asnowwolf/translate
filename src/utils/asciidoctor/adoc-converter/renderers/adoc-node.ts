@@ -1,4 +1,6 @@
 export interface AdocNode {
+  getId(): string;
+
   getContent(): string | any;
 
   getNodeName(): string;

@@ -5,4 +5,7 @@ interface ParagraphNode extends AdocNode {
 }
 
 export class ParagraphRenderer extends BlockNodeRenderer<ParagraphNode> {
+  protected renderChildren(node: ParagraphNode): string {
+    return `${node.getContent()}\n`;
+  }
 }

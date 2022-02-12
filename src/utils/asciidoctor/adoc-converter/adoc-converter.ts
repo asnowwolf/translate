@@ -12,6 +12,7 @@ import { DescriptionListRenderer } from './renderers/description-list-renderer';
 import { NodeRenderer } from './renderers/node-renderer';
 import { AdocNode } from './renderers/adoc-node';
 import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
+import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -27,6 +28,7 @@ export class AdocConverter {
     'paragraph': new ParagraphRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
+    'inline_footnote': new InlineFootnoteRenderer(),
     'inline_indexterm': new InlineIndextermRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();

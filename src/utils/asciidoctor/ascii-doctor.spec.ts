@@ -26,7 +26,9 @@ describe('ascii-doctor', function () {
     });
   });
   it('paragraph', () => {
-    const content = `paragraph`;
+    const content = `paragraph1
+
+paragraph2`;
     expect(rebuild(content)).toEqual(content);
   });
   it('Document header', () => {
@@ -116,15 +118,95 @@ Produce::
     expect(rebuild(content)).toEqual(content);
   });
 
-  it('text formats - simple', () => {
-    const content = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!`;
-    const rebuilt = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ *unconstrained strong* stuff!`;
-    expect(rebuild(content)).toEqual(rebuilt);
+  describe('text formats', function () {
+    it('simple', () => {
+      const content = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!`;
+      const rebuilt = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ *unconstrained strong* stuff!`;
+      expect(rebuild(content)).toEqual(rebuilt);
+    });
+
+    it('mixed', () => {
+      const content = '`*_monospace bold italic phrase_*` & ``*__char__*``acter``*__s__*``';
+      const rebuilt = '`*_monospace bold italic phrase_*` &amp; `*_char_*`acter`*_s_*`';
+      expect(rebuild(content)).toEqual(rebuilt);
+    });
+
+    xit('literal monospace', () => {
+      const content = `You can reference the value of a document attribute using
+the syntax \`+{name}+\`, where  is the attribute name.`;
+      const rebuilt = `You can reference the value of a document attribute using
+the syntax \`+{name}+\`, where  is the attribute name.`;
+      expect(rebuild(content)).toEqual(rebuilt);
+    });
+
+    xit('text span', () => {
+      const content = `The text [.underline]#underline me# is underlined.`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 
-  it('text formats - mixed', () => {
-    const content = '`*_monospace bold italic phrase_*` & ``*__char__*``acter``*__s__*``';
-    const rebuilt = '`*_monospace bold italic phrase_*` &amp; `*_char_*`acter`*_s_*`';
-    expect(rebuild(content)).toEqual(rebuilt);
+  describe('links', () => {
+    it('autolinks', () => {
+      const content = `The homepage for the Asciidoctor Project is https://www.asciidoctor.org.
+Email us at hello@example.com to say hello.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('enclosed link', () => {
+      const content = `You will often see <https://example.org> used in examples.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    xit('no autolink', () => {
+      const content = `Once launched, the site will be available at \\https://example.org.
+
+If you cannot access the site, email \\help@example.org for assistance.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    xit('url macro', () => {
+      const content = `Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^,role=green].`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    xit('complex', () => {
+      const content = `= Document Title
+:link-with-underscores: https://asciidoctor.org/now_this__link_works.html
+
+This URL has repeating underscores {link-with-underscores}.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
+  describe('cross references', () => {
+    it('simple', () => {
+      const content = `The section <<anchors>> describes how automatic anchors work.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('complex', () => {
+      const content = `Learn how to <<link-macro-attributes,use attributes within the link macro>>.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('nature', () => {
+      const content = `Refer to <<Internal Cross References>>.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('cross document', () => {
+      const content = `Refer to <<document-b.adoc#section-b,Section B>> for more information.`;
+      const rebulit = `Refer to <<document-b.html#section-b,Section B>> for more information.`;
+      expect(rebuild(content)).toEqual(rebulit);
+    });
+    it('footnotes', () => {
+      const content = `The hail-and-rainbow protocol can be initiated at five levels:
+
+. doublefootnote:[The double hail-and-rainbow level makes my toes tingle.]
+. tertiary
+. supernumerary
+. supermassive
+. apocalyptic
+
+A bold statement!footnote:disclaimer[Opinions are my own.]
+
+Another outrageous statement.footnote:disclaimer[]`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });
