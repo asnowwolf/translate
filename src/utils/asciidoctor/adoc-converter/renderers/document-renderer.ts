@@ -1,4 +1,3 @@
-import { map, omitBy } from 'lodash';
 import * as asciidoctor from 'asciidoctor.js';
 import { BaseNodeRenderer } from './base-node-renderer';
 import { AdocNode } from './adoc-node';
@@ -41,12 +40,11 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
 
   render(node: DocumentNode): string {
     const doctitle = node.getAttributes().doctitle;
-    const nonDefaultAttributes = omitBy(node.getAttributes(), (value, key) =>
-      this.ignoredAttributes.includes(key) || this.defaultAttributes[key] === value);
+    const nonDefaultAttributes = this.getNonDefaultAttributes(node);
     return [
       doctitle && `= ${doctitle}`,
       node.getAuthors().map(author => `${author.getName()} <${author.getEmail()}>`).join(';'),
-      map(nonDefaultAttributes, (value, key) => renderAttribute(key, value)).join('\n'),
+      nonDefaultAttributes.map(({ name, value }) => renderAttribute(name, value)).join('\n'),
       node.getContent(),
     ].filter(it => !!it).join('\n');
   }

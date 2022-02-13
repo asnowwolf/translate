@@ -1,5 +1,5 @@
 import { BaseNodeRenderer } from './base-node-renderer';
-import { AdocAttribute, AdocNode } from './adoc-node';
+import { AdocNode } from './adoc-node';
 
 export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   render(node: T): string {
@@ -10,12 +10,9 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   }
 
   protected renderHeader(node: T): string {
-    const attributes = this.getAttributes(node);
-    const nonDefaultAttributes = this.getNonDefaultAttributes(attributes);
-
-    const attributesText = this.renderAttributes(nonDefaultAttributes);
+    const attributes = this.renderAttributes(this.getHeaderAttributes(node));
     return [
-      attributesText,
+      attributes ? `[${attributes}]` : '',
       this.buildBlockTitle(this.getBlockTitle(node)),
     ].filter(it => !!it?.trim()).join('\n');
   }
@@ -31,12 +28,6 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   protected buildBlockTitle(title: string): string {
     const blockTitle = title?.trim();
     return blockTitle && `.${blockTitle}`;
-  }
-
-  protected renderAttributes(attributes: AdocAttribute[]): string {
-    const content = attributes.map(it => this.renderAttribute(it))
-      .filter(it => !!it).join(',');
-    return content ? `[${content}]` : '';
   }
 
   protected renderChildren(node: T): string {

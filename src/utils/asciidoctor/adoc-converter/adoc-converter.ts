@@ -13,8 +13,9 @@ import { NodeRenderer } from './renderers/base-node-renderer';
 import { AdocNode } from './renderers/adoc-node';
 import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
 import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
-import { BlockImageRenderer } from './renderers/block-image-renderer';
-import { InlineImageRenderer } from './renderers/inline-image-renderer';
+import { BlockResourceRenderer } from './renderers/block-resource-renderer';
+import { InlineResourceRenderer } from './renderers/inline-resource-renderer';
+import { internalAudioAttributes, internalImageAttributes, internalVideoAttributes } from './renderers/utils/internal-attributes';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -28,12 +29,14 @@ export class AdocConverter {
     'thematic_break': new ThematicBreakRenderer(),
     'page_break': new PageBreakRenderer(),
     'paragraph': new ParagraphRenderer(),
-    'image': new BlockImageRenderer(),
+    'image': new BlockResourceRenderer('image', internalImageAttributes),
+    'audio': new BlockResourceRenderer('audio', internalAudioAttributes),
+    'video': new BlockResourceRenderer('video', internalVideoAttributes),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
     'inline_indexterm': new InlineIndextermRenderer(),
-    'inline_image': new InlineImageRenderer(),
+    'inline_image': new InlineResourceRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 
