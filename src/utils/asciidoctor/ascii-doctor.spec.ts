@@ -292,4 +292,24 @@ While werewolves are hardy community members, keep in mind the following dietary
       expect(rebuild(content)).toEqual(content);
     });
   });
+
+  describe('sidebar', () => {
+    it('simple', () => {
+      const content = `[sidebar]
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('complex', () => {
+      const content = `.Optional Title
+****
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
+
+TIP: They can contain any type of content.
+****`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
 });

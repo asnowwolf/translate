@@ -23,7 +23,7 @@ export interface AdocNode {
 
   convert(): string;
 
-  blocks: AdocNode[];
+  getBlocks(): AdocNode[];
 
   attributes: RawAttributes;
 }

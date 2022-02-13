@@ -6,14 +6,12 @@ interface AdmonitionNode extends AdocNode {
 }
 
 export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
-  ignoredAttributes = ['title'];
-
   render(node: AdmonitionNode): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
     const children = this.renderChildren(node);
     if (isSimpleForm(header)) {
-      return [[header, body].filter(it => !!it).join('\n'), children].filter(it => !!it).join(': ');
+      return [[header, node.getStyle()].filter(it => !!it).join('\n'), children].filter(it => !!it).join(': ');
     } else {
       return [[header, body].filter(it => !!it).join('\n'), '====', children.trim(), '===='].filter(it => !!it).join('\n');
     }

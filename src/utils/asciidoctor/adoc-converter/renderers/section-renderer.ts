@@ -6,7 +6,7 @@ interface SectionNode extends AdocNode {
 }
 
 export class SectionRenderer extends BlockNodeRenderer<SectionNode> {
-  ignoredAttributes = ['style', 'title'];
+  ignoredAttributes = ['style'];
 
   renderBody(node: SectionNode): string {
     const title = node.getTitle();
