@@ -16,6 +16,7 @@ import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
 import { BlockResourceRenderer } from './renderers/block-resource-renderer';
 import { InlineResourceRenderer } from './renderers/inline-resource-renderer';
 import { internalAudioAttributes, internalImageAttributes, internalVideoAttributes } from './renderers/utils/internal-attributes';
+import { InlineKbdRenderer } from './renderers/inline-kbd-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -37,6 +38,7 @@ export class AdocConverter {
     'inline_footnote': new InlineFootnoteRenderer(),
     'inline_indexterm': new InlineIndextermRenderer(),
     'inline_image': new InlineResourceRenderer(),
+    'inline_kbd': new InlineKbdRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 

@@ -252,4 +252,9 @@ image::sunset.jpg[Sunset,200,100]`;
       expect(rebuild(content)).toEqual(content);
     });
   });
+  it('keyboard macro', () => {
+    const content = `:experimental:
+the hortkey is kbd:[Ctrl+F11]`;
+    expect(rebuild(content)).toEqual(content);
+  });
 });
