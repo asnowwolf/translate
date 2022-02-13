@@ -17,6 +17,8 @@ export interface AdocNode {
 
   getTitle(): string;
 
+  getLevel(): number;
+
   getText(): string;
 
   getType(): string;
@@ -24,6 +26,8 @@ export interface AdocNode {
   convert(): string;
 
   getBlocks(): AdocNode[];
+
+  content_model: 'simple' | 'compound';
 
   attributes: RawAttributes;
 }

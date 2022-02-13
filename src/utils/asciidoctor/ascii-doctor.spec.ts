@@ -312,4 +312,22 @@ TIP: They can contain any type of content.
       expect(rebuild(content)).toEqual(content);
     });
   });
+  describe('example blocks', () => {
+    it('simple', () => {
+      const content = `[example]
+.Optional title
+This is an example of an example block.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('complex', () => {
+      const content = `.Onomatopoeia
+====
+The book hit the floor with a *thud*.
+
+He could hear doves *cooing* in the pine trees branches.
+====`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
 });

@@ -6,13 +6,11 @@ interface SidebarNode extends AdocNode {
 }
 
 export class SidebarRenderer extends BlockNodeRenderer<SidebarNode> {
-  ignoredAttributes = ['style'];
-
   render(node: SidebarNode): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
     const children = this.renderChildren(node);
-    const delimiter = node.getBlocks().length > 0 ? '****' : '';
+    const delimiter = node.content_model === 'simple' ? '' : '****';
     return [[header, body].filter(it => !!it).join('\n'), delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 }
