@@ -19,7 +19,7 @@ export class BlockResourceRenderer extends BlockNodeRenderer<BlockResourceNode> 
   }
 
   renderBody(node: BlockResourceNode): string {
-    const attributes = this.renderAttributes(this.getInternalAttributes(node));
+    const attributes = this.renderAttributes(this.getInlineAttributes(node));
     return `${this.type}::${node.getAttribute('target')}[${attributes}]`;
   }
 }

@@ -5,6 +5,7 @@ interface ExampleNode extends AdocNode {
 }
 
 export class ExampleRenderer extends BlockNodeRenderer<ExampleNode> {
+  ignoredAttributes = ['style'];
   renderBody(node: ExampleNode): string {
     const children = this.renderChildren(node);
     const delimiter = node.content_model === 'simple' ? '' : '====';

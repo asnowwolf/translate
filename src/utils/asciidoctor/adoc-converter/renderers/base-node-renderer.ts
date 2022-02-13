@@ -11,7 +11,7 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
 
   protected defaultAttributes: { [name: string]: any } = {};
   protected ignoredAttributes: readonly string[] = [];
-  protected globalIgnoredAttributes: readonly string[] = ['style', 'attribute_entries', 'title'];
+  protected globalIgnoredAttributes: readonly string[] = ['attribute_entries', 'title'];
 
   protected internalAttributes: readonly InternalAttribute[] = [];
 
@@ -38,11 +38,11 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
     return this.getAttributes(node).filter(({ positional, name, value }) => this.defaultAttributes[name] !== value);
   }
 
-  protected getHeaderAttributes(node: T) {
+  protected getBlockAttributes(node: T) {
     return this.getNonDefaultAttributes(node).filter(it => !this.isInternalAttribute(it));
   }
 
-  protected getInternalAttributes(node: T) {
+  protected getInlineAttributes(node: T) {
     return this.getNonDefaultAttributes(node).filter(it => this.isInternalAttribute(it));
   }
 

@@ -13,8 +13,8 @@ export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
     return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 
-  protected getHeaderAttributes(node: AdmonitionNode): AdocAttribute[] {
-    return super.getHeaderAttributes(node).filter(it => !isDefaultValue(it, node));
+  protected getBlockAttributes(node: AdmonitionNode): AdocAttribute[] {
+    return super.getBlockAttributes(node).filter(it => !isDefaultValue(it, node));
   }
 }
 

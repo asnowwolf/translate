@@ -393,5 +393,12 @@ Yep. AsciiDoc and Markdown share a lot of common syntax already.
 ____`;
       expect(rebuild(content)).toEqual(rebuilt);
     });
+
+  });
+  it('verse', () => {
+    const content = `[verse, Carl Sandburg, two lines from the poem Fog]
+The fog comes
+on little cat feet.`;
+    expect(rebuild(content)).toEqual(content);
   });
 });

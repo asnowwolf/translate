@@ -9,7 +9,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   }
 
   protected renderHeader(node: T): string {
-    const attributes = this.renderAttributes(this.getHeaderAttributes(node));
+    const attributes = this.renderAttributes(this.getBlockAttributes(node));
     return [
       attributes ? `[${attributes}]` : '',
       this.buildBlockTitle(this.getBlockTitle(node)),
