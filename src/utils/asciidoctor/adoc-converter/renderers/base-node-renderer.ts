@@ -48,7 +48,7 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
 
   protected renderAttributes(attributes: AdocAttribute[]): string {
     const content = attributes.map(it => this.renderAttribute(it))
-      .filter(it => !!it).join(',');
+      .filter(it => !!it).join(', ');
     return content ?? '';
   }
 

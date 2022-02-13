@@ -44,7 +44,7 @@ Kismet R. Lee <kismet@asciidoctor.org>
     expect(rebuild(content)).toEqual(content);
   });
   it('section - complex', () => {
-    const content = `[positional_attribute_1,positional_attribute_2,named_attribute=value,positional_attribute_3]
+    const content = `[positional_attribute_1, positional_attribute_2, named_attribute=value, positional_attribute_3]
 .Kizmet's Favorite Authors
 === Section Title`;
     expect(rebuild(content)).toEqual(content);
@@ -94,7 +94,7 @@ def`;
   });
 
   it('ordered list', () => {
-    const content = `[start=4,%reversed]
+    const content = `[start=4, %reversed]
 .Title
 . Step four
 . Step five
@@ -231,24 +231,24 @@ Click image:pause.png[Pause] when you need a break.`;
     });
 
     it('image with attributes', () => {
-      const content = `[#img-sunset,link=https://www.flickr.com/photos/javh/5448336655]
+      const content = `[#img-sunset, link=https://www.flickr.com/photos/javh/5448336655]
 .A mountain sunset
-image::sunset.jpg[Sunset,200,100]`;
+image::sunset.jpg[Sunset, 200, 100]`;
       expect(rebuild(content)).toEqual(content);
     });
 
     it('image with attributes 2', () => {
-      const content = `image::tiger.png[Tiger,200,200,float=right,align=center]`;
+      const content = `image::tiger.png[Tiger, 200, 200, float=right, align=center]`;
       expect(rebuild(content)).toEqual(content);
     });
 
     it('audio and video', () => {
-      const content = `video::tiger.mp4[Tiger,200,200,float=right,align=center]`;
+      const content = `video::tiger.mp4[Tiger, 200, 200, float=right, align=center]`;
       expect(rebuild(content)).toEqual(content);
     });
 
     it('icon', () => {
-      const content = `icon:download[link=https://rubygems.org/downloads/whizbang-1.0.0.gem,window=_blank]`;
+      const content = `icon:download[link=https://rubygems.org/downloads/whizbang-1.0.0.gem, window=_blank]`;
       expect(rebuild(content)).toEqual(content);
     });
   });
