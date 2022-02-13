@@ -8,9 +8,10 @@ export interface ListItemNode extends AdocNode {
 export class ListItemRenderer extends BlockNodeRenderer<ListItemNode> {
   ignoredAttributes = ['checkbox', 'checked'];
 
-  renderBody(item: ListItemNode): string {
-    const attributes = item.getAttributes();
+  renderBody(node: ListItemNode): string {
+    const attributes = node.getAttributes();
     const checkbox = attributes.checkbox === '' ? attributes.checked === '' ? '[x]' : '[ ]' : '';
-    return [item.marker, checkbox, item.getText()].filter(it => !!it?.trim?.()).join(' ');
+    const text = [node.marker, checkbox, node.getText()].filter(it => !!it?.trim?.()).join(' ');
+    return [text, this.renderChildren(node).trim()].filter(it => it.trim()).join('\n');
   }
 }

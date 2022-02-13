@@ -275,7 +275,9 @@ Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.`;
   });
   describe('admonitions', () => {
     it('simple', () => {
-      const content = `WARNING: Wolpertingers are known to nest in server racks.
+      const content = `abc
+
+WARNING: Wolpertingers are known to nest in server racks.
 Enter at your own risk.`;
       expect(rebuild(content)).toEqual(content);
     });

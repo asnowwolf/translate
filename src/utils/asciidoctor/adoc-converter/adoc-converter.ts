@@ -7,7 +7,7 @@ import { ListItemRenderer } from './renderers/list-item-renderer';
 import { ListRenderer } from './renderers/list-renderer';
 import { PageBreakRenderer } from './renderers/page-break-renderer';
 import { ThematicBreakRenderer } from './renderers/thematic-break-renderer';
-import { InlineIndextermRenderer } from './renderers/inline-indexterm-renderer';
+import { InlineIndexTermRenderer } from './renderers/inline-index-term-renderer';
 import { DescriptionListRenderer } from './renderers/description-list-renderer';
 import { NodeRenderer } from './renderers/base-node-renderer';
 import { AdocNode } from './renderers/adoc-node';
@@ -44,7 +44,7 @@ export class AdocConverter {
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
-    'inline_indexterm': new InlineIndextermRenderer(),
+    'inline_indexterm': new InlineIndexTermRenderer(),
     'inline_image': new InlineResourceRenderer(),
     'inline_kbd': new InlineKbdRenderer(),
     'inline_button': new InlineButtonRenderer(),

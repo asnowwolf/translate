@@ -5,8 +5,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   render(node: T): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
-    const children = this.renderChildren(node);
-    return [[header, body].filter(it => !!it).join('\n'), children].filter(it => !!it).join('\n');
+    return [header, body].filter(it => !!it).join('\n');
   }
 
   protected renderHeader(node: T): string {
@@ -22,7 +21,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   }
 
   protected renderBody(node: T): string {
-    return '';
+    return `${this.renderChildren(node)}\n`;
   }
 
   protected buildBlockTitle(title: string): string {

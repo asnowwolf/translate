@@ -1,15 +1,15 @@
-import { BlockNodeRenderer } from './block-node-renderer';
 import { addQuotes } from './utils/add-quotes';
 import { AdocNode } from './adoc-node';
+import { InlineNodeRenderer } from './inline-node-renderer';
 
 interface InlineIndexTermNode extends AdocNode {
   getAttributes(): { terms: string[] };
 }
 
-export class InlineIndextermRenderer extends BlockNodeRenderer<InlineIndexTermNode> {
+export class InlineIndexTermRenderer extends InlineNodeRenderer<InlineIndexTermNode> {
   ignoredAttributes = ['terms'];
 
-  renderBody(node: InlineIndexTermNode): string {
+  render(node: InlineIndexTermNode): string {
     const attributes = node.getAttributes();
     if (node.getText()) {
       return `((${node.getText()}))`;

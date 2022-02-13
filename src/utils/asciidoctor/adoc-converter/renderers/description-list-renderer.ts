@@ -12,7 +12,7 @@ export class DescriptionListRenderer extends BlockNodeRenderer<DescriptionListNo
     return items.map(([[term], description]) => [
         term.convert(),
         '::',
-        description.blocks.length > 0 ? '\n' : ' ',
+        description.getBlocks().length > 0 ? '\n' : ' ',
         description.convert(),
       ].join(''),
     ).join('\n');

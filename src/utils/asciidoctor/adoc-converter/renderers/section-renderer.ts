@@ -7,7 +7,7 @@ interface SectionNode extends AdocNode {
 
 export class SectionRenderer extends BlockNodeRenderer<SectionNode> {
   renderBody(node: SectionNode): string {
-    const title = node.getTitle();
-    return title && `${'='.repeat(node.getLevel() + 1)} ${title}\n`;
+    const title = node.getTitle() && `${'='.repeat(node.getLevel() + 1)} ${node.getTitle()}`;
+    return [title, this.renderChildren(node)].filter(Boolean).join('\n\n');
   }
 }

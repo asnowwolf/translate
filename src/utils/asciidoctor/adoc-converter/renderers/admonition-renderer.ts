@@ -6,15 +6,11 @@ interface AdmonitionNode extends AdocNode {
 }
 
 export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
-  render(node: AdmonitionNode): string {
-    const header = this.renderHeader(node);
-    const body = this.renderBody(node);
+  renderBody(node: AdmonitionNode): string {
     const children = this.renderChildren(node);
-    if (isSimpleForm(header)) {
-      return [[header, node.getStyle()].filter(it => !!it).join('\n'), children].filter(it => !!it).join(': ');
-    } else {
-      return [[header, body].filter(it => !!it).join('\n'), '====', children.trim(), '===='].filter(it => !!it).join('\n');
-    }
+    const prefix = node.content_model === 'simple' ? `${node.getStyle()}: ` : '';
+    const delimiter = node.content_model === 'simple' ? '' : '====';
+    return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 
   protected getHeaderAttributes(node: AdmonitionNode): AdocAttribute[] {
@@ -24,8 +20,4 @@ export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
 
 function isDefaultValue(it: AdocAttribute, node: AdmonitionNode) {
   return ['style', 'name', 'textlabel'].includes(it.name) && it.value.toLowerCase() === node.getStyle().toLowerCase();
-}
-
-function isSimpleForm(header: string): boolean {
-  return !header;
 }
