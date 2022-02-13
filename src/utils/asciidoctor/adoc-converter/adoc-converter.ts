@@ -17,6 +17,8 @@ import { BlockResourceRenderer } from './renderers/block-resource-renderer';
 import { InlineResourceRenderer } from './renderers/inline-resource-renderer';
 import { internalAudioAttributes, internalImageAttributes, internalVideoAttributes } from './renderers/utils/internal-attributes';
 import { InlineKbdRenderer } from './renderers/inline-kbd-renderer';
+import { InlineButtonRenderer } from './renderers/inline-button-renderer';
+import { InlineMenuRenderer } from './renderers/inline-menu-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -39,6 +41,8 @@ export class AdocConverter {
     'inline_indexterm': new InlineIndextermRenderer(),
     'inline_image': new InlineResourceRenderer(),
     'inline_kbd': new InlineKbdRenderer(),
+    'inline_button': new InlineButtonRenderer(),
+    'inline_menu': new InlineMenuRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 

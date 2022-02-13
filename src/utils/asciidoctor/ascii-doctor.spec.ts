@@ -252,9 +252,25 @@ image::sunset.jpg[Sunset,200,100]`;
       expect(rebuild(content)).toEqual(content);
     });
   });
-  it('keyboard macro', () => {
-    const content = `:experimental:
+  describe('macros', () => {
+    it('keyboard macro', () => {
+      const content = `:experimental:
 the hortkey is kbd:[Ctrl+F11]`;
-    expect(rebuild(content)).toEqual(content);
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('button macro', () => {
+      const content = `:experimental:
+Press the btn:[OK] button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('menu macro', () => {
+      const content = `:experimental:
+To save the file, select menu:File[Save].
+
+Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });
