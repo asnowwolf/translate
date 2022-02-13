@@ -19,6 +19,7 @@ import { internalAudioAttributes, internalImageAttributes, internalVideoAttribut
 import { InlineKbdRenderer } from './renderers/inline-kbd-renderer';
 import { InlineButtonRenderer } from './renderers/inline-button-renderer';
 import { InlineMenuRenderer } from './renderers/inline-menu-renderer';
+import { AdmonitionRenderer } from './renderers/admonition-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -35,6 +36,7 @@ export class AdocConverter {
     'image': new BlockResourceRenderer('image', internalImageAttributes),
     'audio': new BlockResourceRenderer('audio', internalAudioAttributes),
     'video': new BlockResourceRenderer('video', internalVideoAttributes),
+    'admonition': new AdmonitionRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
@@ -53,3 +55,4 @@ export class AdocConverter {
     return renderer.render(node);
   }
 }
+

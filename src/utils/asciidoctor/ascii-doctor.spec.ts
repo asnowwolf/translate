@@ -273,4 +273,23 @@ Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.`;
       expect(rebuild(content)).toEqual(content);
     });
   });
+  describe('admonitions', () => {
+    it('simple', () => {
+      const content = `WARNING: Wolpertingers are known to nest in server racks.
+Enter at your own risk.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('complex', () => {
+      const content = `[IMPORTANT]
+.Feeding the Werewolves
+====
+While werewolves are hardy community members, keep in mind the following dietary concerns:
+
+. They are allergic to cinnamon.
+. More than two glasses of orange juice in 24 hours makes them howl in harmony with alarms and sirens.
+. Celery makes them sad.
+====`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
 });
