@@ -21,20 +21,7 @@ import { InlineButtonRenderer } from './renderers/inline-button-renderer';
 import { InlineMenuRenderer } from './renderers/inline-menu-renderer';
 import { AdmonitionRenderer } from './renderers/admonition-renderer';
 import { SidebarRenderer } from './renderers/sidebar-renderer';
-import { BlockNodeRenderer } from './renderers/block-node-renderer';
-
-interface ExampleNode extends AdocNode {
-}
-
-class ExampleRenderer extends BlockNodeRenderer<ExampleNode> {
-  render(node: ExampleNode): string {
-    const header = this.renderHeader(node);
-    const body = this.renderBody(node);
-    const children = this.renderChildren(node);
-    const delimiter = node.content_model === 'simple' ? '' : '====';
-    return [[header, body].filter(it => !!it).join('\n'), delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
-  }
-}
+import { ExampleRenderer } from './renderers/example-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
