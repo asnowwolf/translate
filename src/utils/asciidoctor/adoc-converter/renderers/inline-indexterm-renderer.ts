@@ -1,5 +1,5 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { addQuotes } from '../utils/add-quotes';
+import { addQuotes } from './utils/add-quotes';
 import { AdocNode } from './adoc-node';
 
 interface InlineIndexTermNode extends AdocNode {

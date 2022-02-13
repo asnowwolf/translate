@@ -1,11 +1,7 @@
-import { addQuotes } from '../utils/add-quotes';
-import { NodeRenderer } from './node-renderer';
-import { AdocNode } from './adoc-node';
+import { BaseNodeRenderer } from './base-node-renderer';
+import { AdocAttribute, AdocNode } from './adoc-node';
 
-export class BlockNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
-  defaultAttributes: { [name: string]: any } = {};
-  ignoredAttributes: string[] = [];
-
+export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   render(node: T): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
@@ -14,17 +10,8 @@ export class BlockNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
   }
 
   protected renderHeader(node: T): string {
-    const $$keys = node.attributes.$$keys;
-    const attributes = $$keys.map(($$key) => {
-      if (typeof $$key === 'string') {
-        return { positional: false, name: $$key, value: node.getAttribute($$key) };
-      } else {
-        const { value } = $$key;
-        return { positional: true, name: undefined, value };
-      }
-    });
-    const nonDefaultAttributes = attributes.filter(({ positional, name, value }) =>
-      !['title', ...this.ignoredAttributes].includes(name) && this.defaultAttributes[name] !== value);
+    const attributes = this.getAttributes(node);
+    const nonDefaultAttributes = this.getNonDefaultAttributes(attributes);
 
     const attributesText = this.renderAttributes(nonDefaultAttributes);
     return [
@@ -46,13 +33,9 @@ export class BlockNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
     return blockTitle && `.${blockTitle}`;
   }
 
-  protected renderAttributes(attributes: { positional: boolean, name: string, value: any }[]): string {
-    const content = attributes
-      .map(({ value, name, positional }) => {
-        const escapedValue = addQuotes(value);
-        return positional ? escapedValue : `${name}=${escapedValue}`;
-      })
-      .join(',');
+  protected renderAttributes(attributes: AdocAttribute[]): string {
+    const content = attributes.map(it => this.renderAttribute(it))
+      .filter(it => !!it).join(',');
     return content ? `[${content}]` : '';
   }
 

@@ -165,7 +165,7 @@ Email us at hello@example.com to say hello.`;
     });
 
     it('enclosed link', () => {
-      const content = `You will often see <https://example.org> used in examples.`;
+      const content = `You will often see https://example.org used in examples.`;
       expect(rebuild(content)).toEqual(content);
     });
 
@@ -215,6 +215,31 @@ A bold statement!footnote:disclaimer[Opinions are my own.]
 
 Another outrageous statement.footnote:disclaimer[]`;
       expect(rebuild(content)).toEqual(content);
+    });
+    describe('resources', () => {
+      it('images - block', () => {
+        const content = `image::sunset.jpg["Mesa Verde Sunset, by JAVH"]`;
+        expect(rebuild(content)).toEqual(content);
+      });
+
+      it('images - inline', () => {
+        const content = `Click image:play.png[] to get the party started.
+
+Click image:pause.png[Pause] when you need a break.`;
+        expect(rebuild(content)).toEqual(content);
+      });
+
+      it('image with attributes', () => {
+        const content = `[#img-sunset,link=https://www.flickr.com/photos/javh/5448336655]
+.A mountain sunset
+image::sunset.jpg[Sunset,200,100]`;
+        expect(rebuild(content)).toEqual(content);
+      });
+
+      it('image with attributes 2', () => {
+        const content = `image::tiger.png[Tiger,200,200,float=right,align=center]`;
+        expect(rebuild(content)).toEqual(content);
+      });
     });
   });
 });

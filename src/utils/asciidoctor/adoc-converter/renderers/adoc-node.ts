@@ -1,3 +1,7 @@
+interface RawAttributes {
+  $$keys: (string | { key: number, key_hash: number, value: string })[];
+}
+
 export interface AdocNode {
   getId(): string;
 
@@ -21,5 +25,11 @@ export interface AdocNode {
 
   blocks: AdocNode[];
 
-  attributes: { $$keys: (string | { key: number, value: string })[] };
+  attributes: RawAttributes;
+}
+
+export interface AdocAttribute {
+  name: string;
+  value: string;
+  positional: boolean;
 }

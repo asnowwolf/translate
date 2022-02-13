@@ -1,6 +1,6 @@
 import { map, omitBy } from 'lodash';
 import * as asciidoctor from 'asciidoctor.js';
-import { NodeRenderer } from './node-renderer';
+import { BaseNodeRenderer } from './base-node-renderer';
 import { AdocNode } from './adoc-node';
 
 export interface Author {
@@ -17,7 +17,7 @@ export interface DocumentNode extends AdocNode {
   getAttributes(): { [key: string]: any };
 }
 
-export class DocumentRenderer implements NodeRenderer<DocumentNode> {
+export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
   protected helperAdoc = asciidoctor();
 
   defaultAttributes = this.helperAdoc.load('').getAttributes();

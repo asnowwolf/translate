@@ -9,10 +9,12 @@ import { PageBreakRenderer } from './renderers/page-break-renderer';
 import { ThematicBreakRenderer } from './renderers/thematic-break-renderer';
 import { InlineIndextermRenderer } from './renderers/inline-indexterm-renderer';
 import { DescriptionListRenderer } from './renderers/description-list-renderer';
-import { NodeRenderer } from './renderers/node-renderer';
+import { NodeRenderer } from './renderers/base-node-renderer';
 import { AdocNode } from './renderers/adoc-node';
 import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
 import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
+import { BlockImageRenderer } from './renderers/block-image-renderer';
+import { InlineImageRenderer } from './renderers/inline-image-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -26,10 +28,12 @@ export class AdocConverter {
     'thematic_break': new ThematicBreakRenderer(),
     'page_break': new PageBreakRenderer(),
     'paragraph': new ParagraphRenderer(),
+    'image': new BlockImageRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
     'inline_indexterm': new InlineIndextermRenderer(),
+    'inline_image': new InlineImageRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 

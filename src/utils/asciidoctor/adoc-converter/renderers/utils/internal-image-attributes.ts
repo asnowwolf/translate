@@ -1,0 +1,17 @@
+export const internalImageAttributes = [
+  'alt',
+  'fallback',
+  'title',
+  'format',
+  'caption',
+  'width',
+  'height',
+  'window',
+  'scale',
+  'scaledwidth',
+  'pdfwidth',
+  'align',
+  'float',
+  'role',
+  'opts',
+];
