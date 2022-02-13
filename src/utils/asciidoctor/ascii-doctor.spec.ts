@@ -332,4 +332,66 @@ He could hear doves *cooing* in the pine trees branches.
       expect(rebuild(content)).toEqual(content);
     });
   });
+
+  describe('blockquotes', function () {
+    it('simple', function () {
+      const content = `[quote, Captain James T. Kirk, Star Trek IV: The Voyage Home]
+.After landing the cloaked Klingon bird of prey in Golden Gate park:
+Everybody remember where we parked.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('syntax highlight', () => {
+      const content = `[quote, Monty Python and the Holy Grail]
+____
+Dennis: Come and see the violence inherent in the system.
+
+King Arthur: Bloody peasant!
+
+Dennis: Oh, what a giveaway!
+____`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('shorthand', () => {
+      const content = `"I hold it that a little rebellion now and then is a good thing,
+and as necessary in the political world as storms in the physical."
+-- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('markdown', () => {
+      const content = `> > What's new?
+>
+> I've got Markdown in my AsciiDoc!
+>
+> > Like what?
+>
+> * Blockquotes
+> * Headings
+> * Fenced code blocks
+>
+> > Is there more?
+>
+> Yep. AsciiDoc and Markdown share a lot of common syntax already.`;
+      const rebuilt = `____
+____
+What&#8217;s new?
+____
+I&#8217;ve got Markdown in my AsciiDoc!
+
+____
+Like what?
+____
+* Blockquotes
+* Headings
+* Fenced code blocks
+
+____
+Is there more?
+____
+Yep. AsciiDoc and Markdown share a lot of common syntax already.
+____`;
+      expect(rebuild(content)).toEqual(rebuilt);
+    });
+  });
 });

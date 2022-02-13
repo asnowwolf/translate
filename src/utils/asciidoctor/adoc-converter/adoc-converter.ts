@@ -22,6 +22,7 @@ import { InlineMenuRenderer } from './renderers/inline-menu-renderer';
 import { AdmonitionRenderer } from './renderers/admonition-renderer';
 import { SidebarRenderer } from './renderers/sidebar-renderer';
 import { ExampleRenderer } from './renderers/example-renderer';
+import { BlockQuoteRenderer } from './renderers/block-quote-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -41,6 +42,7 @@ export class AdocConverter {
     'admonition': new AdmonitionRenderer(),
     'sidebar': new SidebarRenderer(),
     'example': new ExampleRenderer(),
+    'quote': new BlockQuoteRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
