@@ -14,7 +14,9 @@ export class InlineAnchorRenderer extends InlineNodeRenderer<InlineAnchorNode> {
         if (text === target || target.split(':')?.[1] === text) {
           return text;
         } else {
-          return `${target}[${text}]`;
+          const nonDefaultAttributes = this.getNonDefaultAttributes(node)
+            .filter(it => it.name !== 'window' || text.endsWith('^') && it.value === '_blank');
+          return `${target}[${this.renderAttributes(nonDefaultAttributes)}]`;
         }
       case 'xref':
         const content = [target.replace(/^#/, ''), text].filter(it => !!it).join(',');

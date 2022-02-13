@@ -175,8 +175,8 @@ Email us at hello@example.com to say hello.`;
 If you cannot access the site, email \\help@example.org for assistance.`;
       expect(rebuild(content)).toEqual(content);
     });
-    xit('url macro', () => {
-      const content = `Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^,role=green].`;
+    it('url macro', () => {
+      const content = `Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^, role=green].`;
       expect(rebuild(content)).toEqual(content);
     });
 
