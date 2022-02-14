@@ -451,5 +451,28 @@ ORDERED_LIST_KEYWORDS = {
       // TODO: 不再编码html
       expect(rebuild(content)).toEqual(rebuilt);
     });
+    it('listing blocks', () => {
+      const content = `[subs=+attributes]
+----
+This is a _delimited listing block_
+with the \`subs\` attribute assigned
+the incremental value \`+attributes\`.
+This attribute reference:
+
+{replace-me}
+
+will be replaced with the attribute's
+value when rendered.
+----`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('literal style syntax', () => {
+      const content = `[literal]
+error: 1954 Forbidden search
+absolutely fatal: operation lost in the dodecahedron of doom
+Would you like to try again? y/n`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });

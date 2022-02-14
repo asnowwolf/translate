@@ -1,6 +1,6 @@
 import { BlockNodeRenderer } from './block-node-renderer';
 import { AdocAttribute, AdocNode } from './adoc-node';
-import { isSimpleForm } from './utils/is-simple-form';
+import { hasEmptyLine } from './utils/has-empty-line';
 
 interface BlockQuoteNode extends AdocNode {
 }
@@ -9,7 +9,7 @@ export class BlockQuoteRenderer extends BlockNodeRenderer<BlockQuoteNode> {
   positionalAttributes = [{ name: 'style', position: 1 }, { name: 'attribution', position: 2 }, { name: 'citetitle', position: 3 }];
 
   protected getBlockAttributes(node: BlockQuoteNode): AdocAttribute[] {
-    if (isSimpleForm(node)) {
+    if (!hasEmptyLine(node)) {
       return [];
     } else {
       return this.getNonDefaultAttributes(node);
@@ -18,7 +18,7 @@ export class BlockQuoteRenderer extends BlockNodeRenderer<BlockQuoteNode> {
 
   protected renderBody(node: BlockQuoteNode): string {
     const children = this.renderChildren(node);
-    if (isSimpleForm(node)) {
+    if (!hasEmptyLine(node)) {
       const attribution = node.getAttributes().attribution;
       const citetitle = node.getAttributes().citetitle;
       return `"${children}"\n-- ${[attribution, citetitle].filter(Boolean).join(', ')}`;

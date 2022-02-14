@@ -27,6 +27,8 @@ export interface AdocNode {
 
   getBlocks(): AdocNode[];
 
+  lines: string[];
+
   content_model: 'simple' | 'compound';
 
   attributes: RawAttributes;

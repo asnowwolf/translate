@@ -1,6 +1,6 @@
 import { AdocAttribute, AdocNode } from './adoc-node';
 import { BlockNodeRenderer } from './block-node-renderer';
-import { isSimpleForm } from './utils/is-simple-form';
+import { hasEmptyLine } from './utils/has-empty-line';
 
 interface AdmonitionNode extends AdocNode {
   getStyle(): string;
@@ -9,8 +9,8 @@ interface AdmonitionNode extends AdocNode {
 export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
   renderBody(node: AdmonitionNode): string {
     const children = this.renderChildren(node);
-    const prefix = isSimpleForm(node) ? `${node.getStyle()}: ` : '';
-    const delimiter = isSimpleForm(node) ? '' : '====';
+    const prefix = !hasEmptyLine(node) ? `${node.getStyle()}: ` : '';
+    const delimiter = !hasEmptyLine(node) ? '' : '====';
     return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 

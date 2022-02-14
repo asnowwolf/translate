@@ -47,6 +47,7 @@ export class AdocConverter {
     'quote': new BlockQuoteRenderer(),
     'verse': new VerseRenderer(),
     'listing': new SourceCodeRenderer(),
+    'literal': new SourceCodeRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
