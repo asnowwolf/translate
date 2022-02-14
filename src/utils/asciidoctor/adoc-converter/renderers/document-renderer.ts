@@ -21,7 +21,7 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
 
   defaultAttributes = this.helperAdoc.load('').getAttributes();
 
-  ignoredAttributes = [
+  ignoredAttributeNames = [
     'sectnums',
     'doctitle',
     'firstname',

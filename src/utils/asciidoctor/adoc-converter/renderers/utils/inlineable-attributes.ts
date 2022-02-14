@@ -1,17 +1,17 @@
-export interface InternalAttribute {
+export interface InlineableAttribute {
   name: string;
   // 注意，这是 1-based 位置
   position?: number;
 }
 
-export const internalAudioAttributes: InternalAttribute[] = [
+export const audioInlineableAttributes: InlineableAttribute[] = [
   { name: 'title' },
   { name: 'start' },
   { name: 'end' },
   { name: 'options' },
   { name: 'opts' },
 ];
-export const internalImageAttributes: InternalAttribute[] = [
+export const imageInlineableAttributes: InlineableAttribute[] = [
   { name: 'alt', position: 1 },
   { name: 'fallback' },
   { name: 'title' },
@@ -29,7 +29,7 @@ export const internalImageAttributes: InternalAttribute[] = [
   { name: 'options' },
   { name: 'opts' },
 ];
-export const internalVideoAttributes: InternalAttribute[] = [
+export const videoInlineableAttributes: InlineableAttribute[] = [
   { name: 'alt' },
   { name: 'float' },
   { name: 'align' },

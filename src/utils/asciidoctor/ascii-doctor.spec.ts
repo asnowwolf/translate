@@ -373,12 +373,15 @@ and as necessary in the political world as storms in the physical."
 > > Is there more?
 >
 > Yep. AsciiDoc and Markdown share a lot of common syntax already.`;
-      const rebuilt = `____
+      const rebuilt = `[style=quote]
+____
+[style=quote]
 ____
 What&#8217;s new?
 ____
 I&#8217;ve got Markdown in my AsciiDoc!
 
+[style=quote]
 ____
 Like what?
 ____
@@ -386,6 +389,7 @@ ____
 * Headings
 * Fenced code blocks
 
+[style=quote]
 ____
 Is there more?
 ____
@@ -400,5 +404,18 @@ ____`;
 The fog comes
 on little cat feet.`;
     expect(rebuild(content)).toEqual(content);
+  });
+  describe('source code blocks', () => {
+    it('simple', () => {
+      const content = `[source, ruby]
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });

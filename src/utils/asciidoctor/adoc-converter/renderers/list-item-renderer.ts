@@ -6,7 +6,7 @@ export interface ListItemNode extends AdocNode {
 }
 
 export class ListItemRenderer extends BlockNodeRenderer<ListItemNode> {
-  ignoredAttributes = ['checkbox', 'checked'];
+  ignoredAttributeNames = ['checkbox', 'checked'];
 
   renderBody(node: ListItemNode): string {
     const attributes = node.getAttributes();

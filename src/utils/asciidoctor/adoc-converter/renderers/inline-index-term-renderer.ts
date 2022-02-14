@@ -7,7 +7,7 @@ interface InlineIndexTermNode extends AdocNode {
 }
 
 export class InlineIndexTermRenderer extends InlineNodeRenderer<InlineIndexTermNode> {
-  ignoredAttributes = ['terms'];
+  ignoredAttributeNames = ['terms'];
 
   render(node: InlineIndexTermNode): string {
     const attributes = node.getAttributes();

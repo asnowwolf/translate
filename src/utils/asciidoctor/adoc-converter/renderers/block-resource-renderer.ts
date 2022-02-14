@@ -1,18 +1,17 @@
 import { AdocNode } from './adoc-node';
 import { BlockNodeRenderer } from './block-node-renderer';
-import { InternalAttribute } from './utils/internal-attributes';
+import { InlineableAttribute } from './utils/inlineable-attributes';
 
 interface BlockResourceNode extends AdocNode {
 
 }
 
 export class BlockResourceRenderer extends BlockNodeRenderer<BlockResourceNode> {
-  constructor(private readonly type: string, internalAttributes: InternalAttribute[]) {
+  constructor(private readonly type: string, internalAttributes: InlineableAttribute[]) {
     super();
-    this.internalAttributes = internalAttributes;
+    this.positionalAttributes = internalAttributes.filter((it => it.position));
+    this.inlineAttributeNames = internalAttributes.map(it => it.name);
   }
-
-  ignoredAttributes = ['target', 'attribute_entries', ...this.internalAttributes.map(it => it.name)];
 
   protected getBlockTitle(node: BlockResourceNode): string {
     return node.getTitle();

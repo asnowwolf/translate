@@ -15,7 +15,7 @@ import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
 import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
 import { BlockResourceRenderer } from './renderers/block-resource-renderer';
 import { InlineResourceRenderer } from './renderers/inline-resource-renderer';
-import { internalAudioAttributes, internalImageAttributes, internalVideoAttributes } from './renderers/utils/internal-attributes';
+import { audioInlineableAttributes, imageInlineableAttributes, videoInlineableAttributes } from './renderers/utils/inlineable-attributes';
 import { InlineKbdRenderer } from './renderers/inline-kbd-renderer';
 import { InlineButtonRenderer } from './renderers/inline-button-renderer';
 import { InlineMenuRenderer } from './renderers/inline-menu-renderer';
@@ -24,6 +24,20 @@ import { SidebarRenderer } from './renderers/sidebar-renderer';
 import { ExampleRenderer } from './renderers/example-renderer';
 import { BlockQuoteRenderer } from './renderers/block-quote-renderer';
 import { VerseRenderer } from './renderers/verse-renderer';
+import { BlockNodeRenderer } from './renderers/block-node-renderer';
+
+interface SourceCodeNode extends AdocNode {
+}
+
+class SourceCodeRenderer extends BlockNodeRenderer<SourceCodeNode> {
+  positionalAttributes = [{ name: 'style', position: 1 }, { name: 'language', position: 2 }];
+
+  protected renderBody(node: SourceCodeNode): string {
+    const children = this.renderChildren(node);
+    const delimiter = '----';
+    return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
+  }
+}
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -37,14 +51,15 @@ export class AdocConverter {
     'thematic_break': new ThematicBreakRenderer(),
     'page_break': new PageBreakRenderer(),
     'paragraph': new ParagraphRenderer(),
-    'image': new BlockResourceRenderer('image', internalImageAttributes),
-    'audio': new BlockResourceRenderer('audio', internalAudioAttributes),
-    'video': new BlockResourceRenderer('video', internalVideoAttributes),
+    'image': new BlockResourceRenderer('image', imageInlineableAttributes),
+    'audio': new BlockResourceRenderer('audio', audioInlineableAttributes),
+    'video': new BlockResourceRenderer('video', videoInlineableAttributes),
     'admonition': new AdmonitionRenderer(),
     'sidebar': new SidebarRenderer(),
     'example': new ExampleRenderer(),
     'quote': new BlockQuoteRenderer(),
     'verse': new VerseRenderer(),
+    'listing': new SourceCodeRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),

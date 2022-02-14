@@ -1,5 +1,6 @@
 import { AdocAttribute, AdocNode } from './adoc-node';
 import { BlockNodeRenderer } from './block-node-renderer';
+import { isSimpleForm } from './utils/is-simple-form';
 
 interface AdmonitionNode extends AdocNode {
   getStyle(): string;
@@ -8,8 +9,8 @@ interface AdmonitionNode extends AdocNode {
 export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
   renderBody(node: AdmonitionNode): string {
     const children = this.renderChildren(node);
-    const prefix = node.content_model === 'simple' ? `${node.getStyle()}: ` : '';
-    const delimiter = node.content_model === 'simple' ? '' : '====';
+    const prefix = isSimpleForm(node) ? `${node.getStyle()}: ` : '';
+    const delimiter = isSimpleForm(node) ? '' : '====';
     return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 

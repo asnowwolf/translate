@@ -6,8 +6,8 @@ interface InlineResourceNode extends AdocNode {
 }
 
 export class InlineResourceRenderer extends InlineNodeRenderer<InlineResourceNode> {
-  ignoredAttributes = ['default-alt'];
-  internalAttributes = [{ name: 'alt', position: 1 }];
+  ignoredAttributeNames = ['default-alt'];
+  positionalAttributes = [{ name: 'alt', position: 1 }];
 
   render(node: InlineResourceNode): string {
     const type = node.getType();

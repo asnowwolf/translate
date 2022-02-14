@@ -1,6 +1,6 @@
 import { AdocAttribute, AdocNode } from './adoc-node';
 import { addQuotes } from './utils/add-quotes';
-import { InternalAttribute } from './utils/internal-attributes';
+import { InlineableAttribute } from './utils/inlineable-attributes';
 
 export interface NodeRenderer<T extends AdocNode> {
   render(node: T): string;
@@ -10,13 +10,15 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   abstract render(node: T): string;
 
   protected defaultAttributes: { [name: string]: any } = {};
-  protected ignoredAttributes: readonly string[] = [];
-  protected globalIgnoredAttributes: readonly string[] = ['attribute_entries', 'title'];
+  protected ignoredAttributeNames: readonly string[] = [];
+  protected globalIgnoredAttributeNames: readonly string[] = ['attribute_entries', 'title', 'target'];
 
-  protected internalAttributes: readonly InternalAttribute[] = [];
+  protected positionalAttributes: readonly InlineableAttribute[] = [];
 
-  protected isInternalAttribute(it: AdocAttribute) {
-    return this.internalAttributes.some(inner => inner.name === it.name);
+  protected inlineAttributeNames: string[] = [];
+
+  protected isInlineAttribute(it: AdocAttribute) {
+    return this.inlineAttributeNames.includes(it.name);
   }
 
   protected getAttributes(node: T): AdocAttribute[] {
@@ -27,10 +29,10 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
           return { positional: false, name: $$key, value: node.getAttribute($$key) };
         } else {
           const { key, value } = $$key;
-          return { positional: true, name: this.internalAttributes.find(it => it.position === key)?.name, value };
+          return { positional: true, name: this.positionalAttributes.find(it => it.position === key)?.name, value };
         }
       })
-      .filter(it => ![...this.globalIgnoredAttributes, ...this.ignoredAttributes].includes(it.name));
+      .filter(it => ![...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames].includes(it.name));
     return moveIdToFirst(result.filter(it => !correspondingPositionalExists(it, result)));
   }
 
@@ -39,11 +41,11 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   }
 
   protected getBlockAttributes(node: T) {
-    return this.getNonDefaultAttributes(node).filter(it => !this.isInternalAttribute(it));
+    return this.getNonDefaultAttributes(node).filter(it => !this.isInlineAttribute(it));
   }
 
   protected getInlineAttributes(node: T) {
-    return this.getNonDefaultAttributes(node).filter(it => this.isInternalAttribute(it));
+    return this.getNonDefaultAttributes(node).filter(it => this.isInlineAttribute(it));
   }
 
   protected renderAttributes(attributes: AdocAttribute[]): string {
