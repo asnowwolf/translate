@@ -49,7 +49,10 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   }
 
   protected renderAttributes(attributes: AdocAttribute[]): string {
-    const content = attributes.map(it => this.renderAttribute(it))
+    const id = attributes.find(it => it.name === 'id');
+    const options = attributes.find(it => it.name === 'options' || it.name === 'opts');
+    const content = shortenAttributes(attributes, id, options)
+      .map(it => this.renderAttribute(it))
       .filter(it => !!it).join(', ');
     return content ?? '';
   }
@@ -58,6 +61,8 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
     const value = addQuotes(attr.value);
     if (attr.name === 'id') {
       return `#${value}`;
+    } else if (attr.name === 'options' || attr.name === 'opts') {
+      return `%${value}`;
     } else if (attr.positional) {
       return value;
     } else {
@@ -78,5 +83,18 @@ function moveIdToFirst(attributes: AdocAttribute[]): AdocAttribute[] {
     return attributes;
   } else {
     return [id, ...attributes.filter(it => it !== id)];
+  }
+}
+
+// 简写 id 和 options 属性，把它们添加特定的前缀，然后追加到第一个位置参数后面
+function shortenAttributes(attributes: AdocAttribute[], id: AdocAttribute, options: AdocAttribute): AdocAttribute[] {
+  if (!attributes[0]?.positional) {
+    return attributes;
+  } else {
+    const idText = id?.value && `#${addQuotes(id.value)}`;
+    const optionsText = options?.value && `%${addQuotes(options.value)}`;
+    return attributes
+      .filter(it => !['id', 'options', 'opts'].includes(it.name))
+      .map((it, index) => index === 0 ? { ...it, value: [it.value, idText, optionsText].filter(Boolean).join('') } : it);
   }
 }

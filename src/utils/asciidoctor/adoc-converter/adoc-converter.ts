@@ -24,20 +24,7 @@ import { SidebarRenderer } from './renderers/sidebar-renderer';
 import { ExampleRenderer } from './renderers/example-renderer';
 import { BlockQuoteRenderer } from './renderers/block-quote-renderer';
 import { VerseRenderer } from './renderers/verse-renderer';
-import { BlockNodeRenderer } from './renderers/block-node-renderer';
-
-interface SourceCodeNode extends AdocNode {
-}
-
-class SourceCodeRenderer extends BlockNodeRenderer<SourceCodeNode> {
-  positionalAttributes = [{ name: 'style', position: 1 }, { name: 'language', position: 2 }];
-
-  protected renderBody(node: SourceCodeNode): string {
-    const children = this.renderChildren(node);
-    const delimiter = '----';
-    return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
-  }
-}
+import { SourceCodeRenderer } from './renderers/source-code-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {

@@ -417,5 +417,39 @@ end
 ----`;
       expect(rebuild(content)).toEqual(content);
     });
+    it('highlight', () => {
+      const content = `[#hello, source, ruby]
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('highlight lines', () => {
+      const content = `[source%linenums, ruby, highlight=2..5]
+----
+ORDERED_LIST_KEYWORDS = {
+  'loweralpha' => 'a',
+  'lowerroman' => 'i',
+  'upperalpha' => 'A',
+  'upperroman' => 'I',
+}
+----`;
+      const rebuilt = `[source%linenums, ruby, highlight=2..5]
+----
+ORDERED_LIST_KEYWORDS = {
+  'loweralpha' =&gt; 'a',
+  'lowerroman' =&gt; 'i',
+  'upperalpha' =&gt; 'A',
+  'upperroman' =&gt; 'I',
+}
+----`;
+      // TODO: 不再编码html
+      expect(rebuild(content)).toEqual(rebuilt);
+    });
   });
 });
