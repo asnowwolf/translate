@@ -5,6 +5,8 @@ interface RawAttributes {
 export interface AdocNode {
   getId(): string;
 
+  getDocument(): AdocDocument;
+
   getParent(): AdocNode;
 
   getContent(): string | any;
@@ -32,6 +34,10 @@ export interface AdocNode {
   content_model: 'simple' | 'compound';
 
   attributes: RawAttributes;
+}
+
+export interface AdocDocument extends AdocNode {
+  idMap?: { [key: string]: AdocNode };
 }
 
 export interface AdocAttribute {

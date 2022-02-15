@@ -3,15 +3,28 @@ import { AdocNode } from './adoc-node';
 
 export interface ListItemNode extends AdocNode {
   marker: string;
+
+  getAttributes(): { coids: string, checkbox: string, checked: string };
+}
+
+function getMarker(node: ListItemNode): string {
+  const attributes = node.getAttributes();
+  const coids = attributes.coids;
+  if (!coids) {
+    return node.marker;
+  } else {
+    const relatedNode = node.getDocument().idMap?.[coids];
+    return `<${relatedNode.getText()}>`;
+  }
 }
 
 export class ListItemRenderer extends BlockNodeRenderer<ListItemNode> {
-  ignoredAttributeNames = ['checkbox', 'checked'];
+  ignoredAttributeNames = ['checkbox', 'checked', 'coids'];
 
   renderBody(node: ListItemNode): string {
     const attributes = node.getAttributes();
     const checkbox = attributes.checkbox === '' ? attributes.checked === '' ? '[x]' : '[ ]' : '';
-    const text = [node.marker, checkbox, node.getText()].filter(it => !!it?.trim?.()).join(' ');
+    const text = [getMarker(node), checkbox, node.getText()].filter(it => !!it?.trim?.()).join(' ');
     return [text, this.renderChildren(node).trim()].filter(it => it.trim()).join('\n');
   }
 }

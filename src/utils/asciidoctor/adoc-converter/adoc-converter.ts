@@ -25,6 +25,8 @@ import { ExampleRenderer } from './renderers/example-renderer';
 import { BlockQuoteRenderer } from './renderers/block-quote-renderer';
 import { VerseRenderer } from './renderers/verse-renderer';
 import { SourceCodeRenderer } from './renderers/source-code-renderer';
+import { CalloutListRenderer } from './renderers/callout-list-renderer';
+import { InlineCalloutRenderer } from './renderers/inline-callout-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -48,6 +50,7 @@ export class AdocConverter {
     'verse': new VerseRenderer(),
     'listing': new SourceCodeRenderer(),
     'literal': new SourceCodeRenderer(),
+    'colist': new CalloutListRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
@@ -56,6 +59,7 @@ export class AdocConverter {
     'inline_kbd': new InlineKbdRenderer(),
     'inline_button': new InlineButtonRenderer(),
     'inline_menu': new InlineMenuRenderer(),
+    'inline_callout': new InlineCalloutRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 

@@ -484,5 +484,20 @@ Computer: Calculating ...
 ....`;
       expect(rebuild(content)).toEqual(content);
     });
+
+    it('callouts', () => {
+      const content = `[source, ruby]
+----
+require 'sinatra' <1>
+
+get '/hi' do <2> <3>
+  "Hello World!"
+end
+----
+<1> Library import
+<2> URL mapping
+<3> Response block`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });
