@@ -5,10 +5,13 @@ export function addQuotes(content: string | object): string {
     } else {
       return JSON.stringify(content);
     }
-  }
-  if (content?.includes(',') || content?.includes('"')) {
-    return JSON.stringify(content);
+  } else if (typeof content === 'string') {
+    if (content?.includes(',') || content?.includes('"')) {
+      return JSON.stringify(content);
+    } else {
+      return content ?? '';
+    }
   } else {
-    return content ?? '';
+    return content;
   }
 }

@@ -9,7 +9,6 @@ export const audioInlineableAttributes: InlineableAttribute[] = [
   { name: 'start' },
   { name: 'end' },
   { name: 'options' },
-  { name: 'opts' },
 ];
 export const imageInlineableAttributes: InlineableAttribute[] = [
   { name: 'alt', position: 1 },
@@ -27,7 +26,6 @@ export const imageInlineableAttributes: InlineableAttribute[] = [
   { name: 'float' },
   { name: 'role' },
   { name: 'options' },
-  { name: 'opts' },
 ];
 export const videoInlineableAttributes: InlineableAttribute[] = [
   { name: 'alt' },
@@ -44,5 +42,4 @@ export const videoInlineableAttributes: InlineableAttribute[] = [
   { name: 'list' },
   { name: 'playlist' },
   { name: 'options' },
-  { name: 'opts' },
 ];

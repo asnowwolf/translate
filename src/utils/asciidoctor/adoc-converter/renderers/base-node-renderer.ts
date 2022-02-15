@@ -41,7 +41,21 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   }
 
   protected getNonDefaultAttributes(node: T): AdocAttribute[] {
-    return this.getAttributes(node).filter(({ name, value }) => this.getDefaultAttributes(node)[name] !== value);
+    const defaultAttributes = this.getDefaultAttributes(node);
+    return this.getAttributes(node).map((attr) => {
+      if (defaultAttributes[attr.name] === attr.value) {
+        return;
+      } else if (attr.name === 'options') {
+        return {
+          ...attr,
+          value: attr.value.split(',').map(subValue => subValue.trim())
+            .filter(it => defaultAttributes[attr.name] !== it)
+            .join(', '),
+        };
+      } else {
+        return attr;
+      }
+    }).filter(it => !!it);
   }
 
   protected getBlockAttributes(node: T) {
@@ -60,12 +74,12 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
     return content ?? '';
   }
 
-  protected renderAttribute(attr: AdocAttribute) {
+  protected renderAttribute(attr: AdocAttribute): string {
     const value = addQuotes(attr.value);
     if (attr.name === 'id') {
       return `#${value}`;
-    } else if (attr.name === 'options' || attr.name === 'opts') {
-      return `%${value}`;
+    } else if (attr.name === 'options') {
+      return attr.value.split(',').map(it => `%${addQuotes(it)}`).join(',');
     } else if (attr.position) {
       return value;
     } else {
@@ -76,23 +90,18 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   // 简写 id 和 options 属性，把它们添加特定的前缀，然后追加到第一个位置参数后面
   private shortenAttributes(attributes: AdocAttribute[]): AdocAttribute[] {
     const id = attributes.find(it => it.name === 'id');
-    const options = attributes.find(it => it.name === 'options' || it.name === 'opts');
+    const options = attributes.find(it => it.name === 'options');
 
-    // 如果没有定义位于第一位的位置属性，则不做任何处理
-    if (!this.positionalAttributes.find(it => it.position === 1)) {
-      return attributes;
-    } else {
-      const idText = id?.value && `#${addQuotes(id.value)}`;
-      const optionsText = options?.value && `%${addQuotes(options.value)}`;
-      const firstPositionalAttribute = attributes.find(it => it.position === 1);
-      return attributes
-        .filter(it => !!it)
-        .filter(it => !firstPositionalAttribute?.value || ![id, options].includes(it))
-        .map((it) => it.name === firstPositionalAttribute?.name ? {
-          ...it,
-          value: [it.value, idText, optionsText].filter(it => !!it).join(''),
-        } : it);
-    }
+    const idText = id && this.renderAttribute(id);
+    const optionsText = options && this.renderAttribute(options);
+    const firstPositionalAttribute = attributes.find(it => it.position === 1);
+    return attributes
+      .filter(it => !!it)
+      .filter(it => !firstPositionalAttribute?.value || ![id, options].includes(it))
+      .map((it) => it.name === firstPositionalAttribute?.name ? {
+        ...it,
+        value: [it.value, idText, optionsText].filter(it => !!it).join(''),
+      } : it);
   }
 }
 

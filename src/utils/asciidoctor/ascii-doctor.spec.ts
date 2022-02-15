@@ -500,4 +500,54 @@ end
       expect(rebuild(content)).toEqual(content);
     });
   });
+  describe('tables', function () {
+    it('empty', () => {
+      const content = `[cols="1,1"]
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('no header', () => {
+      const content = `[cols="1,1"]
+|===
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+
+|Cell in column 1, row 3
+|Cell in column 2, row 3
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('with header', () => {
+      const content = `[%footer, cols="1,1"]
+|===
+|Cell in column 1, header row |Cell in column 2, header row
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+
+|Cell in column 1, row 3
+|Cell in column 2, row 3
+
+|Cell in column 1, row 4
+|Cell in column 2, row 4
+
+|Cell in column 1, header row |Cell in column 2, header row
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('alignments', () => {
+      const content = `|===
+|Column Name |Column Name |Column Name
+
+^|Center-aligned content.
+>|Right-aligned content.
+<|Left-aligned content.
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
 });
