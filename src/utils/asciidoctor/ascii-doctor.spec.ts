@@ -534,7 +534,8 @@ end
 |Cell in column 1, row 4
 |Cell in column 2, row 4
 
-|Cell in column 1, header row |Cell in column 2, header row
+|Cell in column 1, footer row
+|Cell in column 2, footer row
 |===`;
       expect(rebuild(content)).toEqual(content);
     });
@@ -622,6 +623,22 @@ import os
 print "%s" %(os.uname())
 ----
 
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('col span and row span', () => {
+      const content = `|===
+|Column 1, header row |Column 2, header row |Column 3, header row |Column 4, header row
+
+|Cell in column 1, row 2
+2.3+|This cell spans columns 2 and 3 and rows 2, 3, and 4 because its specifier contains a span of \`2.3+\`
+|Cell in column 4, row 2
+
+|Cell in column 1, row 3
+|Cell in column 4, row 3
+
+|Cell in column 1, row 4
+|Cell in column 4, row 4
 |===`;
       expect(rebuild(content)).toEqual(content);
     });

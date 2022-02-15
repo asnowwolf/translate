@@ -67,20 +67,37 @@ function renderBody(rows: TableCellNode[][]): string {
     middle: '.^',
   };
 
-  function hAlignOf(it: TableCellNode): string {
-    return horizontalAlignmentChars[it.getAttributes().halign] ?? '';
+  function hAlignOf(node: TableCellNode): string {
+    return horizontalAlignmentChars[node.getAttributes().halign] ?? '';
   }
 
-  function vAlignOf(it: TableCellNode): string {
-    return verticalAlignmentChars[it.getAttributes().valign] ?? '';
+  function vAlignOf(node: TableCellNode): string {
+    return verticalAlignmentChars[node.getAttributes().valign] ?? '';
   }
 
   function addEmptyLine(text: string): string {
     return text.replace(/\n\n(.*[^\n])$/gs, '\n\n$1\n');
   }
 
-  function renderCell(it: TableCellNode): string {
-    return `${hAlignOf(it)}${vAlignOf(it)}${styleCharOf(it)}|${addEmptyLine(it.text)}`;
+  function spanOf(node: TableCellNode): string {
+    const colSpan = node.colspan > 1 ? `${node.colspan}` : '';
+    const rowSpan = node.rowspan > 1 ? `.${node.rowspan}` : '';
+    if (colSpan || rowSpan) {
+      return `${colSpan}${rowSpan}+`;
+    } else {
+      return '';
+    }
+  }
+
+  function renderCell(node: TableCellNode): string {
+    return [
+      spanOf(node),
+      hAlignOf(node),
+      vAlignOf(node),
+      styleCharOf(node),
+      '|',
+      addEmptyLine(node.text),
+    ].join('');
   }
 
   function renderRow(row: TableCellNode[], lastRow: boolean): string {
