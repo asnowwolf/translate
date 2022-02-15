@@ -21,7 +21,7 @@ export class BlockQuoteRenderer extends BlockNodeRenderer<BlockQuoteNode> {
     if (!needDelimiter(node)) {
       const attribution = node.getAttributes().attribution;
       const citetitle = node.getAttributes().citetitle;
-      return `"${children}"\n-- ${[attribution, citetitle].filter(Boolean).join(', ')}`;
+      return `"${children}"\n-- ${[attribution, citetitle].filter(it => !!it).join(', ')}`;
     } else {
       const delimiter = isMultiBlock(node) || isTopLevel(node) ? '____' : '';
       return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');

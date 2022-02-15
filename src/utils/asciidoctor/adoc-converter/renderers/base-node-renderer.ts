@@ -86,11 +86,11 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
       const optionsText = options?.value && `%${addQuotes(options.value)}`;
       const firstPositionalAttribute = attributes.find(it => it.position === 1);
       return attributes
-        .filter(Boolean)
+        .filter(it => !!it)
         .filter(it => !firstPositionalAttribute?.value || ![id, options].includes(it))
         .map((it) => it.name === firstPositionalAttribute?.name ? {
           ...it,
-          value: [it.value, idText, optionsText].filter(Boolean).join(''),
+          value: [it.value, idText, optionsText].filter(it => !!it).join(''),
         } : it);
     }
   }

@@ -10,6 +10,6 @@ export class SectionRenderer extends BlockNodeRenderer<SectionNode> {
 
   renderBody(node: SectionNode): string {
     const title = node.getTitle() && `${'='.repeat(node.getLevel() + 1)} ${node.getTitle()}`;
-    return [title, this.renderChildren(node)].filter(Boolean).join('\n\n');
+    return [title, this.renderChildren(node)].filter(it => !!it).join('\n\n');
   }
 }
