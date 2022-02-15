@@ -557,5 +557,73 @@ end
 |===`;
       expect(rebuild(content)).toEqual(content);
     });
+
+    it('format cell content', () => {
+      const content = `|===
+|Column 1 |Column 2
+
+a|asciidoc,
+e|emphasis,
+
+h|header,
+l|literal,
+
+m|monospaced,
+s|strong,
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    xit('override', () => {
+      const content = `[cols="m,m"]
+|===
+|Column 1, header row |Column 2, header row
+
+|monospaced
+|monospaced
+
+s|strong
+|*strong*
+
+d|default
+|monospaced
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('AsciiDoc block in cell', () => {
+      const content = `|===
+|Normal Style |AsciiDoc Style
+
+|This cell isn't prefixed with an \`a\`, so the processor doesn't interpret the following lines as an AsciiDoc list.
+
+* List item 1
+* List item 2
+* List item 3
+
+a|This cell is prefixed with an \`a\`, so the processor interprets the following lines as an AsciiDoc list.
+
+* List item 1
+* List item 2
+* List item 3
+
+|This cell isn't prefixed with an \`a\`, so the processor doesn't interpret the listing block delimiters or the \`source\` style.
+
+[source,python]
+----
+import os
+print ("%s" %(os.uname()))
+----
+
+a|This cell is prefixed with an \`a\`, so the listing block is processed and rendered according to the \`source\` style rules.
+
+[source,python]
+----
+import os
+print "%s" %(os.uname())
+----
+
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });

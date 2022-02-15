@@ -13,7 +13,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
     return [
       attributes ? `[${attributes}]` : '',
       this.buildBlockTitle(this.getBlockTitle(node)),
-    ].filter(it => !!it?.trim()).join('\n');
+    ].filter(it => !!it).join('\n');
   }
 
   protected getBlockTitle(node: T) {

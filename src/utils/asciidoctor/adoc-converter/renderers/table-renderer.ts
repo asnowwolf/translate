@@ -7,6 +7,7 @@ interface TableCellAttributes {
   halign: string;
   valign: string;
   colpcwidth: number;
+  style: string;
 }
 
 type TableColumnAttributes = TableCellAttributes;
@@ -15,6 +16,22 @@ interface TableCellNode extends AdocNode {
   getAttributes(): TableCellAttributes;
 
   text: string;
+  colspan: number;
+  rowspan: number;
+  style: string;
+}
+
+function styleCharOf(it: TableCellNode): string {
+  const styleCharMap = {
+    asciidoc: 'a',
+    emphasis: 'e',
+    header: 'h',
+    literal: 'l',
+    monospaced: 'm',
+    default: 'd',
+    strong: 's',
+  };
+  return styleCharMap[it.style] ?? '';
 }
 
 interface TableRows {
@@ -58,7 +75,20 @@ function renderBody(rows: TableCellNode[][]): string {
     return verticalAlignmentChars[it.getAttributes().valign] ?? '';
   }
 
-  return rows.map(it => it.map(it => `${hAlignOf(it)}${vAlignOf(it)}|${it.text}`).join('\n')).filter(it => !!it).join('\n\n');
+  function addEmptyLine(text: string): string {
+    return text.replace(/\n\n(.*[^\n])$/gs, '\n\n$1\n');
+  }
+
+  function renderCell(it: TableCellNode): string {
+    return `${hAlignOf(it)}${vAlignOf(it)}${styleCharOf(it)}|${addEmptyLine(it.text)}`;
+  }
+
+  function renderRow(row: TableCellNode[], lastRow: boolean): string {
+    const rowText = row.map(it => renderCell(it)).join('\n');
+    return lastRow ? rowText : rowText.trim();
+  }
+
+  return rows.map((row, rowIndex) => renderRow(row, rowIndex === rows.length - 1)).filter(it => !!it).join('\n\n');
 }
 
 function renderRows(node: TableNode): string {
