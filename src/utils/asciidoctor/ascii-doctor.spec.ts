@@ -543,9 +543,17 @@ end
       const content = `|===
 |Column Name |Column Name |Column Name
 
+|Left-aligned content.
 ^|Center-aligned content.
 >|Right-aligned content.
-<|Left-aligned content.
+
+|Top-aligned content.
+.^|Middle-aligned content.
+.>|Bottom-aligned content.
+
+.^|Top-right-aligned content.
+^.^|Middle-center-aligned content.
+>.>|Bottom-right-aligned content.
 |===`;
       expect(rebuild(content)).toEqual(content);
     });

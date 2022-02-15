@@ -39,12 +39,26 @@ function renderHeader(rows: TableCellNode[][]): string {
 }
 
 function renderBody(rows: TableCellNode[][]): string {
-  const alignmentChars = {
-    left: '<',
+  const horizontalAlignmentChars = {
+    left: '',
     right: '>',
     center: '^',
   };
-  return rows.map(it => it.map(it => `${alignmentChars[it.getAttributes().halign]}|${it.text}`).join('\n')).filter(it => !!it).join('\n\n');
+  const verticalAlignmentChars = {
+    top: '',
+    bottom: '.>',
+    middle: '.^',
+  };
+
+  function hAlignOf(it: TableCellNode): string {
+    return horizontalAlignmentChars[it.getAttributes().halign] ?? '';
+  }
+
+  function vAlignOf(it: TableCellNode): string {
+    return verticalAlignmentChars[it.getAttributes().valign] ?? '';
+  }
+
+  return rows.map(it => it.map(it => `${hAlignOf(it)}${vAlignOf(it)}|${it.text}`).join('\n')).filter(it => !!it).join('\n\n');
 }
 
 function renderRows(node: TableNode): string {
