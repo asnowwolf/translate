@@ -9,7 +9,6 @@ export interface NodeRenderer<T extends AdocNode> {
 export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
   abstract render(node: T): string;
 
-  protected defaultAttributes: { [name: string]: any } = {};
   protected ignoredAttributeNames: readonly string[] = [];
   protected globalIgnoredAttributeNames: readonly string[] = ['attribute_entries', 'title', 'target'];
 
@@ -26,18 +25,23 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
     const result = $$keys
       .map(($$key) => {
         if (typeof $$key === 'string') {
-          return { positional: false, name: $$key, value: node.getAttribute($$key) };
+          return { name: $$key, value: node.getAttribute($$key) };
         } else {
           const { key, value } = $$key;
-          return { positional: true, name: this.positionalAttributes.find(it => it.position === key)?.name, value };
+          const inlineableAttribute = this.positionalAttributes.find(it => it.position === key);
+          return { position: key, name: inlineableAttribute?.name, value };
         }
       })
       .filter(it => ![...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames].includes(it.name));
     return moveIdToFirst(result.filter(it => !correspondingPositionalExists(it, result)));
   }
 
+  protected getDefaultAttributes(node: T): { [name: string]: any } {
+    return {};
+  }
+
   protected getNonDefaultAttributes(node: T): AdocAttribute[] {
-    return this.getAttributes(node).filter(({ positional, name, value }) => this.defaultAttributes[name] !== value);
+    return this.getAttributes(node).filter(({ name, value }) => this.getDefaultAttributes(node)[name] !== value);
   }
 
   protected getBlockAttributes(node: T) {
@@ -49,9 +53,8 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   }
 
   protected renderAttributes(attributes: AdocAttribute[]): string {
-    const id = attributes.find(it => it.name === 'id');
-    const options = attributes.find(it => it.name === 'options' || it.name === 'opts');
-    const content = shortenAttributes(attributes, id, options)
+    const shortenAttributes = this.shortenAttributes(attributes);
+    const content = shortenAttributes
       .map(it => this.renderAttribute(it))
       .filter(it => !!it).join(', ');
     return content ?? '';
@@ -63,17 +66,39 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
       return `#${value}`;
     } else if (attr.name === 'options' || attr.name === 'opts') {
       return `%${value}`;
-    } else if (attr.positional) {
+    } else if (attr.position) {
       return value;
     } else {
       return `${attr.name}=${value}`;
     }
   }
+
+  // 简写 id 和 options 属性，把它们添加特定的前缀，然后追加到第一个位置参数后面
+  private shortenAttributes(attributes: AdocAttribute[]): AdocAttribute[] {
+    const id = attributes.find(it => it.name === 'id');
+    const options = attributes.find(it => it.name === 'options' || it.name === 'opts');
+
+    // 如果没有定义位于第一位的位置属性，则不做任何处理
+    if (!this.positionalAttributes.find(it => it.position === 1)) {
+      return attributes;
+    } else {
+      const idText = id?.value && `#${addQuotes(id.value)}`;
+      const optionsText = options?.value && `%${addQuotes(options.value)}`;
+      const firstPositionalAttribute = attributes.find(it => it.position === 1);
+      return attributes
+        .filter(Boolean)
+        .filter(it => !firstPositionalAttribute?.value || ![id, options].includes(it))
+        .map((it) => it.name === firstPositionalAttribute?.name ? {
+          ...it,
+          value: [it.value, idText, optionsText].filter(Boolean).join(''),
+        } : it);
+    }
+  }
 }
 
 function correspondingPositionalExists(attribute: AdocAttribute, existingAttributes: AdocAttribute[]): boolean {
-  return !attribute.positional && !!existingAttributes.find(it => {
-    return it.positional && it.name === attribute.name && it.value === attribute.value;
+  return !attribute.position && !!existingAttributes.find(it => {
+    return it.position && it.name === attribute.name && it.value === attribute.value;
   });
 }
 
@@ -83,18 +108,5 @@ function moveIdToFirst(attributes: AdocAttribute[]): AdocAttribute[] {
     return attributes;
   } else {
     return [id, ...attributes.filter(it => it !== id)];
-  }
-}
-
-// 简写 id 和 options 属性，把它们添加特定的前缀，然后追加到第一个位置参数后面
-function shortenAttributes(attributes: AdocAttribute[], id: AdocAttribute, options: AdocAttribute): AdocAttribute[] {
-  if (!attributes[0]?.positional) {
-    return attributes;
-  } else {
-    const idText = id?.value && `#${addQuotes(id.value)}`;
-    const optionsText = options?.value && `%${addQuotes(options.value)}`;
-    return attributes
-      .filter(it => !['id', 'options', 'opts'].includes(it.name))
-      .map((it, index) => index === 0 ? { ...it, value: [it.value, idText, optionsText].filter(Boolean).join('') } : it);
   }
 }

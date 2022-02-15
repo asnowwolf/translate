@@ -19,7 +19,9 @@ export interface DocumentNode extends AdocNode {
 export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
   protected helperAdoc = asciidoctor();
 
-  defaultAttributes = this.helperAdoc.load('').getAttributes();
+  getDefaultAttributes(node: DocumentNode): { [key: string]: any } {
+    return this.helperAdoc.load('').getAttributes();
+  }
 
   ignoredAttributeNames = [
     'sectnums',

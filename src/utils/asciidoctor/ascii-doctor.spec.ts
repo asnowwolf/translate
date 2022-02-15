@@ -418,7 +418,7 @@ end
       expect(rebuild(content)).toEqual(content);
     });
     it('highlight', () => {
-      const content = `[#hello, source, ruby]
+      const content = `[source#hello, ruby]
 ----
 require 'sinatra'
 
@@ -431,23 +431,19 @@ end
 
     it('highlight lines', () => {
       const content = `[source%linenums, ruby, highlight=2..5]
-----
 ORDERED_LIST_KEYWORDS = {
   'loweralpha' => 'a',
   'lowerroman' => 'i',
   'upperalpha' => 'A',
   'upperroman' => 'I',
-}
-----`;
+}`;
       const rebuilt = `[source%linenums, ruby, highlight=2..5]
-----
 ORDERED_LIST_KEYWORDS = {
   'loweralpha' =&gt; 'a',
   'lowerroman' =&gt; 'i',
   'upperalpha' =&gt; 'A',
   'upperroman' =&gt; 'I',
-}
-----`;
+}`;
       // TODO: 不再编码html
       expect(rebuild(content)).toEqual(rebuilt);
     });
@@ -472,6 +468,20 @@ value when rendered.
 error: 1954 Forbidden search
 absolutely fatal: operation lost in the dodecahedron of doom
 Would you like to try again? y/n`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('delimited literal block', () => {
+      const content = `....
+Kismet: Where is the *defensive operations manual*?
+
+Computer: Calculating ...
+Can not locate object.
+You are not authorized to know it exists.
+
+Kismet: Did the werewolves tell you to say that?
+
+Computer: Calculating ...
+....`;
       expect(rebuild(content)).toEqual(content);
     });
   });

@@ -1,17 +1,39 @@
 import { AdocNode } from './adoc-node';
 import { BlockNodeRenderer } from './block-node-renderer';
-import { hasEmptyLine } from './utils/has-empty-line';
+import { needDelimiter } from './utils/need-delimiter';
 
 interface SourceCodeNode extends AdocNode {
+  getStyle(): string;
+}
+
+function getDelimiter(style: string): string {
+  switch (style) {
+    case 'source':
+      return '----';
+    case 'literal':
+      return '....';
+    case 'listing':
+      return '----';
+    default:
+      return '====';
+  }
+}
+
+function needStyleAttribute(style: string, node: SourceCodeNode) {
+  return style === 'source' || style === 'literal' && !needDelimiter(node);
 }
 
 export class SourceCodeRenderer extends BlockNodeRenderer<SourceCodeNode> {
-  defaultAttributes = { style: 'listing', 'linenums-option': '', linenums: '' };
   positionalAttributes = [{ name: 'style', position: 1 }, { name: 'language', position: 2 }];
+
+  getDefaultAttributes(node: SourceCodeNode): { [key: string]: any } {
+    const style = node.getStyle();
+    return { style: needStyleAttribute(style, node) ? '' : style, 'linenums-option': '', linenums: '' };
+  }
 
   protected renderBody(node: SourceCodeNode): string {
     const children = this.renderChildren(node);
-    const delimiter = !hasEmptyLine(node) ? '' : '----';
+    const delimiter = !needDelimiter(node) ? '' : getDelimiter(node.getStyle());
     return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 }

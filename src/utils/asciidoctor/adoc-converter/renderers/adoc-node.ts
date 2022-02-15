@@ -37,5 +37,5 @@ export interface AdocNode {
 export interface AdocAttribute {
   name: string;
   value: string;
-  positional: boolean;
+  position?: number;
 }

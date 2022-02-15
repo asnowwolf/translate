@@ -1,6 +1,6 @@
 import { AdocAttribute, AdocNode } from './adoc-node';
 import { BlockNodeRenderer } from './block-node-renderer';
-import { hasEmptyLine } from './utils/has-empty-line';
+import { needDelimiter } from './utils/need-delimiter';
 
 interface AdmonitionNode extends AdocNode {
   getStyle(): string;
@@ -9,8 +9,8 @@ interface AdmonitionNode extends AdocNode {
 export class AdmonitionRenderer extends BlockNodeRenderer<AdmonitionNode> {
   renderBody(node: AdmonitionNode): string {
     const children = this.renderChildren(node);
-    const prefix = !hasEmptyLine(node) ? `${node.getStyle()}: ` : '';
-    const delimiter = !hasEmptyLine(node) ? '' : '====';
+    const prefix = !needDelimiter(node) ? `${node.getStyle()}: ` : '';
+    const delimiter = !needDelimiter(node) ? '' : '====';
     return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 
