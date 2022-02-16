@@ -10,7 +10,7 @@ import { ThematicBreakRenderer } from './renderers/thematic-break-renderer';
 import { InlineIndexTermRenderer } from './renderers/inline-index-term-renderer';
 import { DescriptionListRenderer } from './renderers/description-list-renderer';
 import { NodeRenderer } from './renderers/base-node-renderer';
-import { AdocNode } from './renderers/adoc-node';
+import { AdocDocument, AdocNode } from './renderers/adoc-node';
 import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
 import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
 import { BlockResourceRenderer } from './renderers/block-resource-renderer';
@@ -29,6 +29,7 @@ import { CalloutListRenderer } from './renderers/callout-list-renderer';
 import { InlineCalloutRenderer } from './renderers/inline-callout-renderer';
 import { TableRenderer } from './renderers/table-renderer';
 import { StemRenderer } from './renderers/stem-renderer';
+import { OpenRenderer } from './renderers/open-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -55,6 +56,7 @@ export class AdocConverter {
     'colist': new CalloutListRenderer(),
     'table': new TableRenderer(),
     'stem': new StemRenderer(),
+    'open': new OpenRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
@@ -67,7 +69,7 @@ export class AdocConverter {
   };
   fallbackRenderer = new FallbackRenderer();
 
-  convert(node: AdocNode, transform?: string): string {
+  convert(node: AdocDocument, transform?: string): string {
     const nodeName = transform ?? node.getNodeName();
     const renderer = this.renderers[nodeName] ?? this.fallbackRenderer;
 

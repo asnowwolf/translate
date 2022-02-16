@@ -701,4 +701,25 @@ sqrt(4) = 2
       expect(rebuild(content)).toEqual(content);
     });
   });
+
+  describe('open blocks', function () {
+    it('simple', () => {
+      const content = `--
+An open block can be an anonymous container,
+or it can masquerade as any other block.
+--`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    xit('complex', () => {
+      // 被识别为 source block
+      const content = `[sidebar]
+.Related information
+--
+This is aside text.
+
+It is used to present information related to the main content.
+--`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
 });
