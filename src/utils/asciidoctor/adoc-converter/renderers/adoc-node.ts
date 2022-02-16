@@ -37,7 +37,7 @@ export interface AdocNode {
 }
 
 export interface AdocDocument extends AdocNode {
-  idMap?: { [key: string]: AdocNode };
+  idMap?: { [key: string]: AdocNode }; // 自定义属性
 }
 
 export interface AdocAttribute {
