@@ -658,5 +658,13 @@ print "%s" %(os.uname())
 |===`;
       expect(rebuild(content)).toEqual(content);
     });
+    it('custom separator', () => {
+      const content = `[cols=2*, separator=¦]
+|===
+¦The default separator in PSV tables is the | character.
+¦The | character is often referred to as a "\`pipe\`".
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });
