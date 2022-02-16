@@ -34,12 +34,12 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
   ignoredAttributeNames = [
     'sectnums',
     'doctitle',
-    'firstname',
-    'authorinitials',
-    'middlename',
-    'lastname',
-    'author',
-    'email',
+    /^firstname\w*$/,
+    /^authorinitials\w*$/,
+    /^middlename\w*$/,
+    /^lastname\w*$/,
+    /^author\w*$/,
+    /^email\w*$/,
     'authors',
     'authorcount',
     'localtime',
@@ -54,7 +54,7 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
     const children = node.getContent();
     const body = [
       doctitle && `= ${doctitle}`,
-      node.getAuthors().map(author => buildAuthorLine(author)).join(';'),
+      node.getAuthors().map(author => buildAuthorLine(author)).join('; '),
       nonDefaultAttributes.map(({ name, value }) => renderAttribute(name, value)).join('\n'),
     ].filter(it => !!it).join('\n');
     return body + '\n\n' + children;

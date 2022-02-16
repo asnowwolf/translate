@@ -1,5 +1,6 @@
 import { AdocAttribute, AdocNode } from './adoc-node';
 import { InlineableAttribute } from './utils/inlineable-attributes';
+import { matchAny } from './utils/match-any';
 
 export interface NodeRenderer<T extends AdocNode> {
   render(node: T): string;
@@ -8,15 +9,15 @@ export interface NodeRenderer<T extends AdocNode> {
 export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
   abstract render(node: T): string;
 
-  protected ignoredAttributeNames: readonly string[] = [];
-  protected globalIgnoredAttributeNames: readonly string[] = ['attribute_entries', 'title', 'target'];
+  protected ignoredAttributeNames: readonly (string | RegExp)[] = [];
+  protected globalIgnoredAttributeNames: readonly (string | RegExp)[] = ['attribute_entries', 'title', 'target', /^.*-option$/];
 
   protected positionalAttributes: readonly InlineableAttribute[] = [];
 
-  protected inlineAttributeNames: string[] = [];
+  protected inlineAttributeNames: (string | RegExp)[] = [];
 
   protected isInlineAttribute(it: AdocAttribute) {
-    return this.inlineAttributeNames.includes(it.name);
+    return matchAny(it.name, this.inlineAttributeNames);
   }
 
   protected getAttributes(node: T): AdocAttribute[] {
@@ -31,9 +32,7 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
           return { position: key, name: inlineableAttribute?.name, value };
         }
       })
-      .filter(it => {
-        return ![...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames].includes(it.name) && !it.name?.endsWith('-option');
-      });
+      .filter(it => !matchAny(it.name, [...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames]));
     return moveIdToFirst(result.filter(it => !correspondingPositionalExists(it, result)));
   }
 
