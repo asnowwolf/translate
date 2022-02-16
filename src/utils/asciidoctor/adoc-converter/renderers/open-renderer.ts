@@ -1,13 +1,10 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
+import { AbstractBlockNode } from './dom/models';
 
-interface OpenNode extends AdocNode {
-}
-
-export class OpenRenderer extends BlockNodeRenderer<OpenNode> {
+export class OpenRenderer extends BlockNodeRenderer<AbstractBlockNode> {
   positionalAttributes = [{ name: 'style', position: 1 }];
 
-  render(node: OpenNode): string {
+  render(node: AbstractBlockNode): string {
     const delimiter = '--';
     return [delimiter, this.renderChildren(node).trim(), delimiter].join('\n');
   }

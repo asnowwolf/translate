@@ -1,15 +1,12 @@
-import { AdocNode } from './adoc-node';
+import { InlineNode } from './dom/models';
 import { InlineNodeRenderer } from './inline-node-renderer';
 
-interface InlineFootnoteNode extends AdocNode {
-}
-
-export class InlineFootnoteRenderer extends InlineNodeRenderer<InlineFootnoteNode> {
+export class InlineFootnoteRenderer extends InlineNodeRenderer<InlineNode> {
   ids: { [index: number]: string } = {};
 
-  render(node: InlineFootnoteNode): string {
+  render(node: InlineNode): string {
     const text = node.getText();
-    const index = node.getAttribute('index');
+    const index = node.getAttribute('index') as number;
     if (node.getId()) {
       this.ids[index] = node.getId();
     }

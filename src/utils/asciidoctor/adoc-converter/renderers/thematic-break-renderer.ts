@@ -1,11 +1,8 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
+import { AbstractBlockNode } from './dom/models';
 
-interface ThematicBreakNode extends AdocNode {
-}
-
-export class ThematicBreakRenderer extends BlockNodeRenderer<ThematicBreakNode> {
-  renderBody(node: ThematicBreakNode): string {
+export class ThematicBreakRenderer extends BlockNodeRenderer<AbstractBlockNode> {
+  renderBody(node: AbstractBlockNode): string {
     return `'''`;
   }
 }

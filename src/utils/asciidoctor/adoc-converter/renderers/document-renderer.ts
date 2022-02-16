@@ -1,19 +1,9 @@
 import * as asciidoctor from 'asciidoctor.js';
 import { BaseNodeRenderer } from './base-node-renderer';
-import { AdocNode } from './adoc-node';
+import { Author, DocumentNode } from './dom/models';
 
-export interface Author {
-  getName(): string;
-
-  getEmail(): string;
-}
-
-export interface DocumentNode extends AdocNode {
-  getDocumentTitle(): string;
-
-  getAuthors(): Author[];
-
-  getAttributes(): { [key: string]: any };
+interface DocumentAttributes {
+  doctitle: string;
 }
 
 function buildAuthorLine(author: Author) {
@@ -49,13 +39,14 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
   ];
 
   render(node: DocumentNode): string {
-    const doctitle = node.getAttributes().doctitle;
+    const attributes = node.getAttributes<DocumentAttributes>();
+    const doctitle = attributes.doctitle;
     const nonDefaultAttributes = this.getNonDefaultAttributes(node);
     const children = node.getContent();
     const body = [
       doctitle && `= ${doctitle}`,
       node.getAuthors().map(author => buildAuthorLine(author)).join('; '),
-      nonDefaultAttributes.map(({ name, value }) => renderAttribute(name, value)).join('\n'),
+      nonDefaultAttributes.map(it => renderAttribute(it.name, it.value)).join('\n'),
     ].filter(it => !!it).join('\n');
     return body + '\n\n' + children;
   }

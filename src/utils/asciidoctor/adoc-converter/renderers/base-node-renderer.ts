@@ -1,12 +1,12 @@
-import { AdocAttribute, AdocNode } from './adoc-node';
 import { InlineableAttribute } from './utils/inlineable-attributes';
 import { matchAny } from './utils/match-any';
+import { AbstractNode, AttributeEntry } from './dom/models';
 
-export interface NodeRenderer<T extends AdocNode> {
+export interface NodeRenderer<T extends AbstractNode> {
   render(node: T): string;
 }
 
-export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRenderer<T> {
+export abstract class BaseNodeRenderer<T extends AbstractNode> implements NodeRenderer<T> {
   abstract render(node: T): string;
 
   protected ignoredAttributeNames: readonly (string | RegExp)[] = [];
@@ -16,20 +16,20 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
 
   protected inlineAttributeNames: (string | RegExp)[] = [];
 
-  protected isInlineAttribute(it: AdocAttribute) {
+  protected isInlineAttribute(it: AttributeEntry) {
     return matchAny(it.name, this.inlineAttributeNames);
   }
 
-  protected getAttributes(node: T): AdocAttribute[] {
+  protected getAttributes(node: T): AttributeEntry[] {
     const $$keys = node.attributes.$$keys;
     const result = $$keys
       .map(($$key) => {
         if (typeof $$key === 'string') {
-          return { name: $$key, value: node.getAttribute($$key) };
+          return { position: undefined, name: $$key, value: node.getAttribute($$key) };
         } else {
           const { key, value } = $$key;
           const inlineableAttribute = this.positionalAttributes.find(it => it.position === key);
-          return { position: key, name: inlineableAttribute?.name, value };
+          return { position: key, name: inlineableAttribute?.name, value: value };
         }
       })
       .filter(it => !matchAny(it.name, [...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames]));
@@ -40,7 +40,7 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
     return {};
   }
 
-  protected getNonDefaultAttributes(node: T): AdocAttribute[] {
+  protected getNonDefaultAttributes(node: T): AttributeEntry[] {
     const defaultAttributes = this.getDefaultAttributes(node);
     return this.getAttributes(node).map((attr) => {
       if (defaultAttributes[attr.name] === attr.value) {
@@ -48,7 +48,7 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
       } else if (attr.name === 'options') {
         return {
           ...attr,
-          value: attr.value.split(',').map(subValue => subValue.trim())
+          value: (attr.value as string).split(',').map(subValue => subValue.trim())
             .filter(it => defaultAttributes[attr.name] !== it)
             .join(', '),
         };
@@ -67,13 +67,13 @@ export abstract class BaseNodeRenderer<T extends AdocNode> implements NodeRender
   }
 }
 
-function correspondingPositionalExists(attribute: AdocAttribute, existingAttributes: AdocAttribute[]): boolean {
+function correspondingPositionalExists(attribute: AttributeEntry, existingAttributes: AttributeEntry[]): boolean {
   return !attribute.position && !!existingAttributes.find(it => {
     return it.position && it.name === attribute.name && it.value === attribute.value;
   });
 }
 
-function moveIdToFirst(attributes: AdocAttribute[]): AdocAttribute[] {
+function moveIdToFirst(attributes: AttributeEntry[]): AttributeEntry[] {
   const id = attributes.find(it => it.name === 'id');
   if (!id) {
     return attributes;

@@ -1,11 +1,8 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
+import { BlockNode } from './dom/models';
 
-interface ParagraphNode extends AdocNode {
-}
-
-export class ParagraphRenderer extends BlockNodeRenderer<ParagraphNode> {
-  protected renderChildren(node: ParagraphNode): string {
+export class ParagraphRenderer extends BlockNodeRenderer<BlockNode> {
+  protected renderChildren(node: BlockNode): string {
     return node.lines.join('\n');
   }
 }

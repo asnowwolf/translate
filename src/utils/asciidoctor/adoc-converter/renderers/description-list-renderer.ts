@@ -1,13 +1,8 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { ListItemNode } from './list-item-renderer';
-import { AdocNode } from './adoc-node';
+import { ListNode } from './dom/models';
 
-interface DescriptionListNode extends AdocNode {
-  getItems(): [[ListItemNode], ListItemNode][];
-}
-
-export class DescriptionListRenderer extends BlockNodeRenderer<DescriptionListNode> {
-  renderChildren(node: DescriptionListNode): string {
+export class DescriptionListRenderer extends BlockNodeRenderer<ListNode> {
+  renderChildren(node: ListNode): string {
     const items = node.getItems();
     return items.map(([[term], description]) => [
         term.convert(),

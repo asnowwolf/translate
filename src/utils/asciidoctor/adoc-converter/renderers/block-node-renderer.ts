@@ -1,9 +1,9 @@
 import { BaseNodeRenderer } from './base-node-renderer';
-import { AdocAttribute, AdocNode } from './adoc-node';
 import { addQuotes } from './utils/add-quotes';
 import { splitAttributeValue } from './utils/split-attribute-value';
+import { AbstractBlockNode, AbstractNode, AttributeEntry } from './dom/models';
 
-export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
+export class BlockNodeRenderer<T extends AbstractBlockNode> extends BaseNodeRenderer<T> {
   render(node: T): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
@@ -16,7 +16,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
     const attributes = this.renderAttributes(this.getBlockAttributes(node));
     return [
       attributes ? `[${attributes}]` : '',
-      this.buildBlockTitle(this.getBlockTitle(node)),
+      this.buildBlockTitle(this.getBlockTitle(node)?.toString()),
     ].filter(it => !!it).join('\n');
   }
 
@@ -38,7 +38,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
     return renderContent(content);
   }
 
-  protected renderAttributes(attributes: AdocAttribute[]): string {
+  protected renderAttributes(attributes: AttributeEntry[]): string {
     const shortenAttributes = this.shortenAttributes(attributes);
     const content = shortenAttributes
       .map(it => this.renderAttribute(it))
@@ -46,7 +46,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
     return content ?? '';
   }
 
-  protected renderAttribute(attr: AdocAttribute): string {
+  protected renderAttribute(attr: AttributeEntry): string {
     const value = addQuotes(attr.value);
     if (attr.name === 'id') {
       return `#${value}`;
@@ -55,14 +55,14 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
     } else if (attr.name === 'role') {
       return splitAttributeValue(attr.value).map(it => `.${addQuotes(it)}`).join('');
     } else if (attr.position) {
-      return value;
+      return value.toString();
     } else {
       return `${attr.name}=${value}`;
     }
   }
 
   // 简写 id 和 options 属性，把它们添加特定的前缀，然后追加到第一个位置参数后面
-  private shortenAttributes(attributes: AdocAttribute[]): AdocAttribute[] {
+  private shortenAttributes(attributes: AttributeEntry[]): AttributeEntry[] {
     const id = attributes.find(it => it.name === 'id');
     const options = attributes.find(it => it.name === 'options');
     const role = attributes.find(it => it.name === 'role');
@@ -81,7 +81,7 @@ export class BlockNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
   }
 }
 
-function renderContent(content: string | AdocNode | AdocNode[] | AdocNode[][]): string {
+export function renderContent(content: string | AbstractNode | AbstractBlockNode | AbstractNode[] | AbstractNode[][]): string {
   if (!content || content.constructor.name === '$NilClass') {
     return '';
   }
@@ -92,7 +92,7 @@ function renderContent(content: string | AdocNode | AdocNode[] | AdocNode[][]): 
   if ('convert' in content) {
     return content.convert();
   } else if (content instanceof Array) {
-    return (content as [AdocNode | AdocNode[]]).map(it => renderContent(it))
+    return (content as [AbstractNode | AbstractNode[]]).map(it => renderContent(it))
       .filter(it => !!it).join('\n');
   }
 }

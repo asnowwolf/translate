@@ -25,18 +25,18 @@ describe('ascii-doctor', function () {
       expect(rebuild(content)).toEqual(content);
     });
   });
-  it('paragraph', () => {
-    const content = `paragraph1
-
-paragraph2`;
-    expect(rebuild(content)).toEqual(content);
-  });
   it('Document header', () => {
     const content = `= Document Title
 Kismet R. Lee <kismet@asciidoctor.org>
 :description: The document's description.
 :sectanchors:
 :url-repo: https://my-git-repo.com`;
+    expect(rebuild(content)).toEqual(content);
+  });
+  it('paragraph', () => {
+    const content = `paragraph1
+
+paragraph2`;
     expect(rebuild(content)).toEqual(content);
   });
   it('section title', () => {
@@ -593,19 +593,19 @@ d|default
       const content = `|===
 |Normal Style |AsciiDoc Style
 
-|This cell isn't prefixed with an \`a\`, so the processor doesn't interpret the following lines as an AsciiDoc list.
+|This cell is not prefixed with an a, so the processor does not interpret the following lines as an AsciiDoc list.
 
 * List item 1
 * List item 2
 * List item 3
 
-a|This cell is prefixed with an \`a\`, so the processor interprets the following lines as an AsciiDoc list.
+a|This cell is prefixed with an a, so the processor interprets the following lines as an AsciiDoc list.
 
 * List item 1
 * List item 2
 * List item 3
 
-|This cell isn't prefixed with an \`a\`, so the processor doesn't interpret the listing block delimiters or the \`source\` style.
+|This cell is not prefixed with an a, so the processor does not interpret the listing block delimiters or the source style.
 
 [source,python]
 ----
@@ -629,7 +629,7 @@ print "%s" %(os.uname())
 |Column 1, header row |Column 2, header row |Column 3, header row |Column 4, header row
 
 |Cell in column 1, row 2
-2.3+|This cell spans columns 2 and 3 and rows 2, 3, and 4 because its specifier contains a span of \`2.3+\`
+2.3+|This cell spans columns 2 and 3 and rows 2, 3, and 4 because its specifier contains a span of 2.3+
 |Cell in column 4, row 2
 
 |Cell in column 1, row 3
@@ -660,7 +660,7 @@ print "%s" %(os.uname())
       const content = `[cols=2*, separator=¦]
 |===
 ¦The default separator in PSV tables is the | character.
-¦The | character is often referred to as a "\`pipe\`".
+¦The | character is often referred to as a pipe.
 |===`;
       expect(rebuild(content)).toEqual(content);
     });

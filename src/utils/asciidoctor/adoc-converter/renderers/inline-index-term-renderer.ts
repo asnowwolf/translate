@@ -1,16 +1,16 @@
 import { addQuotes } from './utils/add-quotes';
-import { AdocNode } from './adoc-node';
+import { InlineNode } from './dom/models';
 import { InlineNodeRenderer } from './inline-node-renderer';
 
-interface InlineIndexTermNode extends AdocNode {
-  getAttributes(): { terms: string[] };
+interface InlineIndexTermAttributes {
+  terms: string[];
 }
 
-export class InlineIndexTermRenderer extends InlineNodeRenderer<InlineIndexTermNode> {
+export class InlineIndexTermRenderer extends InlineNodeRenderer<InlineNode> {
   ignoredAttributeNames = ['terms'];
 
-  render(node: InlineIndexTermNode): string {
-    const attributes = node.getAttributes();
+  render(node: InlineNode): string {
+    const attributes = node.getAttributes<InlineIndexTermAttributes>();
     if (node.getText()) {
       return `((${node.getText()}))`;
     } else {

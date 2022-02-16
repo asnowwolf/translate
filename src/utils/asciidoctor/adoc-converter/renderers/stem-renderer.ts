@@ -1,15 +1,12 @@
-import { AdocNode } from './adoc-node';
+import { AbstractBlockNode, AbstractNode } from './dom/models';
 import { BlockNodeRenderer } from './block-node-renderer';
 
-interface StemNode extends AdocNode {
-}
-
-export class StemRenderer extends BlockNodeRenderer<StemNode> {
-  protected getDefaultAttributes(node: StemNode): { [p: string]: any } {
+export class StemRenderer extends BlockNodeRenderer<AbstractBlockNode> {
+  protected getDefaultAttributes(node: AbstractNode): { [p: string]: any } {
     return { style: 'asciimath' };
   }
 
-  protected renderBody(node: StemNode): string {
+  protected renderBody(node: AbstractBlockNode): string {
     const delimiter = '++++';
     return [delimiter, node.getContent(), delimiter].join('\n');
   }

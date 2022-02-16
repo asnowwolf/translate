@@ -1,13 +1,10 @@
-import { AdocAttribute, AdocNode } from './adoc-node';
 import { BlockNodeRenderer } from './block-node-renderer';
+import { AbstractBlockNode, AttributeEntry } from './dom/models';
 
-interface ExampleNode extends AdocNode {
-}
-
-export class ExampleRenderer extends BlockNodeRenderer<ExampleNode> {
+export class ExampleRenderer extends BlockNodeRenderer<AbstractBlockNode> {
   positionalAttributes = [{ name: 'style', position: 1 }];
 
-  protected getBlockAttributes(node: ExampleNode): AdocAttribute[] {
+  protected getBlockAttributes(node: AbstractBlockNode): AttributeEntry[] {
     const blockAttributes = super.getBlockAttributes(node);
     if (node.content_model === 'simple') {
       return blockAttributes;
@@ -16,7 +13,7 @@ export class ExampleRenderer extends BlockNodeRenderer<ExampleNode> {
     }
   }
 
-  renderBody(node: ExampleNode): string {
+  renderBody(node: AbstractBlockNode): string {
     const children = this.renderChildren(node);
     const delimiter = node.content_model === 'simple' ? '' : '====';
     return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');

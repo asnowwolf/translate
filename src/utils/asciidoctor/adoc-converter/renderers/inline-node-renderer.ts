@@ -1,18 +1,14 @@
 import { BaseNodeRenderer } from './base-node-renderer';
-import { AdocAttribute, AdocNode } from './adoc-node';
 import { addQuotes } from './utils/add-quotes';
 import { splitAttributeValue } from './utils/split-attribute-value';
+import { AttributeEntry, InlineNode } from './dom/models';
 
-interface InlineNode extends AdocNode {
-
-}
-
-export class InlineNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> {
+export class InlineNodeRenderer<T extends InlineNode> extends BaseNodeRenderer<T> {
   render(node: InlineNode): string {
     return node.getText();
   }
 
-  protected renderAttributes(attributes: AdocAttribute[]): string {
+  protected renderAttributes(attributes: AttributeEntry[]): string {
     const shortenAttributes = this.shortenAttributes(attributes);
     const content = shortenAttributes
       .map(it => this.renderAttribute(it))
@@ -20,21 +16,21 @@ export class InlineNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> 
     return content ?? '';
   }
 
-  protected renderAttribute(attr: AdocAttribute): string {
-    const value = addQuotes(attr.value);
+  protected renderAttribute(attr: AttributeEntry): string {
+    const value = addQuotes(attr.name);
     if (attr.name === 'id') {
       return `#${value}`;
     } else if (attr.name === 'options') {
-      return splitAttributeValue(attr.value).map(it => `%${addQuotes(it)}`).join('');
+      return splitAttributeValue(attr.name).map(it => `%${addQuotes(it)}`).join('');
     } else if (attr.position) {
-      return value;
+      return value?.toString();
     } else {
       return `${attr.name}=${value}`;
     }
   }
 
   // 简写 id 和 options 属性，把它们添加特定的前缀，然后追加到第一个位置参数后面
-  private shortenAttributes(attributes: AdocAttribute[]): AdocAttribute[] {
+  private shortenAttributes(attributes: AttributeEntry[]): AttributeEntry[] {
     const id = attributes.find(it => it.name === 'id');
     const options = attributes.find(it => it.name === 'options');
 

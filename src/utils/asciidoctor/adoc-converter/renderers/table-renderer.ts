@@ -1,4 +1,4 @@
-import { AdocNode } from './adoc-node';
+import { CellNode, TableNode } from './dom/models';
 import { BlockNodeRenderer } from './block-node-renderer';
 
 interface TableCellAttributes {
@@ -10,18 +10,7 @@ interface TableCellAttributes {
   style: string;
 }
 
-type TableColumnAttributes = TableCellAttributes;
-
-interface TableCellNode extends AdocNode {
-  getAttributes(): TableCellAttributes;
-
-  text: string;
-  colspan: number;
-  rowspan: number;
-  style: string;
-}
-
-function styleCharOf(it: TableCellNode): string {
+function styleCharOf(it: CellNode): string {
   const styleCharMap = {
     asciidoc: 'a',
     emphasis: 'e',
@@ -32,22 +21,6 @@ function styleCharOf(it: TableCellNode): string {
     strong: 's',
   };
   return styleCharMap[it.style] ?? '';
-}
-
-interface TableRows {
-  head: TableCellNode[][];
-  foot: TableCellNode[][];
-  body: TableCellNode[][];
-}
-
-interface TableColumnNode extends AdocNode {
-  getAttributes(): TableColumnAttributes;
-}
-
-interface TableNode extends AdocNode {
-  has_header_option: boolean;
-  rows: TableRows;
-  columns: TableColumnNode[];
 }
 
 export class TableRenderer extends BlockNodeRenderer<TableNode> {
@@ -67,12 +40,12 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
       return delimiter;
     }
 
-    function renderHeaderRows(rows: TableCellNode[][]): string {
+    function renderHeaderRows(rows: CellNode[][]): string {
       const text = rows.map(it => it.map(it => it.text).join(` ${separator}`)).filter(it => !!it).join('\n');
       return text && separator + text;
     }
 
-    function renderBodyRows(rows: TableCellNode[][]): string {
+    function renderBodyRows(rows: CellNode[][]): string {
       const horizontalAlignmentChars = {
         left: '',
         right: '>',
@@ -84,19 +57,19 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
         middle: '.^',
       };
 
-      function hAlignOf(node: TableCellNode): string {
-        return horizontalAlignmentChars[node.getAttributes().halign] ?? '';
+      function hAlignOf(attributes: TableCellAttributes): string {
+        return horizontalAlignmentChars[attributes.halign] ?? '';
       }
 
-      function vAlignOf(node: TableCellNode): string {
-        return verticalAlignmentChars[node.getAttributes().valign] ?? '';
+      function vAlignOf(attributes: TableCellAttributes): string {
+        return verticalAlignmentChars[attributes.valign] ?? '';
       }
 
       function addEmptyLine(text: string): string {
         return text.replace(/\n\n(.*[^\n])$/gs, '\n\n$1\n');
       }
 
-      function spanOf(node: TableCellNode): string {
+      function spanOf(node: CellNode): string {
         const colSpan = node.colspan > 1 ? `${node.colspan}` : '';
         const rowSpan = node.rowspan > 1 ? `.${node.rowspan}` : '';
         if (colSpan || rowSpan) {
@@ -106,18 +79,19 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
         }
       }
 
-      function renderCell(node: TableCellNode): string {
+      function renderCell(node: CellNode): string {
+        const attributes = node.getAttributes<TableCellAttributes>();
         return [
           spanOf(node),
-          hAlignOf(node),
-          vAlignOf(node),
+          hAlignOf(attributes),
+          vAlignOf(attributes),
           styleCharOf(node),
           separator,
           addEmptyLine(node.text),
         ].join('');
       }
 
-      function renderRow(row: TableCellNode[], lastRow: boolean): string {
+      function renderRow(row: CellNode[], lastRow: boolean): string {
         const rowText = row.map(it => renderCell(it)).join('\n');
         return lastRow ? rowText : rowText.trim();
       }

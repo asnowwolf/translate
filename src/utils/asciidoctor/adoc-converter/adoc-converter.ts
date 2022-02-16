@@ -10,7 +10,6 @@ import { ThematicBreakRenderer } from './renderers/thematic-break-renderer';
 import { InlineIndexTermRenderer } from './renderers/inline-index-term-renderer';
 import { DescriptionListRenderer } from './renderers/description-list-renderer';
 import { NodeRenderer } from './renderers/base-node-renderer';
-import { AdocDocument, AdocNode } from './renderers/adoc-node';
 import { InlineQuotedRenderer } from './renderers/inline-quoted-renderer';
 import { InlineFootnoteRenderer } from './renderers/inline-footnote-renderer';
 import { BlockResourceRenderer } from './renderers/block-resource-renderer';
@@ -30,9 +29,10 @@ import { InlineCalloutRenderer } from './renderers/inline-callout-renderer';
 import { TableRenderer } from './renderers/table-renderer';
 import { StemRenderer } from './renderers/stem-renderer';
 import { OpenRenderer } from './renderers/open-renderer';
+import { AbstractNode, DocumentNode } from './renderers/dom/models';
 
 export class AdocConverter {
-  renderers: Record<string, NodeRenderer<AdocNode>> = {
+  renderers: Record<string, NodeRenderer<AbstractNode>> = {
     'document': new DocumentRenderer(),
     'embedded': new DocumentRenderer(),
     'section': new SectionRenderer(),
@@ -69,7 +69,7 @@ export class AdocConverter {
   };
   fallbackRenderer = new FallbackRenderer();
 
-  convert(node: AdocDocument, transform?: string): string {
+  convert(node: DocumentNode, transform?: string): string {
     const nodeName = transform ?? node.getNodeName();
     const renderer = this.renderers[nodeName] ?? this.fallbackRenderer;
 

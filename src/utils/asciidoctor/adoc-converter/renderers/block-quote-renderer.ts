@@ -1,14 +1,16 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocAttribute, AdocNode } from './adoc-node';
 import { needDelimiter } from './utils/need-delimiter';
+import { AbstractBlockNode, AttributeEntry } from './dom/models';
 
-interface BlockQuoteNode extends AdocNode {
+interface BlockQuoteAttributes {
+  attribution: string;
+  citetitle: string;
 }
 
-export class BlockQuoteRenderer extends BlockNodeRenderer<BlockQuoteNode> {
+export class BlockQuoteRenderer extends BlockNodeRenderer<AbstractBlockNode> {
   positionalAttributes = [{ name: 'style', position: 1 }, { name: 'attribution', position: 2 }, { name: 'citetitle', position: 3 }];
 
-  protected getBlockAttributes(node: BlockQuoteNode): AdocAttribute[] {
+  protected getBlockAttributes(node: AbstractBlockNode): AttributeEntry[] {
     if (!needDelimiter(node)) {
       return [];
     } else {
@@ -16,11 +18,12 @@ export class BlockQuoteRenderer extends BlockNodeRenderer<BlockQuoteNode> {
     }
   }
 
-  protected renderBody(node: BlockQuoteNode): string {
+  protected renderBody(node: AbstractBlockNode): string {
     const children = this.renderChildren(node);
     if (!needDelimiter(node)) {
-      const attribution = node.getAttributes().attribution;
-      const citetitle = node.getAttributes().citetitle;
+      const attributes = node.getAttributes<BlockQuoteAttributes>();
+      const attribution = attributes.attribution;
+      const citetitle = attributes.citetitle;
       return `"${children}"\n-- ${[attribution, citetitle].filter(it => !!it).join(', ')}`;
     } else {
       const delimiter = isMultiBlock(node) || isTopLevel(node) ? '____' : '';
@@ -29,10 +32,10 @@ export class BlockQuoteRenderer extends BlockNodeRenderer<BlockQuoteNode> {
   }
 }
 
-function isTopLevel(node: BlockQuoteNode) {
+function isTopLevel(node: AbstractBlockNode) {
   return node.getParent().getNodeName() !== 'document';
 }
 
-function isMultiBlock(node: BlockQuoteNode) {
+function isMultiBlock(node: AbstractBlockNode) {
   return node.getBlocks().length > 1;
 }

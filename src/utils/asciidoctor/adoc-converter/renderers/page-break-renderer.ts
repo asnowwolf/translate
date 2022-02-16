@@ -1,11 +1,8 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
+import { AbstractBlockNode } from './dom/models';
 
-interface PageBreakNode extends AdocNode {
-}
-
-export class PageBreakRenderer extends BlockNodeRenderer<PageBreakNode> {
-  renderBody(node: PageBreakNode): string {
+export class PageBreakRenderer extends BlockNodeRenderer<AbstractBlockNode> {
+  renderBody(node: AbstractBlockNode): string {
     return `<<<`;
   }
 }

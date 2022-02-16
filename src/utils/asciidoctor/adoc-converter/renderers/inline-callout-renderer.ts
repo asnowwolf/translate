@@ -1,14 +1,8 @@
-import { AdocNode } from './adoc-node';
+import { InlineNode } from './dom/models';
 import { InlineNodeRenderer } from './inline-node-renderer';
 
-interface InlineCalloutNode extends AdocNode {
-}
-
-export class InlineCalloutRenderer extends InlineNodeRenderer<InlineCalloutNode> {
-  render(node: InlineCalloutNode): string {
-    const document = node.getDocument();
-    document.idMap = document.idMap ?? {};
-    document.idMap[node.getId()] = node;
+export class InlineCalloutRenderer extends InlineNodeRenderer<InlineNode> {
+  render(node: InlineNode): string {
     return `<${node.getText()}>`;
   }
 }

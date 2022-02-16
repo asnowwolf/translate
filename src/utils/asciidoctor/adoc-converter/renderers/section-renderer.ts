@@ -1,9 +1,5 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
-
-interface SectionNode extends AdocNode {
-  getLevel(): number;
-}
+import { SectionNode } from './dom/models';
 
 export class SectionRenderer extends BlockNodeRenderer<SectionNode> {
   positionalAttributes = [{ name: 'style', position: 1 }];

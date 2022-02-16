@@ -1,12 +1,8 @@
-import { AdocNode } from './adoc-node';
+import { InlineNode } from './dom/models';
 import { InlineNodeRenderer } from './inline-node-renderer';
 
-interface InlineAnchorNode extends AdocNode {
-  getTarget(): string;
-}
-
-export class InlineAnchorRenderer extends InlineNodeRenderer<InlineAnchorNode> {
-  render(node: InlineAnchorNode): string {
+export class InlineAnchorRenderer extends InlineNodeRenderer<InlineNode> {
+  render(node: InlineNode): string {
     const text = node.getText();
     const target = node.getTarget();
     switch (node.getType()) {

@@ -1,31 +1,32 @@
-import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
+import { ListItemNode, NodeAttributes } from './dom/models';
+import { InlineNodeRenderer } from './inline-node-renderer';
 
-export interface ListItemNode extends AdocNode {
-  marker: string;
-
-  getAttributes(): { coids: string, checkbox: string, checked: string };
+interface ListItemAttribute extends NodeAttributes {
+  coids: string;
+  checkbox: string;
+  checked: string;
 }
 
 function getMarker(node: ListItemNode): string {
-  const attributes = node.getAttributes();
+  const callouts = node.getDocument().getCallouts().$current_list();
+  const attributes = node.getAttributes<ListItemAttribute>();
   const coids = attributes.coids;
-  if (!coids) {
+  const callout = callouts.find(it => it.$$smap.id === coids);
+  const ordinal = callout?.$$smap?.ordinal;
+  if (ordinal === undefined) {
     return node.marker;
   } else {
-    const relatedNode = node.getDocument().idMap?.[coids];
-    const text = relatedNode?.getText();
-    return text ? `<${text}>` : node.marker;
+    return `<${ordinal}>`;
   }
 }
 
-export class ListItemRenderer extends BlockNodeRenderer<ListItemNode> {
+export class ListItemRenderer extends InlineNodeRenderer<ListItemNode> {
   ignoredAttributeNames = ['checkbox', 'checked', 'coids'];
 
-  renderBody(node: ListItemNode): string {
-    const attributes = node.getAttributes();
+  render(node: ListItemNode): string {
+    const attributes = node.getAttributes<ListItemAttribute>();
     const checkbox = attributes.checkbox === '' ? attributes.checked === '' ? '[x]' : '[ ]' : '';
     const text = [getMarker(node), checkbox, node.getText()].filter(it => !!it?.trim?.()).join(' ');
-    return [text, this.renderChildren(node).trim()].filter(it => it.trim()).join('\n');
+    return [text, node.getBlocks().map(it => it.convert()).join('\n').trim()].filter(it => it.trim()).join('\n');
   }
 }

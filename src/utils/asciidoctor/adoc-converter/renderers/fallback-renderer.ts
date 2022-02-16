@@ -1,8 +1,8 @@
-import { BlockNodeRenderer } from './block-node-renderer';
-import { AdocNode } from './adoc-node';
+import { AbstractNode } from './dom/models';
+import { BaseNodeRenderer } from './base-node-renderer';
 
-export class FallbackRenderer extends BlockNodeRenderer<AdocNode> {
-  render(node: AdocNode): string {
+export class FallbackRenderer extends BaseNodeRenderer<AbstractNode> {
+  render(node: AbstractNode): string {
     console.warn(`Fallback renderer: ${node.getNodeName()}`);
     return '';
   }
