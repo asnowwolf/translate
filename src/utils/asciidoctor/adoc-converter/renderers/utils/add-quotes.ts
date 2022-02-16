@@ -1,17 +1,10 @@
+import { toText } from './to-text';
+
 export function addQuotes(content: string | object): string {
-  if (typeof content === 'object') {
-    if (content.constructor.name === '$NilClass') {
-      return '';
-    } else {
-      return JSON.stringify(content);
-    }
-  } else if (typeof content === 'string') {
-    if (content?.includes(',') || content?.includes('"')) {
-      return JSON.stringify(content);
-    } else {
-      return content ?? '';
-    }
+  const text = toText(content);
+  if (text?.includes(',') || text?.includes('"')) {
+    return JSON.stringify(text);
   } else {
-    return content;
+    return toText(text);
   }
 }

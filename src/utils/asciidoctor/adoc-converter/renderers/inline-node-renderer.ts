@@ -1,6 +1,7 @@
 import { BaseNodeRenderer } from './base-node-renderer';
 import { AdocAttribute, AdocNode } from './adoc-node';
 import { addQuotes } from './utils/add-quotes';
+import { splitAttributeValue } from './utils/split-attribute-value';
 
 interface InlineNode extends AdocNode {
 
@@ -24,7 +25,7 @@ export class InlineNodeRenderer<T extends AdocNode> extends BaseNodeRenderer<T> 
     if (attr.name === 'id') {
       return `#${value}`;
     } else if (attr.name === 'options') {
-      return attr.value.split(',').map(it => `%${addQuotes(it)}`).join(',');
+      return splitAttributeValue(attr.value).map(it => `%${addQuotes(it)}`).join('');
     } else if (attr.position) {
       return value;
     } else {
