@@ -28,6 +28,7 @@ import { SourceCodeRenderer } from './renderers/source-code-renderer';
 import { CalloutListRenderer } from './renderers/callout-list-renderer';
 import { InlineCalloutRenderer } from './renderers/inline-callout-renderer';
 import { TableRenderer } from './renderers/table-renderer';
+import { StemRenderer } from './renderers/stem-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AdocNode>> = {
@@ -53,6 +54,7 @@ export class AdocConverter {
     'literal': new SourceCodeRenderer(),
     'colist': new CalloutListRenderer(),
     'table': new TableRenderer(),
+    'stem': new StemRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),

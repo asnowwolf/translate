@@ -133,25 +133,21 @@ Produce::
   describe('text formats', function () {
     it('simple', () => {
       const content = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!`;
-      const rebuilt = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ *unconstrained strong* stuff!`;
-      expect(rebuild(content)).toEqual(rebuilt);
+      expect(rebuild(content)).toEqual(content);
     });
 
     it('mixed', () => {
       const content = '`*_monospace bold italic phrase_*` & ``*__char__*``acter``*__s__*``';
-      const rebuilt = '`*_monospace bold italic phrase_*` &amp; `*_char_*`acter`*_s_*`';
-      expect(rebuild(content)).toEqual(rebuilt);
+      expect(rebuild(content)).toEqual(content);
     });
 
-    xit('literal monospace', () => {
+    it('literal monospace', () => {
       const content = `You can reference the value of a document attribute using
 the syntax \`+{name}+\`, where  is the attribute name.`;
-      const rebuilt = `You can reference the value of a document attribute using
-the syntax \`+{name}+\`, where  is the attribute name.`;
-      expect(rebuild(content)).toEqual(rebuilt);
+      expect(rebuild(content)).toEqual(content);
     });
 
-    xit('text span', () => {
+    it('text span', () => {
       const content = `The text [.underline]#underline me# is underlined.`;
       expect(rebuild(content)).toEqual(content);
     });
@@ -169,7 +165,7 @@ Email us at hello@example.com to say hello.`;
       expect(rebuild(content)).toEqual(content);
     });
 
-    xit('no autolink', () => {
+    it('no autolink', () => {
       const content = `Once launched, the site will be available at \\https://example.org.
 
 If you cannot access the site, email \\help@example.org for assistance.`;
@@ -203,8 +199,7 @@ This URL has repeating underscores {link-with-underscores}.`;
     });
     it('cross document', () => {
       const content = `Refer to <<document-b.adoc#section-b,Section B>> for more information.`;
-      const rebulit = `Refer to <<document-b.html#section-b,Section B>> for more information.`;
-      expect(rebuild(content)).toEqual(rebulit);
+      expect(rebuild(content)).toEqual(content);
     });
     it('footnotes', () => {
       const content = `The hail-and-rainbow protocol can be initiated at five levels:
@@ -377,9 +372,9 @@ and as necessary in the political world as storms in the physical."
 ____
 [style=quote]
 ____
-What&#8217;s new?
+What's new?
 ____
-I&#8217;ve got Markdown in my AsciiDoc!
+I've got Markdown in my AsciiDoc!
 
 [style=quote]
 ____
@@ -664,6 +659,34 @@ print "%s" %(os.uname())
 ¦The default separator in PSV tables is the | character.
 ¦The | character is often referred to as a "\`pipe\`".
 |===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    xit('csv', () => {
+      const content = `[%header,format=csv]
+|===
+Artist,Track,Genre
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
+  describe('STEM formula', () => {
+    it('simple', () => {
+      const content = `stem:[sqrt(4) = 2]
+
+Water (stem:[H_2O]) is a critical component.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+  });
+
+  describe('open blocks', function () {
+    it('simple', () => {
+      const content = `--
+An open block can be an anonymous container,
+or it can masquerade as any other block.
+--`;
       expect(rebuild(content)).toEqual(content);
     });
   });
