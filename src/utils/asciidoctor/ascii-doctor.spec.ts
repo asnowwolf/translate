@@ -176,7 +176,7 @@ If you cannot access the site, email \\help@example.org for assistance.`;
       expect(rebuild(content)).toEqual(content);
     });
 
-    xit('complex', () => {
+    it('complex', () => {
       const content = `= Document Title
 :link-with-underscores: https://asciidoctor.org/now_this__link_works.html
 
@@ -250,11 +250,13 @@ image::sunset.jpg[Sunset, 200, 100]`;
   describe('macros', () => {
     it('keyboard macro', () => {
       const content = `:experimental:
+
 the hortkey is kbd:[Ctrl+F11]`;
       expect(rebuild(content)).toEqual(content);
     });
     it('button macro', () => {
       const content = `:experimental:
+
 Press the btn:[OK] button when you are finished.
 
 Select a file in the file navigator and click btn:[Open].`;
@@ -262,6 +264,7 @@ Select a file in the file navigator and click btn:[Open].`;
     });
     it('menu macro', () => {
       const content = `:experimental:
+
 To save the file, select menu:File[Save].
 
 Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.`;
@@ -673,20 +676,28 @@ The Lumineers,Ho Hey,Folk Rock
     });
   });
   describe('STEM formula', () => {
-    it('simple', () => {
+    it('inline', () => {
       const content = `stem:[sqrt(4) = 2]
 
 Water (stem:[H_2O]) is a critical component.`;
       expect(rebuild(content)).toEqual(content);
     });
-  });
+    it('block', () => {
+      const content = `[stem]
+++++
+sqrt(4) = 2
+++++`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('mixed', () => {
+      const content = `= My Diabolical Mathmatical Opus
+Jamie Moriarty
+:stem: latexmath
 
-  describe('open blocks', function () {
-    it('simple', () => {
-      const content = `--
-An open block can be an anonymous container,
-or it can masquerade as any other block.
---`;
+[asciimath]
+++++
+sqrt(4) = 2
+++++`;
       expect(rebuild(content)).toEqual(content);
     });
   });

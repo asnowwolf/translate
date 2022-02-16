@@ -16,6 +16,14 @@ export interface DocumentNode extends AdocNode {
   getAttributes(): { [key: string]: any };
 }
 
+function buildAuthorLine(author: Author) {
+  if (author.getEmail()) {
+    return `${author.getName()} <${author.getEmail()}>`;
+  } else {
+    return author.getName();
+  }
+}
+
 export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
   protected helperAdoc = asciidoctor();
 
@@ -43,14 +51,14 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
   render(node: DocumentNode): string {
     const doctitle = node.getAttributes().doctitle;
     const nonDefaultAttributes = this.getNonDefaultAttributes(node);
-    return [
+    const children = node.getContent();
+    const body = [
       doctitle && `= ${doctitle}`,
-      node.getAuthors().map(author => `${author.getName()} <${author.getEmail()}>`).join(';'),
+      node.getAuthors().map(author => buildAuthorLine(author)).join(';'),
       nonDefaultAttributes.map(({ name, value }) => renderAttribute(name, value)).join('\n'),
-      node.getContent(),
     ].filter(it => !!it).join('\n');
+    return body + '\n\n' + children;
   }
-
 }
 
 function renderAttribute(key, value): string {
