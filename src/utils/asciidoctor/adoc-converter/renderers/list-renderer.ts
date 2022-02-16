@@ -7,7 +7,6 @@ interface ListNode extends AdocNode {
 }
 
 export class ListRenderer extends BlockNodeRenderer<ListNode> {
-  ignoredAttributeNames = ['checklist-option'];
   positionalAttributes = [{ name: 'style', position: 1 }];
 
   getDefaultAttributes(node: ListNode): { [key: string]: any } {

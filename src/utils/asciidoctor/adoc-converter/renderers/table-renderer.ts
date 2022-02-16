@@ -116,7 +116,7 @@ function renderRows(node: TableNode): string {
 }
 
 export class TableRenderer extends BlockNodeRenderer<TableNode> {
-  ignoredAttributeNames = ['colcount', 'rowcount', 'header-option', 'footer-option'];
+  ignoredAttributeNames = ['colcount', 'rowcount'];
 
   protected getDefaultAttributes(node: TableNode): { [p: string]: any } {
     return { tablepcwidth: 100, style: 'table', options: 'header' };

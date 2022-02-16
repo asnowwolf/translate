@@ -642,5 +642,21 @@ print "%s" %(os.uname())
 |===`;
       expect(rebuild(content)).toEqual(content);
     });
+
+    it('table width', () => {
+      const content = `[%autowidth.stretch]
+|===
+|Column 1, header row |Column 2, header row |Column 3, header row
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|Cell in column 3, row 2
+
+|Cell in column 1, row 3
+|Cell in column 2, row 3
+|Cell in column 3, row 3
+|===`;
+      expect(rebuild(content)).toEqual(content);
+    });
   });
 });
