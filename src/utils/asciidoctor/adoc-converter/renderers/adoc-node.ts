@@ -31,7 +31,7 @@ export interface AdocNode {
 
   lines: string[];
 
-  content_model: 'simple' | 'compound';
+  content_model: 'simple' | 'compound' | 'verbatim';
 
   attributes: RawAttributes;
 }

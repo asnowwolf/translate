@@ -435,15 +435,8 @@ ORDERED_LIST_KEYWORDS = {
   'upperalpha' => 'A',
   'upperroman' => 'I',
 }`;
-      const rebuilt = `[source%linenums, ruby, highlight=2..5]
-ORDERED_LIST_KEYWORDS = {
-  'loweralpha' =&gt; 'a',
-  'lowerroman' =&gt; 'i',
-  'upperalpha' =&gt; 'A',
-  'upperroman' =&gt; 'I',
-}`;
       // TODO: 不再编码html
-      expect(rebuild(content)).toEqual(rebuilt);
+      expect(rebuild(content)).toEqual(content);
     });
     it('listing blocks', () => {
       const content = `[subs=+attributes]
@@ -495,6 +488,13 @@ end
 <1> Library import
 <2> URL mapping
 <3> Response block`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('with indent', () => {
+      const content = `[source, ruby, indent=2]
+    def names
+      @name.split ' '
+    end`;
       expect(rebuild(content)).toEqual(content);
     });
   });

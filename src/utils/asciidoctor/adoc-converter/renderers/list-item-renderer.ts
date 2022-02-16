@@ -14,7 +14,8 @@ function getMarker(node: ListItemNode): string {
     return node.marker;
   } else {
     const relatedNode = node.getDocument().idMap?.[coids];
-    return `<${relatedNode.getText()}>`;
+    const text = relatedNode?.getText();
+    return text ? `<${text}>` : node.marker;
   }
 }
 
