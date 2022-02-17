@@ -7,8 +7,6 @@ export class BlockNodeRenderer<T extends AbstractBlockNode> extends BaseNodeRend
   render(node: T): string {
     const header = this.renderHeader(node);
     const body = this.renderBody(node);
-    // 强制渲染一遍子元素，以便记录行号，但不在乎结果
-    node.getContent();
     return [header, body].filter(it => !!it).join('\n');
   }
 
