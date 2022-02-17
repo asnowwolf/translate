@@ -30,6 +30,7 @@ import { TableRenderer } from './renderers/table-renderer';
 import { StemRenderer } from './renderers/stem-renderer';
 import { OpenRenderer } from './renderers/open-renderer';
 import { AbstractNode, DocumentNode } from './renderers/dom/models';
+import { PreambleRenderer } from './renderers/preamble-renderer';
 
 export class AdocConverter {
   renderers: Record<string, NodeRenderer<AbstractNode>> = {
@@ -57,6 +58,7 @@ export class AdocConverter {
     'table': new TableRenderer(),
     'stem': new StemRenderer(),
     'open': new OpenRenderer(),
+    'preamble': new PreambleRenderer(),
     'inline_quoted': new InlineQuotedRenderer(),
     'inline_anchor': new InlineAnchorRenderer(),
     'inline_footnote': new InlineFootnoteRenderer(),
