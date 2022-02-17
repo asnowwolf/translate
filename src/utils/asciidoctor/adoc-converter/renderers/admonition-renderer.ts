@@ -7,7 +7,7 @@ export class AdmonitionRenderer extends BlockNodeRenderer<AbstractBlockNode> {
     const children = this.renderChildren(node);
     const prefix = !needDelimiter(node) ? `${node.getStyle()}: ` : '';
     const delimiter = !needDelimiter(node) ? '' : '====';
-    return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n');
+    return [delimiter, prefix + children.trim(), delimiter].filter(it => !!it).join('\n') + '\n';
   }
 
   protected getBlockAttributes(node: AbstractBlockNode): AttributeEntry[] {
