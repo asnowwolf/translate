@@ -15,7 +15,7 @@ export class InlineAnchorRenderer extends InlineNodeRenderer<InlineNode> {
           return `${target}[${this.renderAttributes(nonDefaultAttributes)}]`;
         }
       case 'xref':
-        const content = [target.replace(/^#/, ''), text].filter(it => !!it).join(',');
+        const content = [target.replace(/^#/, '').replace(/^(.+?)(\.\w+)#(.*)$/, '$1#$3'), text].filter(it => !!it).join(', ');
         return content ? `<<${content}>>` : '';
     }
   }
