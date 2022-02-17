@@ -68,6 +68,10 @@ export class AdocConverter {
     'inline_button': new InlineButtonRenderer(),
     'inline_menu': new InlineMenuRenderer(),
     'inline_callout': new InlineCalloutRenderer(),
+    'outline': new FallbackRenderer(),
+    'floating-title': new FallbackRenderer(),
+    'toc': new FallbackRenderer(),
+    'inline_break': new FallbackRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 
