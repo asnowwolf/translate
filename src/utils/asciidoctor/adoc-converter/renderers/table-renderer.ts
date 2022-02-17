@@ -35,7 +35,7 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
     const content = renderRows(node);
     const delimiter = `|===`;
     if (content) {
-      return [delimiter, content, delimiter].join('\n');
+      return [delimiter, content, delimiter].join('\n') + '\n';
     } else {
       return delimiter;
     }
