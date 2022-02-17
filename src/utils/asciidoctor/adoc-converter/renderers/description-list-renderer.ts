@@ -1,9 +1,13 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { ListNode } from './dom/models';
+import { ListItemNode, ListNode } from './dom/models';
+
+type DescriptionItemNode = [[ListItemNode], ListItemNode];
 
 export class DescriptionListRenderer extends BlockNodeRenderer<ListNode> {
+  positionalAttributes = [{ name: 'style', position: 1 }];
+
   renderChildren(node: ListNode): string {
-    const items = node.getItems();
+    const items = node.getItems<DescriptionItemNode>();
     return items.map(([[term], description]) => [
         term.convert(),
         '::',
