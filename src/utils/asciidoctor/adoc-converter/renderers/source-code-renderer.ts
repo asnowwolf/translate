@@ -24,7 +24,7 @@ export class SourceCodeRenderer extends BlockNodeRenderer<BlockNode> {
 
   getDefaultAttributes(node: BlockNode): { [key: string]: any } {
     const style = node.getStyle();
-    return { style: needStyleAttribute(style, node) ? '' : style, 'linenums-option': '', linenums: '' };
+    return { style: needStyleAttribute(style, node) ? '' : style, linenums: '' };
   }
 
   protected renderBody(node: BlockNode): string {
