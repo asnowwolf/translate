@@ -3,6 +3,7 @@ import * as globby from 'globby';
 import { readFileSync } from 'fs';
 import { AdocConverter } from './adoc-converter/adoc-converter';
 import { RawIncludeProcessor } from './processors/raw-include.processor';
+import * as path from 'path';
 
 describe('ascii-doctor', function () {
   let adoc;
@@ -20,12 +21,23 @@ describe('ascii-doctor', function () {
     return text.trim();
   }
 
-  xit(`e2e`, () => {
+  describe(`e2e`, () => {
     const files = globby.sync(path.join(__dirname, 'samples/**/*.adoc'));
+
+    function preprocess(content: string): string {
+      return content
+        .replace(/\n\n+/g, '\n\n')
+        .replace(/, /g, ',')
+        .trim();
+    }
+
     files.forEach((file) => {
-      console.log('converting', file);
-      const content = readFileSync(file, 'utf8');
-      expect(rebuild(content)).toEqual(content);
+      it(`${file}`, () => {
+        const content = preprocess(readFileSync(file, 'utf8'));
+        const rebuilt = preprocess(rebuild(content));
+        expect(rebuilt).toEqual(content);
+        expect(rebuild(rebuilt)).toEqual(rebuilt);
+      });
     });
   });
   it('Document header', () => {
