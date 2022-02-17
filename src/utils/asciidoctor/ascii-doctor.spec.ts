@@ -1,18 +1,21 @@
 import * as asciidoctor from 'asciidoctor.js';
-import { AdocConverter } from './adoc-converter/adoc-converter';
 import * as globby from 'globby';
-import * as path from 'path';
 import { readFileSync } from 'fs';
+import { AdocConverter } from './adoc-converter/adoc-converter';
+import { RawIncludeProcessor } from './processors/raw-include.processor';
 
 describe('ascii-doctor', function () {
   let adoc;
+  let registry;
   beforeAll(() => {
     adoc = asciidoctor();
+    registry = adoc.Extensions.create();
+    registry.includeProcessor(RawIncludeProcessor);
     adoc.ConverterFactory.register(new AdocConverter(), ['html5']);
   });
 
   function rebuild(content: string): string {
-    const dom = adoc.load(content);
+    const dom = adoc.load(content, { extension_registry: registry });
     const text = dom.convert();
     return text.trim();
   }
@@ -56,7 +59,6 @@ paragraph2`;
   });
   it('index term - complex', () => {
     const content = `=== Create a new Git repository
-
 (((Repository, create)))
 (((Create Git repository)))
 To create a new git repository,`;
@@ -226,7 +228,7 @@ Click image:pause.png[Pause] when you need a break.`;
     });
 
     it('image with attributes', () => {
-      const content = `[#img-sunset, link=https://www.flickr.com/photos/javh/5448336655]
+      const content = `[[img-sunset], link=https://www.flickr.com/photos/javh/5448336655]
 .A mountain sunset
 image::sunset.jpg[Sunset, 200, 100]`;
       expect(rebuild(content)).toEqual(content);
@@ -429,12 +431,14 @@ end
 
     it('highlight lines', () => {
       const content = `[source%linenums, ruby, highlight=2..5]
+----
 ORDERED_LIST_KEYWORDS = {
   'loweralpha' => 'a',
   'lowerroman' => 'i',
   'upperalpha' => 'A',
   'upperroman' => 'I',
-}`;
+}
+----`;
       // TODO: 不再编码html
       expect(rebuild(content)).toEqual(content);
     });
@@ -456,9 +460,11 @@ value when rendered.
 
     it('literal style syntax', () => {
       const content = `[literal]
+....
 error: 1954 Forbidden search
 absolutely fatal: operation lost in the dodecahedron of doom
-Would you like to try again? y/n`;
+Would you like to try again? y/n
+....`;
       expect(rebuild(content)).toEqual(content);
     });
     it('delimited literal block', () => {
@@ -485,6 +491,7 @@ get '/hi' do <2> <3>
   "Hello World!"
 end
 ----
+
 <1> Library import
 <2> URL mapping
 <3> Response block`;
@@ -492,9 +499,11 @@ end
     });
     it('with indent', () => {
       const content = `[source, ruby, indent=2]
+----
     def names
       @name.split ' '
-    end`;
+    end
+----`;
       expect(rebuild(content)).toEqual(content);
     });
   });
@@ -721,5 +730,9 @@ It is used to present information related to the main content.
 --`;
       expect(rebuild(content)).toEqual(content);
     });
+  });
+  it('include', () => {
+    const content = `include::./test/fixtures/include.adoc[]`;
+    expect(rebuild(content)).toEqual(content);
   });
 });

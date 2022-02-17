@@ -1,7 +1,6 @@
 import * as asciidoctor from 'asciidoctor.js';
 import { BaseNodeRenderer } from './base-node-renderer';
 import { Author, DocumentNode } from './dom/models';
-import { restoreIncludeUrl } from './utils/restore-include-url';
 
 interface DocumentAttributes {
   doctitle: string;
@@ -63,7 +62,7 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
     const children = node.getContent();
     const id = node.getId();
     // 作者这一行也可能是一句 include:: 指令，但是现在用的转换机制无法正确识别 include:: 指令，因此只能把它替换回去
-    const authors = restoreIncludeUrl(node.getAuthors().map(author => buildAuthorLine(author)).join('; '));
+    const authors = node.getAuthors().map(author => buildAuthorLine(author)).join('; ');
     const body = [
       getLinesBeforeTitle(node, id),
       doctitle && `= ${doctitle}`,
