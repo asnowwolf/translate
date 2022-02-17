@@ -44,10 +44,10 @@ export class BlockNodeRenderer<T extends AbstractBlockNode> extends BaseNodeRend
     return content ?? '';
   }
 
-  protected renderAttribute(attr: AttributeEntry): string {
+  protected renderAttribute(attr: AttributeEntry, hasFirstPositionalAttribute = false): string {
     const value = addQuotes(attr.value);
     if (attr.name === 'id') {
-      return `[${value}]`;
+      return hasFirstPositionalAttribute ? `#${value}` : `[${value}]`;
     } else if (attr.name === 'options') {
       return splitAttributeValue(attr.value).map(it => `%${addQuotes(it)}`).join('');
     } else if (attr.name === 'role') {
@@ -65,10 +65,10 @@ export class BlockNodeRenderer<T extends AbstractBlockNode> extends BaseNodeRend
     const options = attributes.find(it => it.name === 'options');
     const role = attributes.find(it => it.name === 'role');
 
-    const idText = id && this.renderAttribute(id);
+    const firstPositionalAttribute = attributes.find(it => it.position === 1);
+    const idText = id && this.renderAttribute(id, !!firstPositionalAttribute?.value);
     const optionsText = options && this.renderAttribute(options);
     const roleText = role && this.renderAttribute(role);
-    const firstPositionalAttribute = attributes.find(it => it.position === 1);
     return attributes
       .filter(it => !!it)
       .filter(it => !firstPositionalAttribute?.value || ![id, options, role].includes(it))
