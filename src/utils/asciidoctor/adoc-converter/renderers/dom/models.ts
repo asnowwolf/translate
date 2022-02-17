@@ -175,7 +175,7 @@ export interface DocumentNode extends AbstractBlockNode {
 
   getFootnotes(): string[];
 
-  getHeader(): string;
+  getHeader(): SectionNode;
 
   write(output: string, target: string): void;
 
@@ -375,7 +375,7 @@ export interface ListItemNode extends InlineNode {
 export interface ListNode extends AbstractBlockNode {
   getTitle(): string;
 
-  getItems(): ListItemNode[];
+  getItems<T = ListItemNode>(): T[];
 
   $content: string;
 
