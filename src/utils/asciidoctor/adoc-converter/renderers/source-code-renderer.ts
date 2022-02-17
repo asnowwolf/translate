@@ -31,7 +31,7 @@ export class SourceCodeRenderer extends BlockNodeRenderer<BlockNode> {
     const children = node.getSourceLines()
       .map(it => ' '.repeat(+node.getAttribute('indent')) + it)
       .join('\n');
-    const delimiter = !needDelimiter(node) ? '' : getDelimiter(node.getStyle());
-    return [delimiter, children, delimiter].filter(it => !!it).join('\n');
+    const delimiter = getDelimiter(node.getStyle());
+    return [delimiter, children, delimiter].filter(it => !!it).join('\n') + '\n';
   }
 }
