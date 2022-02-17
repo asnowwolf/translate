@@ -12,11 +12,11 @@ describe('ascii-doctor', function () {
     adoc = asciidoctor();
     registry = adoc.Extensions.create();
     registry.includeProcessor(RawIncludeProcessor);
-    adoc.ConverterFactory.register(new AdocConverter(), ['html5']);
+    adoc.ConverterFactory.register(new AdocConverter(), ['adoc']);
   });
 
   function rebuild(content: string): string {
-    const dom = adoc.load(content, { extension_registry: registry });
+    const dom = adoc.load(content, { extension_registry: registry, backend: 'adoc' });
     const text = dom.convert();
     return text.trim();
   }
