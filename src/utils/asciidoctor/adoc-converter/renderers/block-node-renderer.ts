@@ -47,7 +47,7 @@ export class BlockNodeRenderer<T extends AbstractBlockNode> extends BaseNodeRend
   protected renderAttribute(attr: AttributeEntry): string {
     const value = addQuotes(attr.value);
     if (attr.name === 'id') {
-      return `#${value}`;
+      return `[${value}]`;
     } else if (attr.name === 'options') {
       return splitAttributeValue(attr.value).map(it => `%${addQuotes(it)}`).join('');
     } else if (attr.name === 'role') {
