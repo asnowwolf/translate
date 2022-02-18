@@ -28,12 +28,14 @@ export class AdocBuilder {
 
   protected preprocess(content: string): string {
     return content
-      .replace(/^\[(.*)indent=("?)(\d+)("?)(.*)]$/gm, '[$1rawIndent=$2$3$4$5]');
+      .replace(/^\[(.*)indent=("?)(\d+)("?)(.*)]$/gm, '[$1rawIndent=$2$3$4$5]')
+      .replace(/^(ifdef|ifndef|ifeval|endif)/gm, '\\$1');
   }
 
   protected postprocess(content: string): string {
     return content
       .replace(/^\[(.*)rawIndent=("?)(\d+)("?)(.*)]$/gm, '[$1indent=$2$3$4$5]')
+      .replace(/^\\(ifdef|ifndef|ifeval|endif)/gm, '$1')
       .replace(/^Unresolved directive in .* - (.*)$/gm, '$1');
   }
 }

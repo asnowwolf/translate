@@ -752,4 +752,12 @@ It is used to present information related to the main content.
       expect(rebuildAdoc(content)).toEqual(content);
     });
   });
+  describe('conditional directives', () => {
+    it('simple', () => {
+      const content = `ifeval::["{spring-boot-artifactory-repo}" != "release"]
+=== Section Title
+endif::[]`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+  });
 });
