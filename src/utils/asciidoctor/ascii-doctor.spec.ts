@@ -666,6 +666,7 @@ print "%s" %(os.uname())
     });
 
     xit('csv', () => {
+      // converter 中拿不到原始信息
       const content = `[%header,format=csv]
 |===
 Artist,Track,Genre
@@ -721,7 +722,7 @@ or it can masquerade as any other block.
       expect(rebuildAdoc(content)).toEqual(content);
     });
     xit('complex', () => {
-      // 被识别为 source block，应该是 open block
+      // 不知道为什么被识别为 listing block，应该是 open block
       const content = `[sidebar]
 .Related information
 --
