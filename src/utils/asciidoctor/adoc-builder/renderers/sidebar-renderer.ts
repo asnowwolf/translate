@@ -18,6 +18,6 @@ export class SidebarRenderer extends BlockNodeRenderer<AbstractBlockNode> {
   renderBody(node: AbstractBlockNode): string {
     const children = this.renderChildren(node);
     const delimiter = !needDelimiter(node) ? '' : '****';
-    return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
+    return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n') + '\n';
   }
 }

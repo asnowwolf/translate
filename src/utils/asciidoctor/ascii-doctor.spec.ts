@@ -60,6 +60,7 @@ paragraph2`;
   });
   it('index term - complex', () => {
     const content = `=== Create a new Git repository
+
 (((Repository, create)))
 (((Create Git repository)))
 To create a new git repository,`;
