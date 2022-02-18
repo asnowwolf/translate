@@ -51,7 +51,7 @@ export abstract class BaseNodeRenderer<T extends AbstractNode> implements NodeRe
           ...attr,
           value: (attr.value as string).split(',').map(subValue => subValue.trim())
             .filter(it => defaultAttributes[attr.name] !== it)
-            .join(', '),
+            .join(','),
         };
       } else {
         return attr;

@@ -14,7 +14,7 @@ export class InlineIndexTermRenderer extends InlineNodeRenderer<InlineNode> {
     if (node.getText()) {
       return `((${node.getText()}))`;
     } else {
-      return attributes.terms && `(((${attributes.terms.map(it => addQuotes(it)).join(', ')})))`;
+      return attributes.terms && `(((${attributes.terms.map(it => addQuotes(it)).join(',')})))`;
     }
   }
 }

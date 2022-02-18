@@ -42,7 +42,7 @@ export class BlockNodeRenderer<T extends AbstractBlockNode> extends BaseNodeRend
     const shortenAttributes = this.shortenAttributes(attributes);
     const content = shortenAttributes
       .map(it => this.renderAttribute(it))
-      .filter(it => !!it).join(', ');
+      .filter(it => !!it).join(',');
     return content ?? '';
   }
 
