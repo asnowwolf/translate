@@ -30,6 +30,10 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
     return { tablepcwidth: 100, style: 'table', options: 'header' };
   }
 
+  protected getBlockTitle(node: TableNode): string | number {
+    return node.getTitle();
+  }
+
   protected renderBody(node: TableNode): string {
     const separator = node.getAttribute('separator') ?? '|';
     const content = renderRows(node);

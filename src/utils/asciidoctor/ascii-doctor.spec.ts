@@ -528,8 +528,8 @@ end
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('with title', () => {
-      const content = `.Table Title
-[cols="1,1"]
+      const content = `[cols="1,1"]
+.Table Title
 |===`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
