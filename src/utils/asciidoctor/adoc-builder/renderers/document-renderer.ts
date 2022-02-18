@@ -74,5 +74,8 @@ export class DocumentRenderer extends BaseNodeRenderer<DocumentNode> {
 }
 
 function renderAttribute(key, value): string {
+  if (key === 'revnumber') {
+    return `v${value}`;
+  }
   return [`:${key}:`, value].filter(it => !!it).join(' ');
 }

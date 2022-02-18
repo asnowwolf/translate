@@ -1,39 +1,10 @@
-import * as globby from 'globby';
-import { readFileSync } from 'fs';
-import * as path from 'path';
-import { AdocBuilder } from './adoc-builder/adoc-builder';
-
-function rebuildAdoc(content: string): string {
-  const builder = new AdocBuilder();
-  const dom = builder.parse(content);
-  return builder.build(dom);
-}
+import { rebuildAdoc } from './utils/rebuild-adoc';
 
 describe('ascii-doctor', function () {
-  describe(`e2e`, () => {
-    const files = globby.sync(path.join(__dirname, 'samples/**/*.adoc'));
-
-    function normalize(content: string): string {
-      return content
-        .replace(/\n+/g, '\n')
-        .replace(/, /g, ',')
-        .replace(/subs="(\w+)"/g, 'subs=$1')
-        .replace(/[|] +/g, '|')
-        .trim();
-    }
-
-    files.forEach((file) => {
-      it(`${file}`, () => {
-        const content = readFileSync(file, 'utf8');
-        const rebuilt = rebuildAdoc(content);
-        expect(normalize(rebuilt)).toEqual(normalize(content));
-        expect(normalize(rebuildAdoc(rebuilt))).toEqual(normalize(rebuilt));
-      });
-    });
-  });
   it('Document header', () => {
     const content = `= Document Title
 Kismet R. Lee <kismet@asciidoctor.org>
+v1.0.0
 :description: The document's description.
 :sectanchors:
 :url-repo: https://my-git-repo.com`;
