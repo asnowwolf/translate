@@ -1,5 +1,5 @@
 import { BlockNodeRenderer } from './block-node-renderer';
-import { CellNode, TableNode } from '../dom/table-node';
+import { CellNode, ColumnNode, TableNode } from '../dom/table-node';
 
 interface TableCellAttributes {
   width: number;
@@ -10,18 +10,7 @@ interface TableCellAttributes {
   style: string;
 }
 
-function styleCharOf(it: CellNode): string {
-  const styleCharMap = {
-    asciidoc: 'a',
-    emphasis: 'e',
-    header: 'h',
-    literal: 'l',
-    monospaced: 'm',
-    default: 'd',
-    strong: 's',
-  };
-  return styleCharMap[it.style] ?? '';
-}
+type TableColumnAttributes = TableCellAttributes;
 
 export class TableRenderer extends BlockNodeRenderer<TableNode> {
   ignoredAttributeNames = ['colcount', 'rowcount', 'tablepcwidth'];
@@ -44,6 +33,26 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
       return delimiter;
     }
 
+    function columnOf(cell: CellNode): ColumnNode {
+      return node.columns[+cell.getAttribute('colnumber') - 1];
+    }
+
+    function styleCharOf(cell: CellNode): string {
+      const styleCharMap = {
+        asciidoc: 'a',
+        emphasis: 'e',
+        header: 'h',
+        literal: 'l',
+        monospaced: 'm',
+        default: 'd',
+        strong: 's',
+      };
+      if (cell.style === columnOf(cell).style) {
+        return '';
+      }
+      return styleCharMap[cell.style] ?? '';
+    }
+
     function renderHeaderRows(rows: CellNode[][]): string {
       const text = rows.map(it => it.map(it => it.text).join(` ${separator}`)).filter(it => !!it).join('\n');
       return text && separator + text;
@@ -61,12 +70,23 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
         middle: '.^',
       };
 
-      function hAlignOf(attributes: TableCellAttributes): string {
-        return horizontalAlignmentChars[attributes.halign] ?? '';
+      function hAlignOf(cell: CellNode): string {
+        const cellAttributes = cell.getAttributes<TableCellAttributes>();
+        const columnAttributes = columnOf(cell).getAttributes<TableColumnAttributes>();
+        if (cellAttributes.halign === columnAttributes.halign) {
+          return '';
+        }
+
+        return horizontalAlignmentChars[cellAttributes.halign] ?? '';
       }
 
-      function vAlignOf(attributes: TableCellAttributes): string {
-        return verticalAlignmentChars[attributes.valign] ?? '';
+      function vAlignOf(cell: CellNode): string {
+        const cellAttributes = cell.getAttributes<TableCellAttributes>();
+        const columnAttributes = columnOf(cell).getAttributes<TableColumnAttributes>();
+        if (cellAttributes.valign === columnAttributes.valign) {
+          return '';
+        }
+        return verticalAlignmentChars[cellAttributes.valign] ?? '';
       }
 
       function addEmptyLine(text: string): string {
@@ -84,11 +104,10 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
       }
 
       function renderCell(node: CellNode): string {
-        const attributes = node.getAttributes<TableCellAttributes>();
         return [
           spanOf(node),
-          hAlignOf(attributes),
-          vAlignOf(attributes),
+          hAlignOf(node),
+          vAlignOf(node),
           styleCharOf(node),
           separator,
           addEmptyLine(node.text),

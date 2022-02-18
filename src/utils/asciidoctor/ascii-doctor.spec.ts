@@ -573,8 +573,8 @@ s|strong,
       expect(rebuildAdoc(content)).toEqual(content);
     });
 
-    xit('override', () => {
-      const content = `[cols="m,m"]
+    it('override', () => {
+      const content = `[cols=">a,e"]
 |===
 |Column 1, header row |Column 2, header row
 
@@ -584,7 +584,7 @@ s|strong,
 s|strong
 |*strong*
 
-d|default
+|default
 |monospaced
 |===`;
       expect(rebuildAdoc(content)).toEqual(content);
