@@ -53,8 +53,13 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
       return styleCharMap[cell.style] ?? '';
     }
 
+    function escapeSeparator(text: string): string {
+      const separator = node.getAttribute('separator') as string ?? '|';
+      return text.replace(new RegExp(`[${separator}]`, 'g'), '\\' + separator);
+    }
+
     function renderHeaderRows(rows: CellNode[][]): string {
-      const text = rows.map(it => it.map(it => it.text).join(` ${separator}`)).filter(it => !!it).join('\n');
+      const text = rows.map(it => it.map(it => escapeSeparator(it.text)).join(` ${separator}`)).filter(it => !!it).join('\n');
       return text && separator + text;
     }
 
@@ -110,7 +115,7 @@ export class TableRenderer extends BlockNodeRenderer<TableNode> {
           vAlignOf(node),
           styleCharOf(node),
           separator,
-          addEmptyLine(node.text),
+          addEmptyLine(escapeSeparator(node.text)),
         ].join('');
       }
 

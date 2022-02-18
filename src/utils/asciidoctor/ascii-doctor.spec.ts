@@ -21,7 +21,7 @@ paragraph2`;
     expect(rebuildAdoc(content)).toEqual(content);
   });
   it('section - complex', () => {
-    const content = `[positional_attribute_1, positional_attribute_2, named_attribute=value, positional_attribute_3]
+    const content = `[positional_attribute_1,positional_attribute_2,named_attribute=value,positional_attribute_3]
 .Kizmet's Favorite Authors
 === Section Title`;
     expect(rebuildAdoc(content)).toEqual(content);
@@ -71,7 +71,7 @@ def`;
   });
 
   it('ordered list', () => {
-    const content = `[start=4, %reversed]
+    const content = `[start=4,%reversed]
 .Title
 . Step four
 . Step five
@@ -203,24 +203,24 @@ Click image:pause.png[Pause] when you need a break.`;
     });
 
     it('image with attributes', () => {
-      const content = `[[img-sunset], link=https://www.flickr.com/photos/javh/5448336655]
+      const content = `[[img-sunset],link=https://www.flickr.com/photos/javh/5448336655]
 .A mountain sunset
 image::sunset.jpg[Sunset, 200, 100]`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
 
     it('image with attributes 2', () => {
-      const content = `image::tiger.png[Tiger, 200, 200, float=right, align=center]`;
+      const content = `image::tiger.png[Tiger,200,200,float=right,align=center]`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
 
     it('audio and video', () => {
-      const content = `video::tiger.mp4[Tiger, 200, 200, float=right, align=center]`;
+      const content = `video::tiger.mp4[Tiger,200,200,float=right,align=center]`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
 
     it('icon', () => {
-      const content = `icon:download[link=https://rubygems.org/downloads/whizbang-1.0.0.gem, window=_blank]`;
+      const content = `icon:download[link=https://rubygems.org/downloads/whizbang-1.0.0.gem,window=_blank]`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
   });
@@ -310,13 +310,13 @@ He could hear doves *cooing* in the pine trees branches.
 
   describe('blockquotes', function () {
     it('simple', function () {
-      const content = `[quote, Captain James T. Kirk, Star Trek IV: The Voyage Home]
+      const content = `[quote,Captain James T. Kirk,Star Trek IV: The Voyage Home]
 .After landing the cloaked Klingon bird of prey in Golden Gate park:
 Everybody remember where we parked.`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('syntax highlight', () => {
-      const content = `[quote, Monty Python and the Holy Grail]
+      const content = `[quote,Monty Python and the Holy Grail]
 ____
 Dennis: Come and see the violence inherent in the system.
 
@@ -375,14 +375,14 @@ ____`;
 
   });
   it('verse', () => {
-    const content = `[verse, Carl Sandburg, two lines from the poem Fog]
+    const content = `[verse,Carl Sandburg,two lines from the poem Fog]
 The fog comes
 on little cat feet.`;
     expect(rebuildAdoc(content)).toEqual(content);
   });
   describe('source code blocks', () => {
     it('simple', () => {
-      const content = `[source, ruby]
+      const content = `[source,ruby]
 ----
 require 'sinatra'
 
@@ -393,7 +393,7 @@ end
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('indent', () => {
-      const content = `[source, ruby, indent=0]
+      const content = `[source,ruby,indent=0]
 ----
   require 'sinatra'
 
@@ -404,7 +404,7 @@ end
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('highlight', () => {
-      const content = `[source#hello, ruby]
+      const content = `[source#hello,ruby]
 ----
 require 'sinatra'
 
@@ -416,7 +416,7 @@ end
     });
 
     it('highlight lines', () => {
-      const content = `[source%linenums, ruby, highlight=2..5]
+      const content = `[source%linenums,ruby,highlight=2..5]
 ----
 ORDERED_LIST_KEYWORDS = {
   'loweralpha' => 'a',
@@ -468,7 +468,7 @@ Computer: Calculating ...
     });
 
     it('callouts', () => {
-      const content = `[source, ruby]
+      const content = `[source,ruby]
 ----
 require 'sinatra' <1>
 
@@ -483,7 +483,7 @@ end
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('with indent', () => {
-      const content = `[source, ruby, indent=2]
+      const content = `[source,ruby,indent=2]
 ----
     def names
       @name.split ' '
@@ -519,7 +519,7 @@ end
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('with header', () => {
-      const content = `[%footer, cols="1,1"]
+      const content = `[%footer,cols="1,1"]
 |===
 |Cell in column 1, header row |Cell in column 2, header row
 
@@ -657,7 +657,7 @@ print "%s" %(os.uname())
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('custom separator', () => {
-      const content = `[cols=2*, separator=¦]
+      const content = `[cols=2*,separator=¦]
 |===
 ¦The default separator in PSV tables is the | character.
 ¦The | character is often referred to as a pipe.
@@ -671,6 +671,16 @@ print "%s" %(os.uname())
 Artist,Track,Genre
 Baauer,Harlem Shake,Hip Hop
 The Lumineers,Ho Hey,Folk Rock
+|===`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+
+    it('escape the `|` character', () => {
+      const content = `|===
+|header 1 with '\\|' |header 2 without \\|
+
+|body with \\| 1
+|body with \`\\| 2\`
 |===`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
