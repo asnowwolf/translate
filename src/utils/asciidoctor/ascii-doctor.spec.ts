@@ -418,6 +418,17 @@ end
 ----`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
+    it('indent', () => {
+      const content = `[source, ruby, indent=0]
+----
+  require 'sinatra'
+
+  get '/hi' do
+    "Hello World!"
+  end
+----`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
     it('highlight', () => {
       const content = `[source#hello, ruby]
 ----
@@ -440,7 +451,6 @@ ORDERED_LIST_KEYWORDS = {
   'upperroman' => 'I',
 }
 ----`;
-      // TODO: 不再编码html
       expect(rebuildAdoc(content)).toEqual(content);
     });
     it('listing blocks', () => {
@@ -721,7 +731,7 @@ or it can masquerade as any other block.
       expect(rebuildAdoc(content)).toEqual(content);
     });
     xit('complex', () => {
-      // 被识别为 source block
+      // 被识别为 source block，应该是 open block
       const content = `[sidebar]
 .Related information
 --
