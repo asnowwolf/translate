@@ -15,8 +15,10 @@ describe('ascii-doctor', function () {
 
     function normalize(content: string): string {
       return content
-        .replace(/\n\n+/g, '\n\n')
+        .replace(/\n+/g, '\n')
         .replace(/, /g, ',')
+        .replace(/subs="(\w+)"/g, 'subs=$1')
+        .replace(/[|] +/g, '|')
         .trim();
     }
 
@@ -25,7 +27,7 @@ describe('ascii-doctor', function () {
         const content = readFileSync(file, 'utf8');
         const rebuilt = rebuildAdoc(content);
         expect(normalize(rebuilt)).toEqual(normalize(content));
-        expect(normalize(rebuildAdoc(rebuilt))).toEqual(rebuilt);
+        expect(normalize(rebuildAdoc(rebuilt))).toEqual(normalize(rebuilt));
       });
     });
   });
@@ -525,6 +527,12 @@ end
 |===`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
+    it('with title', () => {
+      const content = `.Table Title
+[cols="1,1"]
+|===`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
     it('no header', () => {
       const content = `[cols="1,1"]
 |===
@@ -743,8 +751,34 @@ It is used to present information related to the main content.
       expect(rebuildAdoc(content)).toEqual(content);
     });
   });
-  it('include', () => {
-    const content = `include::./test/fixtures/include.adoc[]`;
-    expect(rebuildAdoc(content)).toEqual(content);
+  describe('include', () => {
+    it('simple', () => {
+      const content = `include::./test/fixtures/include.adoc[]`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+    it('unresolved directive', () => {
+      const content = `include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+  });
+  describe('escape', () => {
+    const title = 'TIP: ';
+    it('simple', () => {
+      const content = title + 'Spring Boot\'s -- "`JarFile`" \'`JarFile`\' Class: ``abc``\n<ab>&';
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+
+    it('+', () => {
+      const content = title + 'properties such as `+logging.*+` and `+++spring.main.*+++`';
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+    it('**', () => {
+      const content = title + '**bold**';
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
+    it('${}', () => {
+      const content = title + '${foo}';
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
   });
 });
