@@ -7,7 +7,6 @@ import { htmlToMd } from '../unified/markdown';
 
 export interface DictEntry {
   file: string;
-  xpath: string;
   english: string;
   chinese: string;
 }
@@ -23,7 +22,6 @@ export class Extractor {
     const pairs = extractAll(doc);
     return pairs.map(pair => ({
       file: filename,
-      xpath: getPathsTo(pair.english).join('/'),
       english: htmlToMd(pair.english.outerHTML).trim(),
       chinese: htmlToMd(pair.chinese.outerHTML).trim(),
     }));
@@ -36,7 +34,7 @@ export class Extractor {
     const groups = groupBy(pairs, it => it.file);
     for (const [file, pairs] of Object.entries(groups)) {
       for (const pair of pairs) {
-        await dict.createOrUpdate(file, pair.english, pair.chinese, pair.xpath);
+        await dict.createOrUpdate(file, pair.english, pair.chinese);
       }
     }
   }

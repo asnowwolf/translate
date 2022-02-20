@@ -1,9 +1,9 @@
 import { CommandBuilder } from 'yargs';
-import { Dict } from '../../dict/dict';
 import { basenameWithoutExt } from '../../utils/common';
 import { Exporter } from '../../exporter/exporter';
 import { writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../translation-engine/translation-engine-type';
+import { SqliteDict } from '../../dict/sqlite-dict';
 
 export const command = `export <dictFile>`;
 
@@ -30,10 +30,10 @@ interface ExportsParams {
 }
 
 export const handler = async function ({ dictFile, engine }: ExportsParams) {
-  const dict = new Dict();
+  const dict = new SqliteDict();
   await dict.open(dictFile);
   try {
-    const entries = await dict.findAll({ where: { isRegExp: false } });
+    const entries = await dict.query();
     const exporter = new Exporter();
     const result = exporter.export(entries);
     if (engine === TranslationEngineType.ms) {

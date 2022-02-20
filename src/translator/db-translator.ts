@@ -1,12 +1,12 @@
 import { Translator } from './translator';
-import { Dict } from '../dict/dict';
+import { SqliteDict } from '../dict/sqlite-dict';
 
 export class DbTranslator extends Translator {
   async translateFile(filename: string): Promise<void> {
-    const dict = new Dict();
+    const dict = new SqliteDict();
     await dict.open(filename);
     try {
-      const allEntries = await dict.findAll();
+      const allEntries = await dict.query();
       const newEntries = allEntries.filter(it => !it.isRegExp && !it.chinese);
       newEntries.map(entry => this.engine.translateHtml(entry.english)
         .then(translation => {

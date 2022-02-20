@@ -9,8 +9,6 @@ export class DictEntryEntity {
   path: string;
   @Column()
   filename: string;
-  @Column()
-  xpath: string;
   @Column({ type: 'nvarchar', length: 256 })
   english: string;
   @Column({ type: 'nvarchar', length: 256 })

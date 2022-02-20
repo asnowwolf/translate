@@ -1,5 +1,6 @@
 import { Extractor } from './extractor';
-import { Dict } from '../dict/dict';
+import { pick } from 'lodash';
+import { SqliteDict } from '../dict/sqlite-dict';
 
 describe('extractor', () => {
   it('extract pairs from html', async () => {
@@ -10,13 +11,11 @@ describe('extractor', () => {
         'chinese': '# 一',
         'english': '# One',
         'file': 'samples/html/extract1.html',
-        'xpath': 'h1/1',
       },
       {
         'chinese': '二',
         'english': 'Two',
         'file': 'samples/html/extract1.html',
-        'xpath': 'div/2/p/1',
       },
     ]);
     const entries2 = await extractor.extractFile('samples/html/extract2.html');
@@ -25,24 +24,22 @@ describe('extractor', () => {
         'chinese': '三',
         'english': 'Three',
         'file': 'samples/html/extract2.html',
-        'xpath': 'p/1',
       },
       {
         'chinese': '四',
         'english': 'Four',
         'file': 'samples/html/extract2.html',
-        'xpath': 'div/2/p/1',
       },
     ]);
   });
 
   it('extract pairs to dict', async () => {
     const extractor = new Extractor();
-    const dict = new Dict();
-    await dict.openInMemory();
+    const dict = new SqliteDict();
+    await dict.open(':memory:');
     await extractor.extractFilesToDict(['samples/html/extract1.html', 'samples/html/extract2.html'], dict);
-    const result = await dict.findAll({ select: ['id', 'chinese', 'english', 'filename', 'path', 'xpath'] });
-    expect(result).toEqual([
+    const result = await dict.query();
+    expect(result.map(it => pick(it, 'id', 'chinese', 'english', 'filename', 'path', 'isRegExp'))).toEqual([
       {
         'chinese': '# 一',
         'english': '# One',
@@ -50,7 +47,6 @@ describe('extractor', () => {
         'id': 1,
         'isRegExp': false,
         'path': 'samples/html/extract1.html',
-        'xpath': 'h1/1',
       },
       {
         'chinese': '二',
@@ -59,7 +55,6 @@ describe('extractor', () => {
         'id': 2,
         'isRegExp': false,
         'path': 'samples/html/extract1.html',
-        'xpath': 'div/2/p/1',
       },
       {
         'chinese': '三',
@@ -68,7 +63,6 @@ describe('extractor', () => {
         'id': 3,
         'isRegExp': false,
         'path': 'samples/html/extract2.html',
-        'xpath': 'p/1',
       },
       {
         'chinese': '四',
@@ -77,7 +71,6 @@ describe('extractor', () => {
         'id': 4,
         'isRegExp': false,
         'path': 'samples/html/extract2.html',
-        'xpath': 'div/2/p/1',
       },
     ]);
   });

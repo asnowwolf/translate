@@ -1,7 +1,7 @@
 import { CommandBuilder } from 'yargs';
-import { Dict } from '../../dict/dict';
 import { sync as globby } from 'globby';
 import { Extractor } from '../../extractor/extractor';
+import { SqliteDict } from '../../dict/sqlite-dict';
 
 export const command = `extract <outFile> <sourceGlobs...>`;
 
@@ -33,7 +33,7 @@ export const handler = async function ({ sourceGlobs, outFile, filter }: Extract
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
   }
-  const dict = new Dict();
+  const dict = new SqliteDict();
   await dict.open(outFile);
   try {
     const extractor = new Extractor();
