@@ -1,5 +1,5 @@
 import { TranslationEngine } from './translation-engine';
-import { delay } from '../utils/delay';
+import { delay } from '../dom/delay';
 
 export class FakeTranslationEngine extends TranslationEngine {
   protected async doTranslateHtml(texts: string[]): Promise<string[]> {

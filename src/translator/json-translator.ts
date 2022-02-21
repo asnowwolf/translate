@@ -1,5 +1,5 @@
 import { Translator } from './translator';
-import { containsChinese } from '../utils/common';
+import { containsChinese } from '../dom/common';
 import { isDeepStrictEqual } from 'util';
 
 export class JsonTranslator extends Translator {

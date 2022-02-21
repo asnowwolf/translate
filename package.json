@@ -18,7 +18,7 @@
     "url": "https://github.com/asnowwolf/translate/issues"
   },
   "scripts": {
-    "test": "mocha --require ts-node/register src/**/*.ts",
+    "test": "jest",
     "prelink": "rm -fr dist && tsc && ts-node ./tools/prepublish.ts",
     "publish": "rm -fr dist && tsc && ts-node ./tools/prepublish.ts && cd dist && npm publish && cd -"
   },

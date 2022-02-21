@@ -1,5 +1,5 @@
 import { CommandBuilder } from 'yargs';
-import { basenameWithoutExt } from '../../utils/common';
+import { basenameWithoutExt } from '../../dom/common';
 import { Exporter } from '../../exporter/exporter';
 import { writeFileSync } from 'fs';
 import { TranslationEngineType } from '../../translation-engine/translation-engine-type';

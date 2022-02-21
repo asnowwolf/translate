@@ -2,7 +2,7 @@ import { Connection, ConnectionOptions, createConnection, Repository } from 'typ
 import { DictEntryEntity } from './dict-entry.entity';
 import { basename, extname, resolve } from 'path';
 import { existsSync } from 'fs';
-import { basenameWithoutExt } from '../utils/common';
+import { basenameWithoutExt } from '../dom/common';
 import { Dict } from './dict';
 
 export class SqliteDict implements Dict {

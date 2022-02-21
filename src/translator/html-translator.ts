@@ -1,6 +1,6 @@
 import { Translator } from './translator';
-import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../utils/tiny-dom/dom-models';
-import { containsChinese } from '../utils/common';
+import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../dom/phase5/dom-models';
+import { containsChinese } from '../dom/common';
 import { NoopTranslationEngine } from '../translation-engine/noop-engine';
 import { sameExceptWhitespace } from './same-except-whitespace';
 

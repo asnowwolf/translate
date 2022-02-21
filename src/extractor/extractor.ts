@@ -1,9 +1,9 @@
-import { DomDocument, DomElement, DomParentNode } from '../utils/tiny-dom/dom-models';
+import { DomDocument, DomElement, DomParentNode } from '../dom/phase5/dom-models';
 import { readFileSync } from 'fs';
-import { containsChinese } from '../utils/common';
+import { containsChinese } from '../dom/common';
 import { Dict } from '../dict/dict';
 import { groupBy, uniqBy } from 'lodash';
-import { htmlToMd } from '../unified/markdown';
+import { htmlToMd } from '../dom/unified/markdown';
 
 export interface DictEntry {
   file: string;

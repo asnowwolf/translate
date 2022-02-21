@@ -1,7 +1,7 @@
-import { htmlToMd, mdToHtml } from '../unified/markdown';
+import { htmlToMd, mdToHtml } from '../dom/unified/markdown';
 import { chunk } from 'lodash';
-import { PromiseMaker } from '../utils/promise-maker';
-import { delay } from '../utils/delay';
+import { PromiseMaker } from '../dom/promise-maker';
+import { delay } from '../dom/delay';
 
 export abstract class TranslationEngine {
   batchSize = 100;
