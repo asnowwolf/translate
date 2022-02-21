@@ -119,4 +119,17 @@ b`;
     const tree = markdownParse(markdown);
     expect(markdownStringify(tree).trim()).toEqual(markdown);
   });
+
+  it('should parse originalId', () => {
+    const markdown = `# h1 {@originalId 123}`;
+    const tree = markdownParse(markdown);
+    expect(markdownStringify(tree).trim()).toEqual(markdown);
+  });
+
+  it('when mdToHtml, originalId should mark with translate="no"', () => {
+    const markdown = `# h1 {@originalId 123}`;
+    const html = '<h1>h1<original-id translate="no" value="123"></original-id></h1>';
+    expect(mdToHtml(markdown).trim()).toEqual(html);
+    expect(htmlToMd(html).trim()).toEqual(markdown);
+  });
 });

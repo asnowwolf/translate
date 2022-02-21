@@ -1,4 +1,7 @@
-export function anchorTokenizer(this: { file: { fail: (message: string) => void } }, eat, value, silent) {
+import { Eater, UnifiedParser } from './unified-parser';
+import { Node } from 'unist';
+
+export function anchorTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const matches = /^{@a (.*?)}/.exec(value);
   if (matches) {
     try {

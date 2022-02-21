@@ -1,11 +1,13 @@
-const trim = require('trim');
+import { Eater, UnifiedParser } from './unified-parser';
+import { Node } from 'unist';
+
 const whitespace = require('is-whitespace-character');
 
 const backslash = '\\';
 const asterisk = '*';
 const underscore = '_';
 
-export function strongTokenizer(this, eat, value, silent) {
+export function strongTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const self = this;
   let index = 0;
   let character = value.charAt(index);
@@ -48,7 +50,7 @@ export function strongTokenizer(this, eat, value, silent) {
       character = value.charAt(index + 2);
 
       if (character !== marker) {
-        if (!trim(queue)) {
+        if (!queue.trim()) {
           return;
         }
 

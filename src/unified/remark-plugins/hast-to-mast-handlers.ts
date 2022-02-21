@@ -5,6 +5,7 @@ export const hastToMastHandlers = {
   strong: (h, node) => h(node, 'strong', { marker: node.properties['nt__marker'] }, all(h, node)),
   li: (h, node) => h(node, 'listItem', { marker: node.properties['nt__marker'] }, all(h, node)),
   'plain-html': (h, node) => h(node, 'plainHtml', { value: unescape(node.properties['value']) }, all(h, node)),
+  'original-id': (h, node) => h(node, 'originalId', { value: unescape(node.properties['value']) }, all(h, node)),
   a: (h, node) => {
     const href = node.properties['href'];
     if (href?.startsWith('linkRef:')) {

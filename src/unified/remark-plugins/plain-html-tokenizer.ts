@@ -1,4 +1,7 @@
-export function plainHtmlTokenizer(this: { file: { fail: (message: string) => void } }, eat, value, silent) {
+import { Eater, UnifiedParser } from './unified-parser';
+import { Node } from 'unist';
+
+export function plainHtmlTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const matches = /^<(code-example|code-tabs)[\s\S]+?<\/\1>/.exec(value);
   if (matches) {
     try {

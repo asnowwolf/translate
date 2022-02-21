@@ -1,6 +1,8 @@
 'use strict';
 
-const trim = require('trim');
+import { Node } from 'unist';
+import { Eater, UnifiedParser } from './unified-parser';
+
 const word = require('is-word-character');
 const whitespace = require('is-whitespace-character');
 
@@ -8,7 +10,7 @@ const asterisk = '*';
 const underscore = '_';
 const backslash = '\\';
 
-export function emphasisTokenizer(this: any, eat, value, silent) {
+export function emphasisTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const self = this;
   let index = 0;
   let character = value.charAt(index);
@@ -37,7 +39,7 @@ export function emphasisTokenizer(this: any, eat, value, silent) {
       character = value.charAt(++index);
 
       if (character !== marker) {
-        if (!trim(queue) || prev === marker) {
+        if (!queue.trim() || prev === marker) {
           return;
         }
 

@@ -1,4 +1,6 @@
 import { pad } from './utils/pad';
+import { Node, Position } from 'unist';
+import { UnifiedParser } from './unified-parser';
 
 const lineFeed = '\n';
 const space = ' ';
@@ -24,13 +26,13 @@ const tabSize = 4;
 // ```markdown
 // [ ] foo
 // ```
-export function listItemVisitor(this, node, parent, position, bullet) {
+export function listItemVisitor(this: UnifiedParser, node: Node, parent?: Node, position?: Position, bullet?: string): string {
   const self = this;
   const style = self.options.listItemIndent;
   const marker = node.marker || bullet || self.options.bullet;
   const spread = node.spread == null ? true : node.spread;
   const checked = node.checked;
-  const children = node.children;
+  const children = node.children as Node[];
   const length = children.length;
   const values = [];
   let index = -1;

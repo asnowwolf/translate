@@ -1,5 +1,7 @@
 import { removeIndent } from './utils/remove-indent';
 import { getIndent } from './utils/get-indent';
+import { Eater, UnifiedParser } from './unified-parser';
+import { Node } from 'unist';
 
 const tabSize = 4;
 const looseListItemExpression = /\n\n(?!\s*$)/;
@@ -13,7 +15,7 @@ function isDecimal(character): boolean {
   return code >= 48 && code <= 57; /* 0-9 */
 }
 
-export function listTokenizer(this, eat, value, silent) {
+export function listTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const self = this;
   const commonmark = self.options.commonmark;
   const pedantic = self.options.pedantic;

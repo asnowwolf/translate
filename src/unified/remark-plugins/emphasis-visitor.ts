@@ -1,6 +1,7 @@
 import { Node } from 'unist';
+import { UnifiedParser } from './unified-parser';
 
-export function emphasisVisitor(this, node: Node) {
+export function emphasisVisitor(this: UnifiedParser, node: Node): string {
   let marker = node.marker ?? this.options.emphasis;
   const content = this.all(node).join('');
 
