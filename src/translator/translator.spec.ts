@@ -4,7 +4,7 @@ import { getTranslationEngine } from '../translation-engine/get-translation-engi
 import { DomDocument } from '../dom/phase5/dom-models';
 import { TranslationEngineType } from '../translation-engine/translation-engine-type';
 
-describe('file-translator', function () {
+describe('translators', function () {
   it('translate html file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
