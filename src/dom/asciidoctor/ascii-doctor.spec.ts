@@ -738,6 +738,10 @@ It is used to present information related to the main content.
       const content = `include::./test/fixtures/include.adoc[]`;
       expect(rebuildAdoc(content)).toEqual(content);
     });
+    it('with attributes', () => {
+      const content = `include::filename.txt[lines="1..10,15..20"]`;
+      expect(rebuildAdoc(content)).toEqual(content);
+    });
     it('unresolved directive', () => {
       const content = `include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]`;
       expect(rebuildAdoc(content)).toEqual(content);
