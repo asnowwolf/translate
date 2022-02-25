@@ -23,7 +23,7 @@ export class DictTranslationEngine extends TranslationEngine {
   protected async doTranslateHtml(texts: string[]): Promise<string[]> {
     return Promise.all(texts.map(async (text) => {
       const english = htmlToMd(text).trim().replace(/\n */g, ' ');
-      const entry = await this.dict.get(this.context.filename, english);
+      const entry = await this.dict.get(english, { path: this.context.filename });
       const chinese = mdToHtml(entry.chinese);
       if (!entry || !chinese) {
         return text;

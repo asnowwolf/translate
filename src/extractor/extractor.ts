@@ -1,15 +1,10 @@
 import { DomDocument, DomElement, DomParentNode } from '../dom/phase5/dom-models';
 import { readFileSync } from 'fs';
 import { containsChinese } from '../dom/common';
-import { Dict } from '../dict/dict';
+import { Dict, DictEntry } from '../dict/dict';
 import { groupBy, uniqBy } from 'lodash';
 import { htmlToMd } from '../dom/unified/markdown';
-
-export interface DictEntry {
-  file: string;
-  english: string;
-  chinese: string;
-}
+import { v4 } from 'uuid';
 
 export class Extractor {
   extractFile(filename: string): DictEntry[] {
@@ -20,10 +15,13 @@ export class Extractor {
   extract(content: string, filename: string): DictEntry[] {
     const doc = DomDocument.parse(content);
     const pairs = extractAll(doc);
-    return pairs.map(pair => ({
-      file: filename,
+    return pairs.map((pair) => ({
+      id: v4(),
+      path: filename,
       english: htmlToMd(pair.english.outerHTML).trim(),
       chinese: htmlToMd(pair.chinese.outerHTML).trim(),
+      isRegExp: false,
+      confidence: 'Manual',
     }));
   }
 
@@ -31,10 +29,10 @@ export class Extractor {
     const allPairs = files.map(file => this.extractFile(file)).flat()
       .filter(it => filter.test(it.english) || filter.test(it.chinese));
     const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
-    const groups = groupBy(pairs, it => it.file);
+    const groups = groupBy(pairs, it => it.path);
     for (const [file, pairs] of Object.entries(groups)) {
       for (const pair of pairs) {
-        await dict.createOrUpdate(file, pair.english, pair.chinese);
+        await dict.createOrUpdate(pair.english, pair.chinese, { path: file });
       }
     }
   }
@@ -61,11 +59,4 @@ export function extractAll(body: DomParentNode): SentencePair[] {
     }
   });
   return results;
-}
-
-export function getPathsTo(element: DomParentNode): string[] {
-  if (!element || element instanceof DomElement && element.isTagOf('body')) {
-    return [];
-  }
-  return [...getPathsTo(element.parentElement), element.nodeName, element.indexOfElement.toString(10)];
 }
