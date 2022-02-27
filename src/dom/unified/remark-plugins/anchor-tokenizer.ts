@@ -13,7 +13,7 @@ export function anchorTokenizer(this: UnifiedParser, eat: Eater, value: string, 
         type: 'anchor',
         name: matches[1],
       });
-    } catch (e) {
+    } catch (e: any) {
       this.file.fail('Unmatched anchor tag: ' + e.message);
     }
   }

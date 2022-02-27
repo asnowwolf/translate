@@ -1,4 +1,4 @@
-import { rebuildAdoc } from './utils/rebuild-adoc';
+import { rebuildAdoc } from './adoc-compiler/utils/rebuild-adoc';
 
 describe('ascii-doctor', function () {
   it('Document header', () => {

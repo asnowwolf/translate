@@ -247,7 +247,7 @@ include::{docs-java}/howto/dataaccess/configurehibernatenamingstrategy/spring/My
 
 If you prefer to use Hibernate 5's default instead, set the following property:
 
-[indent=0,properties,subs=verbatim]
+[source,indent=0,properties,subs=verbatim]
 ----
 	spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 ----

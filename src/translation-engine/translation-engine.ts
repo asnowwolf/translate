@@ -46,5 +46,5 @@ export abstract class TranslationEngine {
       .then(() => delay(100));
   }
 
-  protected abstract async doTranslateHtml(texts: string[]): Promise<string[]>;
+  protected abstract doTranslateHtml(texts: string[]): Promise<string[]>;
 }

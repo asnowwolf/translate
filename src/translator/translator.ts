@@ -12,5 +12,5 @@ export abstract class Translator {
     writeFileSync(filename, result, 'utf8');
   }
 
-  abstract async translate(text: string): Promise<string>;
+  abstract translate(text: string): Promise<string>;
 }

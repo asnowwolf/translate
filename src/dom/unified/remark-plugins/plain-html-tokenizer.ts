@@ -13,7 +13,7 @@ export function plainHtmlTokenizer(this: UnifiedParser, eat: Eater, value: strin
         type: 'plainHtml',
         value: matches[0],
       });
-    } catch (e) {
+    } catch (e: any) {
       this.file.fail('Unmatched plain HTML block tag: ' + e.message);
     }
   }

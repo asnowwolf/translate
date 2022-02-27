@@ -14,7 +14,7 @@ export function originalIdTokenizer(this: UnifiedParser, eat: Eater, value: stri
         type: 'originalId',
         value: matches[1],
       });
-    } catch (e) {
+    } catch (e: any) {
       this.file.fail('Unmatched originalId tag: ' + e.message);
     }
   }
