@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { DomDocument, DomElement } from '../dom/phase5/dom-models';
+import { DomDocument, DomElement } from '../dom/parse5/dom-models';
 
 export class Injector {
   constructor(

@@ -1,4 +1,4 @@
-import { DomDocument, DomElement, DomParentNode } from '../dom/phase5/dom-models';
+import { DomDocument, DomElement, DomParentNode } from '../dom/parse5/dom-models';
 import { readFileSync } from 'fs';
 import { containsChinese } from '../dom/common';
 import { Dict, DictEntry } from '../dict/dict';

@@ -1,5 +1,5 @@
 import { Marker, restructureTable } from './marker';
-import { defaultSelectors, DomDocumentFragment } from '../dom/phase5/dom-models';
+import { defaultSelectors, DomDocumentFragment } from '../dom/parse5/dom-models';
 
 describe('marker', () => {
   it('should add translation mark', () => {

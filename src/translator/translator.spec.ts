@@ -1,7 +1,7 @@
 import { getTranslator } from './get-translator';
 import { readFileSync } from 'fs';
 import { getTranslationEngine } from '../translation-engine/get-translation-engine';
-import { DomDocument } from '../dom/phase5/dom-models';
+import { DomDocument } from '../dom/parse5/dom-models';
 import { TranslationEngineType } from '../translation-engine/translation-engine-type';
 
 describe('translators', function () {

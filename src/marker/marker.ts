@@ -7,7 +7,7 @@ import {
   DomSelector,
   DomTableElement,
   DomTableRowElement,
-} from '../dom/phase5/dom-models';
+} from '../dom/parse5/dom-models';
 import { containsChinese } from '../dom/common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';

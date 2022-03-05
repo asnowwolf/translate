@@ -1,5 +1,5 @@
 import { mdToHtml } from '../dom/unified/markdown';
-import { htmlToText } from '../dom/phase5/dom-utils';
+import { htmlToText } from '../dom/parse5/dom-utils';
 
 export class Exporter {
   export(entries: { english: string, chinese: string }[]): { english: string, chinese: string }[] {
