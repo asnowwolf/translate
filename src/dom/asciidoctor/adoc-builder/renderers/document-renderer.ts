@@ -33,7 +33,7 @@ export class DocumentRenderer extends BaseNodeRenderer<Document> {
   protected helperAdoc = asciidoctor();
 
   getDefaultAttributes(node: Document): { [key: string]: any } {
-    return this.helperAdoc.load('').getAttributes();
+    return this.helperAdoc.load('', { backend: 'adoc' }).getAttributes();
   }
 
   ignoredAttributeNames = [
@@ -73,7 +73,7 @@ export class DocumentRenderer extends BaseNodeRenderer<Document> {
       authors,
       nonDefaultAttributes.map(it => renderAttribute(it.name, it.value)).join('\n'),
     ].filter(it => !!it).join('\n');
-    return body + '\n\n' + children;
+    return [body, children].filter(it => !!it).join('\n\n');
   }
 }
 

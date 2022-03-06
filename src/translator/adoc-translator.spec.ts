@@ -1,8 +1,8 @@
-import { AdocCompiler } from '../dom/asciidoctor/adoc-compiler/adoc-compiler';
+import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 import { TranslationEngine } from '../translation-engine/translation-engine';
 import { Asciidoctor } from '@asciidoctor/core';
-import { Adoc } from '../dom/asciidoctor/adoc-compiler/utils/adoc';
+import { Adoc } from '../dom/asciidoctor/utils/adoc';
 import AbstractNode = Asciidoctor.AbstractNode;
 
 function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string) {
@@ -45,12 +45,12 @@ describe('adoc-translator', () => {
 == Two
 
 Three`;
-    const compiler = new AdocCompiler();
-    const dom = compiler.parse(input);
+    const builder = new AdocBuilder();
+    const dom = builder.parse(input);
     const engine = new FakeTranslationEngine();
     adocTranslate(dom, engine);
     await engine.flush();
-    const output = compiler.build(dom);
+    const output = builder.build(dom);
     expect(output).toBe(`= 一: Subtitle for 一
 :description: Description for "一"
 
@@ -61,7 +61,7 @@ Three`;
   it('indexterm', async () => {
     const input = `I, King Arthur.
 (((knight, "Arthur, King")))`;
-    const compiler = new AdocCompiler();
+    const compiler = new AdocBuilder();
     const dom = compiler.parse(input);
     const engine = new FakeTranslationEngine();
     adocTranslate(dom, engine);

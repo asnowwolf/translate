@@ -1,1 +1,1 @@
-export * from './adoc-compiler/adoc-compiler';
+export * from './adoc-builder/adoc-builder';

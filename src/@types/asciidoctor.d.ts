@@ -28,6 +28,10 @@ declare module '@asciidoctor/core' {
       }
     }
 
+    interface Document {
+      blocks: Block[];
+    }
+
     interface InlineIndexTermAttributes {
       terms: string[];
     }
