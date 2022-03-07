@@ -1,17 +1,14 @@
 import { BlockNodeRenderer } from './block-node-renderer';
 import { Asciidoctor } from '@asciidoctor/core';
-import List = Asciidoctor.List;
-import ListItem = Asciidoctor.ListItem;
+import DescriptionList = Asciidoctor.DescriptionList;
 
-type DescriptionItem = [[ListItem], ListItem];
-
-export class DescriptionListRenderer extends BlockNodeRenderer<List> {
+export class DescriptionListRenderer extends BlockNodeRenderer<DescriptionList> {
   positionalAttributes = [{ name: 'style', position: 1 }];
 
-  renderChildren(node: List): string {
-    const items = node.getItems() as unknown as DescriptionItem[];
+  renderChildren(node: DescriptionList): string {
+    const items = node.getItems();
     return items.map(([[term], description]) => [
-      term.convert(),
+        term.convert(),
         '::',
         description.getBlocks().length > 0 ? '\n' : ' ',
         description.convert(),

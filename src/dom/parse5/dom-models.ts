@@ -30,6 +30,18 @@ export class DomNode {
     return this.childNodes?.[this.childNodes.length - 1];
   }
 
+  get children(): DomElement[] {
+    return this.childNodes?.filter(child => child instanceof DomElement) as DomElement[];
+  }
+
+  get firstElementChild(): DomElement {
+    return this.children?.[0];
+  }
+
+  get lastElementChild(): DomElement {
+    return this.children?.[this.children.length - 1];
+  }
+
   get textContent(): string {
     let result = '';
     if (this instanceof DomText) {
@@ -290,6 +302,10 @@ export class DomElement extends DomParentNode implements DomChildNode {
     }
   }
 
+  getAttributes(): DomAttr[] {
+    return this.attrs;
+  }
+
   setAttributes(...domAttrs: DomAttr[]): void {
     this.attrs.push(...domAttrs);
   }
@@ -307,6 +323,11 @@ export class DomElement extends DomParentNode implements DomChildNode {
 
   isTagOf(...names: string[]): boolean {
     return !!names.find(name => isSameName(this.tagName, name));
+  }
+
+  hasClass(...classNames: string[]): boolean {
+    const classes = this.getAttribute('class')?.split(' ');
+    return classNames.some(it => classes?.includes(it));
   }
 }
 

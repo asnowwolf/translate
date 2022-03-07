@@ -1,6 +1,12 @@
 import * as globby from 'globby';
 import { readFileSync } from 'fs';
-import { rebuildAdoc } from './utils/rebuild-adoc';
+import { AdocBuilder } from './adoc-builder/adoc-builder';
+
+function rebuild(content: string): string {
+  const compiler = new AdocBuilder();
+  const dom = compiler.parse(content);
+  return compiler.build(dom);
+}
 
 describe('ascii-doctor-e2e', () => {
   const files = globby.sync('./src/dom/asciidoctor/examples/**/*.adoc');
@@ -8,9 +14,9 @@ describe('ascii-doctor-e2e', () => {
   files.forEach((file) => {
     it(`${file.replace(/^.\/src\/dom\/asciidoctor\/examples\//, '')}`, () => {
       const content = readFileSync(file, 'utf8').trim();
-      const rebuilt = rebuildAdoc(content);
+      const rebuilt = rebuild(content);
       expect(rebuilt).toEqual(content);
-      expect(rebuildAdoc(rebuilt)).toEqual(rebuilt);
+      expect(rebuild(rebuilt)).toEqual(rebuilt);
     });
   });
 });

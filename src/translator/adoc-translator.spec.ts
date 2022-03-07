@@ -1,73 +1,79 @@
 import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
-import { TranslationEngine } from '../translation-engine/translation-engine';
-import { Asciidoctor } from '@asciidoctor/core';
-import { Adoc } from '../dom/asciidoctor/utils/adoc';
-import AbstractNode = Asciidoctor.AbstractNode;
+import { adocTranslate } from './adoc-translator';
 
-function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string) {
-  const attribute = node.getAttribute(attributeName);
-  if (attribute) {
-    engine.translateHtml(attribute).then(translation => translation && node.setAttribute(attributeName, translation));
-  }
-}
-
-function adocTranslate(dom: AbstractNode, engine: TranslationEngine) {
-  if (Adoc.isAbstractBlock(dom)) {
-    const title = dom.getTitle();
-    if (title) {
-      engine.translateHtml(title).then(translation => translation && dom.setTitle(translation));
-    }
-    dom.getBlocks().filter(it => it !== dom).forEach((it) => adocTranslate(it, engine));
-  }
-  if (Adoc.isIndexTerm(dom)) {
-    translateAttribute(engine, dom, 'terms');
-  }
-  if (Adoc.isDocument(dom)) {
-    translateAttribute(engine, dom, 'doctitle');
-    translateAttribute(engine, dom, 'description');
-  }
-  if (Adoc.isSection(dom)) {
-    engine.translateHtml(dom.getTitle()).then(translation => dom.setTitle(translation));
-  }
-  if (Adoc.isParagraph(dom)) {
-    for (let i = 0; i < dom.lines.length; ++i) {
-      engine.translateHtml(dom.lines[i]).then(translation => dom.lines[i] = translation);
-    }
-  }
+async function rebuild(input: string): Promise<string> {
+  const builder = new AdocBuilder();
+  const dom = builder.parse(input);
+  const engine = new FakeTranslationEngine();
+  adocTranslate(dom, engine);
+  await engine.flush();
+  return builder.build(dom);
 }
 
 describe('adoc-translator', () => {
-  it('document/section/paragraph', async () => {
+  it('document', async () => {
     const input = `= One: Subtitle for One
-:description: Description for "One"
-
-== Two
-
-Three`;
-    const builder = new AdocBuilder();
-    const dom = builder.parse(input);
-    const engine = new FakeTranslationEngine();
-    adocTranslate(dom, engine);
-    await engine.flush();
-    const output = builder.build(dom);
+:description: Description for "One"`;
+    const output = await rebuild(input);
     expect(output).toBe(`= 一: Subtitle for 一
-:description: Description for "一"
-
-== 二
-
-三`);
+:description: Description for "一"`);
   });
-  it('indexterm', async () => {
+  it('section', async () => {
+    const input = `== One`;
+    const output = await rebuild(input);
+    expect(output).toBe(`== 一`);
+  });
+  it('section with title', async () => {
+    const input = `.One
+== Two`;
+    const output = await rebuild(input);
+    expect(output).toBe(`.一
+== 二`);
+  });
+  xit('indexterm', async () => {
     const input = `I, King Arthur.
-(((knight, "Arthur, King")))`;
-    const compiler = new AdocBuilder();
-    const dom = compiler.parse(input);
-    const engine = new FakeTranslationEngine();
-    adocTranslate(dom, engine);
-    await engine.flush();
-    const output = compiler.build(dom);
+(((One, "Two, Three")))`;
+    const output = await rebuild(input);
     expect(output).toBe(`I, King Arthur.
-(((knight, "Arthur, King")))`);
+(((一, "二, 三")))`);
+  });
+  it('unordered list', async () => {
+    const input = `* [ ] One
+** One-Two
+* [x] Three`;
+    const output = await rebuild(input);
+    expect(output).toEqual(`* [ ] 一
+** 一-二
+* [x] 三`);
+  });
+  it('description lists', async () => {
+    const input = `One:: Description for One.
+Two:: Description for Two.`;
+    const output = await rebuild(input);
+    expect(output).toEqual(`一:: Description for 一.
+二:: Description for 二.`);
+  });
+  describe('text formats', () => {
+    it('simple', async () => {
+      const content = `*one* _two_ \`three\` #four# ~five~ ^six^ **seven eight**`;
+      const input = await rebuild(content);
+      expect(input).toEqual(`*一* _二_ \`三\` #四# ~五~ ^六^ *七 八*`);
+    });
+
+    it('mixed', async () => {
+      const content = '`*_one two_*` & ``*__three__*``four``*__five__*``';
+      expect(await rebuild(content)).toEqual('`*_一 二_*` & `*_三_*`四`*_五_*`');
+    });
+
+    it('literal monospace', async () => {
+      const content = '`One` is one';
+      expect(await rebuild(content)).toEqual(content);
+    });
+
+    it('text span', async () => {
+      const content = `One [.two]#Three#`;
+      expect(await rebuild(content)).toEqual(content);
+    });
   });
 });

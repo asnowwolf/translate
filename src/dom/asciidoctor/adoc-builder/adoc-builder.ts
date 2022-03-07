@@ -1,24 +1,17 @@
-import { AdocConverter } from './renderers/adoc-converter';
 import { Asciidoctor } from '@asciidoctor/core';
 import { createAsciidoctor } from '../utils/create-asciidoctor';
+import { Adoc } from '../utils/adoc';
 import Document = Asciidoctor.Document;
-
-export function configForAdocOutput(adoc: Asciidoctor) {
-  // 每次都重新初始化，以免相互干扰。
-  const consts = (adoc.$$const).Substitutors.$$const;
-  // 不要对任何部分进行编码，因为我们的输出不是 html，而是 adoc。
-  consts.BASIC_SUBS = [];
-  consts.HEADER_SUBS = [];
-  consts.NORMAL_SUBS = [];
-  consts.REFTEXT_SUBS = [];
-  consts.VERBATIM_SUBS = ['callouts'];
-  adoc.ConverterFactory.register(new AdocConverter(), ['adoc']);
-}
 
 export class AdocBuilder {
   parse(content: string): Document {
-    const adoc = createAsciidoctor('adoc');
-    return adoc.load(this.preprocess(content), { backend: 'adoc' });
+    const adoc = createAsciidoctor();
+    Adoc.disableSubstitution(adoc);
+    try {
+      return adoc.load(this.preprocess(content), { backend: 'adoc' });
+    } finally {
+      Adoc.enableSubstitution(adoc);
+    }
   }
 
   build(dom: Document): string {

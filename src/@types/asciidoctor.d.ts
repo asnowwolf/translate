@@ -5,6 +5,7 @@ import { Asciidoctor } from '@asciidoctor/core';
 declare module '@asciidoctor/core' {
   namespace Asciidoctor {
     import Callout = Asciidoctor.Callout;
+    import ListItem = Asciidoctor.ListItem;
 
     interface AbstractBlock {
       content_model?: string;
@@ -57,26 +58,28 @@ declare module '@asciidoctor/core' {
       }
     }
 
+    interface DescriptionList extends AbstractBlock {
+      getItems(): DescriptionItem[];
+    }
+
+    type DescriptionItem = [[ListItem], ListItem];
+
     interface Callouts {
       getCurrentList(): Callout[];
     }
   }
 
-  interface $$SubsitutorsConst {
-    VERBATIM_SUBS: string[];
-    REFTEXT_SUBS: string[];
-    TITLE_SUBS: string[];
-    NORMAL_SUBS: string[];
-    HEADER_SUBS: string[];
-    BASIC_SUBS: string[];
-  }
-
-  interface $$Const {
-    Substitutors: { $$const: $$SubsitutorsConst };
-  }
 
   interface Asciidoctor {
-    $$const: $$Const;
+    Substitutors: {
+      $$const: {
+        VERBATIM_SUBS: string[];
+        REFTEXT_SUBS: string[];
+        NORMAL_SUBS: string[];
+        HEADER_SUBS: string[];
+        BASIC_SUBS: string[];
+      }
+    };
     Reader: typeof Asciidoctor.Reader;
     Callouts: typeof Asciidoctor.Callouts;
     Logger: typeof Asciidoctor.Logger;
