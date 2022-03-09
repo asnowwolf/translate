@@ -51,7 +51,7 @@ describe('translators', function () {
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate('<p translation-origin="off">One</p>');
 
-    expect(result).toEqual('<p translation-result="on">一</p><p translation-origin="off">One</p>');
+    expect(result).toEqual('<p translation-result="on">译One</p><p translation-origin="off">One</p>');
   });
 
   it('translate complex html fragment file with fake engine', async () => {
@@ -73,26 +73,26 @@ describe('translators', function () {
 </li>`);
 
     expect(result).toEqual(`<li>
-  <p translation-result="on">a<a href="/1">一</a>b</p>
+  <p translation-result="on">译a<a href="/1">译One</a>译b</p>
   <p translation-origin="off">a<a href="/1">One</a>b</p>
-  <p translation-result="on">二</p>
+  <p translation-result="on">译Two</p>
   <p translation-origin="off">Two</p>
-  <p translation-result="on">三</p>
+  <p translation-result="on">译Three</p>
   <p translation-origin="off">Three</p>
   <ul>
     <li>
-      <p translation-result="on">四</p>
+      <p translation-result="on">译Four</p>
       <p translation-origin="off">Four</p>
     </li>
   </ul>
   <table>
     <tbody><tr>
       <td>
-        <p translation-result="on">五</p>
+        <p translation-result="on">译Five</p>
         <p translation-origin="off">Five</p>
       </td>
       <td>
-        <p translation-result="on">六</p>
+        <p translation-result="on">译Six</p>
         <p translation-origin="off">Six</p>
       </td>
     </tr>
@@ -118,11 +118,11 @@ describe('translators', function () {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('a.html', engine);
     const result = await translator.translate(`<li>
-<p>no translate</p>
+<p>no-translate</p>
 </li>`);
 
     expect(result).toEqual(`<li>
-<p>no translate</p>
+<p>no-translate</p>
 </li>`);
   });
 
@@ -170,7 +170,7 @@ export class Class2 {
 /**
  * Class One
  *
- * Class 一
+ * 译 Class One
  *
  * @publicApi
  */
@@ -178,7 +178,7 @@ export class Class1 {
   /**
    * two
    *
-   * 二
+   * 译 two
    *
    */
   foo1() {
@@ -197,7 +197,7 @@ export class Class2 {
   /**
    * four
    *
-   * 四
+   * 译 four
    *
    * @publicApi
    */
@@ -255,14 +255,14 @@ export class Class1 {
 /**
  * Class Two
  *
- * Class 二
+ * 译 Class Two
  *
  */
 export class Class2 {
   /**
    * three
    *
-   * 三
+   * 译 three
    *
    */
   foo1() {

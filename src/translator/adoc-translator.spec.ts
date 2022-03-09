@@ -68,12 +68,12 @@ Two:: Description for Two.`;
 
     it('literal monospace', async () => {
       const content = '`One` is one';
-      expect(await rebuild(content)).toEqual(content);
+      expect(await rebuild(content)).toEqual('`一` is 一');
     });
 
     it('text span', async () => {
       const content = `One [.two]#Three#`;
-      expect(await rebuild(content)).toEqual(content);
+      expect(await rebuild(content)).toEqual('一 [.two]#三#');
     });
   });
 });

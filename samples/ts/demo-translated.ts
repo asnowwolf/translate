@@ -6,7 +6,7 @@
 /**
  * Two
  *
- * 二
+ * 译 Two
  *
  */
 let nextUniqueId = 0;
@@ -15,11 +15,11 @@ let nextUniqueId = 0;
 /**
  * Three {@link CdkMenu})
  *
- * 三 {@link CdkMenu})
+ * 译 Three {@link CdkMenu})
  *
  * **Four**
  *
- * **四**
+ * **译 Four**
  *
  */
 export class Demo {
@@ -32,7 +32,7 @@ export class Demo {
   /**
    * Six
    *
-   * 六
+   * 译 Six
    *
    */
   b: string;
@@ -40,36 +40,39 @@ export class Demo {
   /**
    * Seven.
    *
-   * 七.
+   * 译 Seven.
    *
    * Eight
    *
-   * 八
+   * 译 Eight
    *
    * @param {Number} p1 Eight One
    *
-   * 八 一
+   * 译 Eight One
    *
    * @param p2 Eight Two
    *
-   * 八 二
+   * 译 Eight Two
    *
    * @param {String} [p3] Eight Three
    *
-   * 八 三
+   * 译 Eight Three
    *
    * @param {(string|string[])} [p4=Eight Four] - Eight Five
    *
-   *   八 五
+   *   译 Eight Five
    *
    * @see bar
+   *
+   * 译 bar
+   *
    * @see <http://github.com|Nine>
    *
-   * [http://github.com|九](http://github.com%7CNine)
+   * [http://github.com|Nine](http://github.com%7CNine)
    *
    * @returns One
    *
-   * 一
+   * 译 One
    *
    */
   foo1(p1: number, p2: string, p3: string, p4: string): number {
@@ -79,7 +82,7 @@ export class Demo {
   /**
    * Two
    *
-   * 二
+   * 译 Two
    *
    */
   foo2(): void {

@@ -86,7 +86,7 @@ export class DomNode {
     }
   }
 
-  previousSibling(): DomNode {
+  previousSibling(): DomChildNode {
     if (this.index === -1) {
       return;
     }
