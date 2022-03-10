@@ -6,6 +6,7 @@ export class DomNode {
 
   nodeName: string;
   parentNode?: DomParentNode;
+
   childNodes?: DomChildNode[] = [];
 
   get index(): number {
@@ -98,6 +99,10 @@ export class DomNode {
       return;
     }
     return this.parentNode?.childNodes[this.index + 1];
+  }
+
+  queryAncestor(selector: DomSelector): boolean {
+    return this.parentElement && (selector(this.parentElement) || this.parentElement.queryAncestor(selector));
   }
 
   appendChild(child: DomChildNode): void {
