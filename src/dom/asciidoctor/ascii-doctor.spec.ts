@@ -354,15 +354,12 @@ and as necessary in the political world as storms in the physical."
 > > Is there more?
 >
 > Yep. AsciiDoc and Markdown share a lot of common syntax already.`;
-      const rebuilt = `[style=quote]
-____
-[style=quote]
+      const rebuilt = `____
 ____
 What's new?
 ____
 I've got Markdown in my AsciiDoc!
 
-[style=quote]
 ____
 Like what?
 ____
@@ -370,7 +367,6 @@ ____
 * Headings
 * Fenced code blocks
 
-[style=quote]
 ____
 Is there more?
 ____

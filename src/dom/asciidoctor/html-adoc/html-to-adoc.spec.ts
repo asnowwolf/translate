@@ -85,7 +85,36 @@ the syntax \`{name}\`, where  is the attribute name.`;
     });
     it('cross document references', () => {
       const input = 'Refer to xref:document-b.adoc#section-b[Section B] for more information.';
-      expect(rebuild(input)).toEqual(input);
+      expect(rebuild(input)).toEqual(`Refer to <<document-b.adoc#section-b,Section B>> for more information.`);
+    });
+  });
+  describe('links', () => {
+    it('autolinks', async () => {
+      const content = `One https://www.one.org.
+Email to two@example.com`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('enclosed link', async () => {
+      const content = `You will often see https://example.org used in examples.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('no autolink', async () => {
+      const content = `\\https://example.org, email to \\help@example.org for assistance.`;
+      expect(rebuild(content)).toEqual(content);
+    });
+    it('url macro', async () => {
+      const content = `Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^, role=green].`;
+      expect(rebuild(content)).toEqual(content);
+    });
+
+    it('complex', () => {
+      const content = `= Document Title
+:link-with-underscores: https://asciidoctor.org/now_this__link_works.html
+
+This URL has repeating underscores {link-with-underscores}.`;
+      expect(rebuild(content)).toEqual(`This URL has repeating underscores https://asciidoctor.org/now_this__link_works.html.`);
     });
   });
   it('inline breaks', () => {
@@ -121,5 +150,9 @@ Topazes are blue.`;
       const content = `icon:download[link=https://rubygems.org/downloads/whizbang-1.0.0.gem]`;
       expect(rebuild(content)).toEqual(content);
     });
+  });
+  xit('footnotes', async () => {
+    const content = `A bold statement!footnote:disclaimer[Opinions are my own.] Another outrageous statement.footnote:disclaimer[]`;
+    expect(rebuild(content)).toEqual(content);
   });
 });

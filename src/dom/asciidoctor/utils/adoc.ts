@@ -8,6 +8,7 @@ import Inline = Asciidoctor.Inline;
 import ListItem = Asciidoctor.ListItem;
 import List = Asciidoctor.List;
 import DefList = Asciidoctor.DescriptionList;
+import Table = Asciidoctor.Table;
 
 type SubstitutionMode = Asciidoctor['Substitutors']['$$const'];
 
@@ -77,5 +78,25 @@ export class Adoc {
       REFTEXT_SUBS: ['specialcharacters', 'quotes', 'replacements'],
       VERBATIM_SUBS: ['specialcharacters', 'callouts'],
     });
+  }
+
+  static isBlockImage(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'image';
+  }
+
+  static isAdmonition(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'admonition';
+  }
+
+  static isExample(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'example';
+  }
+
+  static isQuote(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'quote';
+  }
+
+  static isTable(node: AbstractNode): node is Table {
+    return node.getNodeName() === 'table';
   }
 }

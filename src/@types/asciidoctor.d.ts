@@ -15,12 +15,12 @@ declare module '@asciidoctor/core' {
       lines: string[];
     }
 
-    interface RawAttributes {
+    interface RubyMap {
       $$keys: (string | { key: number, key_hash: number, value: string })[];
     }
 
     interface AbstractNode {
-      attributes: RawAttributes;
+      attributes: RubyMap;
     }
 
     namespace Document {
@@ -30,7 +30,7 @@ declare module '@asciidoctor/core' {
     }
 
     interface Document {
-      blocks: Block[];
+      blocks: AbstractBlock[];
     }
 
     interface InlineIndexTermAttributes {
@@ -50,6 +50,8 @@ declare module '@asciidoctor/core' {
       type ColumnAttributes = CellAttributes;
 
       interface Cell {
+        text: string;
+
         getAttributes(): CellAttributes;
       }
 

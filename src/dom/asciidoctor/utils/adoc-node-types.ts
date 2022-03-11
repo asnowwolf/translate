@@ -1,0 +1,42 @@
+import { Asciidoctor } from '@asciidoctor/core';
+
+export interface AdocNodeTypes {
+  document: Asciidoctor.Document;
+  embedded: Asciidoctor.Document;
+  outline: Asciidoctor.Block;
+  section: Asciidoctor.Section;
+  admonition: Asciidoctor.Block;
+  audio: Asciidoctor.Block;
+  colist: Asciidoctor.List;
+  dlist: Asciidoctor.List;
+  example: Asciidoctor.Block;
+  'floating-title': Asciidoctor.Block;
+  image: Asciidoctor.Block;
+  listing: Asciidoctor.Block;
+  literal: Asciidoctor.Block;
+  stem: Asciidoctor.Block;
+  olist: Asciidoctor.List;
+  open: Asciidoctor.Block;
+  page_break: Asciidoctor.Block;
+  paragraph: Asciidoctor.Block;
+  preamble: Asciidoctor.Block;
+  quote: Asciidoctor.Block;
+  thematic_break: Asciidoctor.Block;
+  sidebar: Asciidoctor.Block;
+  table: Asciidoctor.Table;
+  toc: Asciidoctor.Block;
+  ulist: Asciidoctor.List;
+  verse: Asciidoctor.Block;
+  video: Asciidoctor.Block;
+  inline_anchor: Asciidoctor.Inline;
+  inline_break: Asciidoctor.Inline;
+  inline_button: Asciidoctor.Inline;
+  inline_callout: Asciidoctor.Inline;
+  inline_footnote: Asciidoctor.Inline;
+  inline_image: Asciidoctor.Inline;
+  inline_indexterm: Asciidoctor.Inline;
+  inline_kbd: Asciidoctor.Inline;
+  inline_menu: Asciidoctor.Inline;
+  inline_quoted: Asciidoctor.Inline;
+  '': Asciidoctor.AbstractNode;
+}

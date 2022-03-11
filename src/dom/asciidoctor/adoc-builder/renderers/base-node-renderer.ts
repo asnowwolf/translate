@@ -27,15 +27,28 @@ export abstract class BaseNodeRenderer<T extends AbstractNode> implements NodeRe
     const result = $$keys
       .map(($$key) => {
         if (typeof $$key === 'string') {
-          return { position: undefined, name: $$key, value: node.getAttribute($$key), negate: false };
+          if (!this.isPositionalAttribute($$key)) {
+            return { position: undefined, name: $$key, value: node.getAttribute($$key), negate: false };
+          }
         } else {
-          const { key, value } = $$key;
-          const inlineableAttribute = this.positionalAttributes.find(it => it.position === key);
-          return { position: key, name: inlineableAttribute?.name, value: value, negate: false };
+          const positionalAttribute = this.positionalAttributes.find(it => it.position === $$key.key);
+          if (positionalAttribute) {
+            const name = positionalAttribute.name;
+            // 由于 setAttribute 不会更改 $$keys 中的 value，因此这里要重新取一下属性值
+            const value = node.getAttribute(name);
+            return { position: $$key.key, name, value, negate: false };
+          } else {
+            return { position: $$key.key, name: '1', value: $$key.value, negate: false };
+          }
         }
       })
+      .filter(it => !!it)
       .filter(it => !matchAny(it.name, [...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames]));
     return moveIdToFirst(result.filter(it => !correspondingPositionalExists(it, result)));
+  }
+
+  private isPositionalAttribute($$key: string) {
+    return this.positionalAttributes.some(it => it.name === $$key);
   }
 
   protected getDefaultAttributes(node: T): { [name: string]: any } {

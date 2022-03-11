@@ -4,9 +4,11 @@ import { Asciidoctor } from '@asciidoctor/core';
 import { adocToHtml } from '../dom/asciidoctor/html-adoc/adoc-to-html';
 import { htmlToAdoc } from '../dom/asciidoctor/html-adoc/html-to-adoc';
 import AbstractNode = Asciidoctor.AbstractNode;
+import Cell = Asciidoctor.Table.Cell;
 
 function translateAdoc(engine: TranslationEngine, text: string): Promise<string> {
-  return engine.translateHtml(adocToHtml(text)).then(translation => htmlToAdoc(translation));
+  const html = adocToHtml(text);
+  return engine.translateHtml(html).then(translation => htmlToAdoc(translation));
 }
 
 function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string) {
@@ -38,12 +40,31 @@ export function adocTranslate(node: AbstractNode, engine: TranslationEngine) {
   if (Adoc.isSection(node)) {
     translateAdoc(engine, node.getTitle()).then(translation => node.setTitle(translation));
   }
-  if (Adoc.isParagraph(node)) {
+  if (Adoc.isParagraph(node) || Adoc.isAdmonition(node) || Adoc.isExample(node) || Adoc.isQuote(node)) {
     for (let i = 0; i < node.lines.length; ++i) {
       translateAdoc(engine, node.lines[i]).then(translation => node.lines[i] = translation);
     }
   }
+
+  if (Adoc.isQuote(node)) {
+    translateAttribute(engine, node, 'title');
+    translateAttribute(engine, node, 'citetitle');
+    translateAttribute(engine, node, 'attribution');
+  }
+
   if (Adoc.isListItem(node)) {
     translateAdoc(engine, node.getText()).then(translation => node.setText(translation));
+  }
+
+  if (Adoc.isBlockImage(node)) {
+    translateAttribute(engine, node, 'alt');
+  }
+
+  if (Adoc.isTable(node)) {
+    const rows = node.getRows();
+    [...rows.head, ...rows.body, ...rows.foot].flat(9).forEach((it: Cell) => {
+      const html = adocToHtml(it.text);
+      engine.translateHtml(html).then(translation => it.text = htmlToAdoc(translation));
+    });
   }
 }

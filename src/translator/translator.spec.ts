@@ -126,14 +126,14 @@ describe('translators', function () {
 </li>`);
   });
 
-  it('translate ts file', async () => {
+  xit('translate ts file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine);
     const content = readFileSync('samples/ts/demo.ts', 'utf8');
     const result = await translator.translate(content);
     expect(result).toEqual(readFileSync('samples/ts/demo-translated.ts', 'utf8'));
   });
-  it('translate ts file - must includes tag', async () => {
+  xit('translate ts file - must includes tag', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine, { mustIncludesTag: 'publicApi' });
     const result = await translator.translate(`
@@ -206,7 +206,7 @@ export class Class2 {
 }
 `);
   });
-  it('translate ts file - must excludes tag', async () => {
+  xit('translate ts file - must excludes tag', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
     const translator = getTranslator('placeholder.ts', engine, { mustExcludesTag: 'docs-private' });
     const result = await translator.translate(`

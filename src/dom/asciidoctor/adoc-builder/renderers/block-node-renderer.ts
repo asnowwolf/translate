@@ -42,15 +42,15 @@ export class BlockNodeRenderer<T extends AbstractBlock> extends BaseNodeRenderer
   protected renderAttributes(attributes: AttributeEntry[]): string {
     const shortenAttributes = this.shortenAttributes(attributes);
     const content = shortenAttributes
-      .map(it => this.renderAttribute(it))
+      .map(it => this.renderAttribute(it, shortenAttributes))
       .filter(it => !!it).join(',');
     return content ?? '';
   }
 
-  protected renderAttribute(attr: AttributeEntry, hasFirstPositionalAttribute = false): string {
+  protected renderAttribute(attr: AttributeEntry, attributes: AttributeEntry[] = []): string {
     const value = addQuotes(attr.value);
     if (attr.name === 'id') {
-      return hasFirstPositionalAttribute ? `#${value}` : `[${value}]`;
+      return attributes.length > 1 ? `#${value}` : `[${value}]`;
     } else if (optionNamePattern.test(attr.name)) {
       const optionName = attr.name.replace(optionNamePattern, '$1');
       return `%${addQuotes(optionName)}`;
@@ -70,9 +70,9 @@ export class BlockNodeRenderer<T extends AbstractBlock> extends BaseNodeRenderer
     const role = attributes.find(it => it.name === 'role');
 
     const firstPositionalAttribute = attributes.find(it => it.position === 1);
-    const idText = id && this.renderAttribute(id, !!firstPositionalAttribute?.value);
-    const optionsText = options && this.renderAttribute(options);
-    const roleText = role && this.renderAttribute(role);
+    const idText = id && this.renderAttribute(id, attributes);
+    const optionsText = options && this.renderAttribute(options, attributes);
+    const roleText = role && this.renderAttribute(role, attributes);
     return attributes
       .filter(it => !!it)
       .filter(it => !firstPositionalAttribute?.value || ![id, options, role].includes(it))
