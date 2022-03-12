@@ -105,21 +105,24 @@ export class DomNode {
     return this.parentElement && (selector(this.parentElement) || this.parentElement.queryAncestor(selector));
   }
 
-  appendChild(child: DomChildNode): void {
+  appendChild<T extends DomChildNode>(child: T): T {
     if (this instanceof DomParentNode) {
       child.parentNode = this;
       this.childNodes.push(child);
     }
+    return child;
   }
 
-  insertBefore(newNode: DomChildNode, referenceNode: DomChildNode) {
+  insertBefore<T extends DomChildNode>(newNode: T, referenceNode: T): T {
     newNode.remove();
     this.childNodes.splice(referenceNode.index, 0, newNode);
+    return newNode;
   }
 
-  insertAfter(newNode: DomChildNode, referenceNode: DomChildNode) {
+  insertAfter<T extends DomChildNode>(newNode: T, referenceNode: T): T {
     newNode.remove();
     this.childNodes.splice(referenceNode.index + 1, 0, newNode);
+    return newNode;
   }
 }
 
@@ -195,14 +198,15 @@ export class DomDocument extends DomParentNode {
   }
 
   set title(value: string) {
-    const element = this.titleElement;
-    if (element) {
-      element.textContent = value;
-    }
+    const element = this.titleElement || this.head.appendChild(new DomElement('title'));
+    element.textContent = value;
   }
 
   private get titleElement(): DomElement {
-    return this.querySelector(it => it.isTagOf('title'));
+    const element = this.querySelector(it => it.isTagOf('title'));
+    if (element) {
+      return element;
+    }
   }
 
   toHtml(): string {
@@ -263,7 +267,8 @@ export class DomElement extends DomParentNode implements DomChildNode {
   }
 
   set innerHTML(html: string) {
-    this.childNodes = parseFragment(html, { treeAdapter: DomNode.treeAdapter }).childNodes;
+    const fragment = parseFragment(html, { treeAdapter: DomNode.treeAdapter });
+    this.childNodes = fragment.childNodes;
   }
 
   get outerHTML(): string {
