@@ -37,6 +37,7 @@ export class DocumentRenderer extends BaseNodeRenderer<Document> {
   }
 
   ignoredAttributeNames = [
+    'compat-mode',
     'sectnums',
     'doctitle',
     /^firstname\w*$/,
@@ -53,6 +54,8 @@ export class DocumentRenderer extends BaseNodeRenderer<Document> {
     'docdatetime',
     'outfilesuffix',
     'filetype',
+    'revdate',
+    'revnumber',
     'filetype-adoc',
     /doctype(-[-\w]+)?/,
     /backend(-[-\w]+)?/,
@@ -67,10 +70,14 @@ export class DocumentRenderer extends BaseNodeRenderer<Document> {
     const id = node.getId();
     // 作者这一行也可能是一句 include:: 指令，但是现在用的转换机制无法正确识别 include:: 指令，因此只能把它替换回去
     const authors = node.getAuthors().map(author => buildAuthorLine(author)).join('; ');
+    const revisionNumber = node.getRevisionNumber();
+    const revisionDate = node.getRevisionDate();
+    const rev = [revisionNumber && `v${revisionNumber}`, revisionDate].filter(it => !!it).join(', ');
     const body = [
       getLinesBeforeTitle(node, id),
       doctitle && `= ${doctitle}`,
       authors,
+      rev,
       nonDefaultAttributes.map(it => renderAttribute(it.name, it.value)).join('\n'),
     ].filter(it => !!it).join('\n');
     return [body, children].filter(it => !!it).join('\n\n');
@@ -78,8 +85,5 @@ export class DocumentRenderer extends BaseNodeRenderer<Document> {
 }
 
 function renderAttribute(key, value): string {
-  if (key === 'revnumber') {
-    return `v${value}`;
-  }
   return [`:${key}:`, value].filter(it => !!it).join(' ');
 }

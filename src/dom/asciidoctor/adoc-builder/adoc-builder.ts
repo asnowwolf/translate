@@ -22,15 +22,16 @@ export class AdocBuilder {
   protected preprocess(content: string): string {
     return content
       .replace(/^\[(.*)indent=("?)(\d+)("?)(.*)]$/gm, '[$1rawIndent=$2$3$4$5]')
-      .replace(/^(ifdef|ifndef|ifeval|endif)/gm, '\\$1')
-      .replace(/^include::(.*?)]$/gm, '\\include::$1]');
+      .replace(/^((?:ifdef|ifndef|ifeval|endif)::\[.*])$/gm, '`begin-directive:[$1]end-directive`')
+      .replace(/^(include::.*?])$/gm, '`begin-directive:[$1]end-directive`')
+      .replace(/^(\/\/ *(?:tag|end)::.*?])$/gm, '`begin-directive:[$1]end-directive`')
+      ;
   }
 
   protected postprocess(content: string): string {
     return content
       .replace(/^\[(.*)rawIndent=("?)(\d+)("?)(.*)]$/gm, '[$1indent=$2$3$4$5]')
-      .replace(/^\\(ifdef|ifndef|ifeval|endif)/gm, '$1')
-      .replace(/^\\include::(.*?)]/gm, 'include::$1]')
+      .replace(/^`begin-directive:\[(.*?)]end-directive`$/gm, '$1')
       .replace(/^Unresolved directive in .* - (.*)$/gm, '$1');
   }
 }
