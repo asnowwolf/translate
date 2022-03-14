@@ -19,5 +19,5 @@ export class AdmonitionRenderer extends BlockNodeRenderer<AbstractBlock> {
 
 function isDefaultValue(it: AttributeEntry, node: AbstractBlock) {
   return ['style', 'name', 'textlabel'].includes(it.name) &&
-    it.value.toString().toLowerCase() === node.getStyle().toLowerCase();
+    it.value.toString().toLowerCase() === node.getStyle()?.toLowerCase();
 }

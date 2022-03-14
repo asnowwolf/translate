@@ -3,11 +3,12 @@ import { readFileSync } from 'fs';
 import { getTranslationEngine } from '../translation-engine/get-translation-engine';
 import { DomDocument } from '../dom/parse5/dom-models';
 import { TranslationEngineType } from '../translation-engine/translation-engine-type';
+import { HtmlTranslator } from './html-translator';
 
 describe('translators', function () {
   it('translate html file', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
-    const translator = getTranslator('a.html', engine);
+    const translator = new HtmlTranslator(engine);
     const result = await translator.translate(readFileSync('samples/html/demo.html', 'utf8'));
 
     const expected = readFileSync('samples/html/demo-translated.html', 'utf8');
@@ -16,8 +17,8 @@ describe('translators', function () {
 
   it('translate complex html fragment file with noop engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.noop);
-    const translator = getTranslator('a.html', engine);
-    const result = await translator.translate(`<li>
+    const translator = new HtmlTranslator(engine);
+    const result = await translator.translateFragment(`<li>
   a<a href="/1">One</a>b
   <p>Two</p>
   <p>Three</p>
@@ -40,24 +41,24 @@ describe('translators', function () {
 
   it('translate simple html fragment file with noop engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.noop);
-    const translator = getTranslator('a.html', engine);
-    const result = await translator.translate('<p>&#8220;One&mdash;&#8221;</p>');
+    const translator = new HtmlTranslator(engine);
+    const result = await translator.translateFragment('<p>&#8220;One&mdash;&#8221;</p>');
 
     expect(result).toEqual('<p translation-origin="off">“One—”</p>');
   });
 
   it('translate simple html fragment file with fake engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
-    const translator = getTranslator('a.html', engine);
-    const result = await translator.translate('<p translation-origin="off">One</p>');
+    const translator = new HtmlTranslator(engine);
+    const result = await translator.translateFragment('<p translation-origin="off">One</p>');
 
     expect(result).toEqual('<p translation-result="on">译One</p><p translation-origin="off">One</p>');
   });
 
   it('translate complex html fragment file with fake engine', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
-    const translator = getTranslator('a.html', engine);
-    const result = await translator.translate(`<li>
+    const translator = new HtmlTranslator(engine);
+    const result = await translator.translateFragment(`<li>
   a<a href="/1">One</a>b
   <p>Two</p>
   <p>Three</p>
@@ -102,8 +103,8 @@ describe('translators', function () {
 
   it('only translate one time', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
-    const translator = getTranslator('a.html', engine);
-    const result = await translator.translate(`<li>
+    const translator = new HtmlTranslator(engine);
+    const result = await translator.translateFragment(`<li>
 <p translation-result="on">One译</p>
 <p translation-origin="off">One</p>
 </li>`);
@@ -116,8 +117,8 @@ describe('translators', function () {
 
   it('does not change when the original and the translation are the same', async () => {
     const engine = getTranslationEngine(TranslationEngineType.fake);
-    const translator = getTranslator('a.html', engine);
-    const result = await translator.translate(`<li>
+    const translator = new HtmlTranslator(engine);
+    const result = await translator.translateFragment(`<li>
 <p>no-translate</p>
 </li>`);
 

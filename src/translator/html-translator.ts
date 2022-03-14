@@ -8,9 +8,19 @@ export class HtmlTranslator extends Translator {
   private selectors = defaultSelectors;
 
   async translate(text: string): Promise<string> {
+    return this.translateHtml(text);
+  }
+
+  async translateHtml(text: string): Promise<string> {
     const doc = DomDocument.parse(text);
     const result = await this.translateDoc(doc);
     return result.toHtml();
+  }
+
+  async translateFragment(text: string): Promise<string> {
+    const doc = DomDocument.parse(text);
+    const result = await this.translateDoc(doc);
+    return result.toFragment();
   }
 
   async translateDoc(doc: DomDocument): Promise<DomDocument> {

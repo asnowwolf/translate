@@ -1,5 +1,5 @@
 import { InlineableAttribute } from './utils/inlineable-attributes';
-import { matchAny } from './utils/match-any';
+import { matchSome } from './utils/match-some';
 import { Asciidoctor } from '@asciidoctor/core';
 import AbstractNode = Asciidoctor.AbstractNode;
 import AttributeEntry = Asciidoctor.Document.AttributeEntry;
@@ -19,7 +19,7 @@ export abstract class BaseNodeRenderer<T extends AbstractNode> implements NodeRe
   protected inlineAttributeNames: (string | RegExp)[] = [];
 
   protected isInlineAttribute(it: AttributeEntry) {
-    return matchAny(it.name, this.inlineAttributeNames);
+    return matchSome(it.name, this.inlineAttributeNames);
   }
 
   protected getAttributes(node: T): AttributeEntry[] {
@@ -43,7 +43,7 @@ export abstract class BaseNodeRenderer<T extends AbstractNode> implements NodeRe
         }
       })
       .filter(it => !!it)
-      .filter(it => !matchAny(it.name, [...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames]));
+      .filter(it => !matchSome(it.name, [...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames]));
     return moveIdToFirst(result.filter(it => !correspondingPositionalExists(it, result)));
   }
 

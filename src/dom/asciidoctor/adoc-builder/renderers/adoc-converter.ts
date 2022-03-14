@@ -51,9 +51,9 @@ export class AdocConverter implements Asciidoctor.AbstractConverter {
     'stem': new StemRenderer(),
     'open': new OpenRenderer(),
     'preamble': new PreambleRenderer(),
-    'outline': new FallbackRenderer(),
-    'floating-title': new FallbackRenderer(),
-    'toc': new FallbackRenderer(),
+    // 'outline': new FallbackRenderer(),
+    'floating_title': new SectionRenderer(),
+    // 'toc': new FallbackRenderer(),
   };
   fallbackRenderer = new FallbackRenderer();
 

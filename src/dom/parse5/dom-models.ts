@@ -105,7 +105,7 @@ export class DomNode {
     return this.parentElement && (selector(this.parentElement) || this.parentElement.queryAncestor(selector));
   }
 
-  appendChild<T extends DomChildNode>(child: T): T {
+  appendChild<T extends DomChildNode | DomText>(child: T): T {
     if (this instanceof DomParentNode) {
       child.parentNode = this;
       this.childNodes.push(child);
@@ -113,13 +113,13 @@ export class DomNode {
     return child;
   }
 
-  insertBefore<T extends DomChildNode>(newNode: T, referenceNode: T): T {
+  insertBefore<T extends DomChildNode | DomText>(newNode: T, referenceNode: DomNode): T {
     newNode.remove();
     this.childNodes.splice(referenceNode.index, 0, newNode);
     return newNode;
   }
 
-  insertAfter<T extends DomChildNode>(newNode: T, referenceNode: T): T {
+  insertAfter<T extends DomChildNode | DomText>(newNode: T, referenceNode: DomNode): T {
     newNode.remove();
     this.childNodes.splice(referenceNode.index + 1, 0, newNode);
     return newNode;
@@ -171,6 +171,26 @@ export class DomParentNode extends DomChildNode {
       }
     }
   }
+
+  mergeTextNodes(): void {
+    let text = '';
+    for (let i = this.childNodes.length - 1; i >= 0; i--) {
+      const node = this.childNodes[i];
+      if (node instanceof DomText) {
+        text = node.value + text;
+        if (!(node.previousSibling() instanceof DomText)) {
+          node.value = text;
+          text = '';
+        } else {
+          node.remove();
+        }
+      }
+
+      if (node instanceof DomParentNode) {
+        node.mergeTextNodes();
+      }
+    }
+  }
 }
 
 export class DomComment extends DomChildNode {
@@ -199,7 +219,7 @@ export class DomDocument extends DomParentNode {
 
   set title(value: string) {
     const element = this.titleElement || this.head.appendChild(new DomElement('title'));
-    element.textContent = value;
+    element.textContent = value ?? '';
   }
 
   private get titleElement(): DomElement {
@@ -211,7 +231,11 @@ export class DomDocument extends DomParentNode {
 
   toHtml(): string {
     // 如果是文档片段，则只序列化 body，否则序列化整个对象
-    return serialize(this.isFragment() ? this.body : this, { treeAdapter: DomNode.treeAdapter });
+    return serialize(this, { treeAdapter: DomNode.treeAdapter });
+  }
+
+  toFragment(): string {
+    return serialize(this.body, { treeAdapter: DomNode.treeAdapter });
   }
 
   isFragment(): boolean {

@@ -1,652 +1,277 @@
-import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
-import { FakeTranslationEngine } from '../translation-engine/fake-engine';
+import { Examples } from '../dom/asciidoctor/utils/examples';
 import { adocTranslate } from './adoc-translator';
-
-async function translate(input: string): Promise<string> {
-  const builder = new AdocBuilder();
-  const dom = builder.parse(input);
-  const engine = new FakeTranslationEngine();
-  adocTranslate(dom, engine);
-  await engine.flush();
-  return builder.build(dom);
-}
 
 describe('adoc-translator', () => {
   it('document', async () => {
-    const input = `= One: Subtitle for One
-:description: Description for "One"`;
-    const output = await translate(input);
-    expect(output).toBe(`= 译One: Subtitle for One
-:description: 译Description for "One"`);
+    expect(await adocTranslate(Examples.documentAdoc)).toEqual(Examples.documentAdocCn);
   });
-  it('section', async () => {
-    const input = `== One`;
-    const output = await translate(input);
-    expect(output).toBe(`== 译One`);
+  it('documentWithPreamble', async () => {
+    expect(await adocTranslate(Examples.documentWithPreambleAdoc)).toEqual(Examples.documentWithPreambleAdocCn);
   });
-  it('section with title', async () => {
-    const input = `.One
-== Two`;
-    const output = await translate(input);
-    expect(output).toBe(`.译One
-== 译Two`);
+  it('paragraph', async () => {
+    expect(await adocTranslate(Examples.paragraphAdoc)).toEqual(Examples.paragraphAdocCn);
   });
-  xit('indexterm', async () => {
-    const input = `I, King Arthur.
-(((One, "Two, Three")))`;
-    const output = await translate(input);
-    expect(output).toBe(`I, King Arthur.
-(((译One, "译Two, 译Three")))`);
+  it('sectionSimple', async () => {
+    expect(await adocTranslate(Examples.sectionSimpleAdoc)).toEqual(Examples.sectionSimpleAdocCn);
   });
-  it('unordered list', async () => {
-    const input = `* [ ] One
-** One-Two
-* [x] Three`;
-    const output = await translate(input);
-    expect(output).toEqual(`* [ ] 译One
-** 译One-Two
-* [x] 译Three`);
+  it('floatingTitle', async () => {
+    expect(await adocTranslate(Examples.floatingTitleAdoc)).toEqual(Examples.floatingTitleAdocCn);
   });
-  it('description lists', async () => {
-    const input = `One:: Description for One.
-Two:: Description for Two.`;
-    const output = await translate(input);
-    expect(output).toEqual(`译One:: 译Description for One.
-译Two:: 译Description for Two.`);
+  it('sectionWithTitleAndAttributes', async () => {
+    expect(await adocTranslate(Examples.sectionWithTitleAndAttributesAdoc)).toEqual(Examples.sectionWithTitleAndAttributesAdocCn);
   });
-  describe('text formats', () => {
-    it('simple', async () => {
-      const content = `*one* _two_ \`three\` #four# ~five~ ^six^ **seven 译Eight**`;
-      const input = await translate(content);
-      expect(input).toEqual('*译one* _译two_ `three` #译four# ~译five~ ^译six^ *译seven 译Eight*');
-    });
-
-    it('mixed', async () => {
-      const content = '`*_one two_*` & ``*__three__*``four``*__five__*``';
-      expect(await translate(content)).toEqual('`*_one two_*` & ``*_three_*``译four``*_five_*``');
-    });
-
-    it('literal monospace', async () => {
-      const content = '`One` is one';
-      expect(await translate(content)).toEqual('`One` 译is one');
-    });
-
-    it('text span', async () => {
-      const content = `One [.two]#Three#`;
-      expect(await translate(content)).toEqual('译One [.two]#译Three#');
-    });
+  it('indexTermBlockSimple', async () => {
+    expect(await adocTranslate(Examples.indexTermBlockSimpleAdoc)).toEqual(Examples.indexTermBlockSimpleAdocCn);
   });
-  describe('links', () => {
-    it('autolinks', async () => {
-      const content = `One https://www.one.org.
-Email to two@example.com`;
-      expect(await translate(content)).toEqual(`译One https://www.one.org.
-译Email to two@example.com`);
-    });
-
-    it('no autolink', async () => {
-      const content = `One \\https://three.org. two \\help@three.org`;
-      expect(await translate(content)).toEqual(`译One \\https://three.org. two \\help@three.org`);
-    });
-    it('url macro', async () => {
-      const content = `One https://two.asciidoctor.org/[*three four*^, role=green].`;
-      expect(await translate(content)).toEqual(`译One https://two.asciidoctor.org/[*译three four*^, role=green].`);
-    });
+  it('indexTermBlockComplex', async () => {
+    expect(await adocTranslate(Examples.indexTermBlockComplexAdoc)).toEqual(Examples.indexTermBlockComplexAdocCn);
   });
-  describe('cross references', () => {
-    it('simple', async () => {
-      const content = `One <<two>> three`;
-      expect(await translate(content)).toEqual(`译One <<two,译[two]>> 译three`);
-    });
-    it('complex', async () => {
-      const content = `One <<two,three>>.`;
-      expect(await translate(content)).toEqual(`译One <<two,译three>>.`);
-    });
-    it('nature', async () => {
-      const content = `One <<Two Three Four>>.`;
-      expect(await translate(content)).toEqual(`译One <<Two Three Four,译[Two Three Four]>>.`);
-    });
-    it('cross document', async () => {
-      const content = `One <<two-b.adoc#three-b,Four>> five.`;
-      expect(await translate(content)).toEqual(`译One <<two-b.adoc#three-b,译Four>> 译five.`);
-    });
+  it('indexTermInline', async () => {
+    expect(await adocTranslate(Examples.indexTermInlineAdoc)).toEqual(Examples.indexTermInlineAdocCn);
   });
-  describe('resources', () => {
-    it('images - block', async () => {
-      const content = `image::one.jpg["Two, Three"]`;
-      expect(await translate(content)).toEqual(`image::one.jpg["译Two, 译Three"]`);
-    });
-
-    it('images - inline', async () => {
-      const content = `One image:two.png[] three.
-
-One image:two.png[Three] Four.`;
-      expect(await translate(content)).toEqual(`译One image:two.png[译Two] 译Three.
-
-译One image:two.png[译Three] 译Four.`);
-    });
-
-    it('image with attributes', async () => {
-      const content = `[#one-two,link=https://www.three.com]
-.Four
-image::five.jpg[Six,200,100]`;
-      expect(await translate(content)).toEqual(`[#one-two,link=https://www.three.com]
-.译Four
-image::five.jpg[译Six,200,100]`);
-    });
-
-    it('image with attributes 2', async () => {
-      const content = `image::one.png[Two,200,200,float=three,align=four]`;
-      expect(await translate(content)).toEqual(`image::one.png[译Two,200,200,float=three,align=four]`);
-    });
-
-    it('audio and video', async () => {
-      expect(await translate(`video::one.mp4[two,200,200,float=three,align=four]`))
-        .toEqual(`video::one.mp4[two,200,200,float=three,align=four]`);
-      expect(await translate(`audio::one.mp3[start=60,opts=autoplay]`))
-        .toEqual(`[%autoplay]
-audio::one.mp3[start=60]`);
-    });
-
-    it('icon', async () => {
-      const content = `icon:one[link=https://two.com/three]`;
-      expect(await translate(content)).toEqual(content);
-    });
+  it('breakThematic1', async () => {
+    expect(await adocTranslate(Examples.breakThematic1Adoc)).toEqual(Examples.breakThematic2Normalized);
   });
-  describe('macros', () => {
-    it('keyboard macro', async () => {
-      const content = `:experimental:
-
-One kbd:[Ctrl+F11]`;
-      expect(await translate(content)).toEqual(`:experimental:
-
-译One kbd:[Ctrl+F11]`);
-    });
-    it('button macro', async () => {
-      const content = `:experimental:
-
-One btn:[Two] Three.`;
-      expect(await translate(content)).toEqual(`:experimental:
-
-译One btn:[译Two] 译Three.`);
-    });
-    it('menu macro', async () => {
-      const content = `:experimental:
-
-One menu:Two[Three].
-
-One menu:Two[Three > Four] Five.`;
-      expect(await translate(content)).toEqual(`:experimental:
-
-译One menu:译Two[译Three].
-
-译One menu:译Two[译Three > 译Four] 译Five.`);
-    });
+  it('breakThematic2', async () => {
+    expect(await adocTranslate(Examples.breakThematic2Adoc)).toEqual(Examples.breakThematic2Normalized);
   });
-  describe('admonitions', () => {
-    it('simple', async () => {
-      const content = `one
-
-WARNING: Two three`;
-      expect(await translate(content)).toEqual(`译One
-
-WARNING: 译Two 译Three`);
-    });
-    it('complex', async () => {
-      const content = `[IMPORTANT]
-.One
-====
-Two
-
-. Three
-. Four
-. Five
-====`;
-      expect(await translate(content)).toEqual(`[IMPORTANT]
-.译One
-====
-译Two
-
-. 译Three
-. 译Four
-. 译Five
-====`);
-    });
+  it('breakThematic3', async () => {
+    expect(await adocTranslate(Examples.breakThematic3Adoc)).toEqual(Examples.breakThematic2Normalized);
   });
-
-  describe('sidebar', () => {
-    it('simple', async () => {
-      const content = `[sidebar]
-One two three.`;
-      expect(await translate(content)).toEqual(content);
-    });
-
-    it('complex', async () => {
-      const content = `.One
-****
-Two three.
-
-TIP: Four
-****`;
-      expect(await translate(content)).toEqual(`.译One
-****
-译Two 译Three.
-
-TIP: 译Four
-****`);
-    });
+  it('breakThematic4', async () => {
+    expect(await adocTranslate(Examples.breakThematic4Adoc)).toEqual(Examples.breakThematic2Normalized);
   });
-  describe('example blocks', () => {
-    it('simple', async () => {
-      const content = `[example]
-.One
-Two.`;
-      expect(await translate(content)).toEqual(`[example]
-.译One
-译Two.`);
-    });
-
-    it('complex', async () => {
-      const content = `.One
-====
-Two *three*.
-
-Four *five*.
-====`;
-      expect(await translate(content)).toEqual(`.译One
-====
-译Two *译Three*.
-
-译Four *译Five*.
-====`);
-    });
+  it('breakThematic5', async () => {
+    expect(await adocTranslate(Examples.breakThematic5Adoc)).toEqual(Examples.breakThematic2Normalized);
   });
-
-  describe('blockquotes', () => {
-    it('simple', async () => {
-      const content = `[quote,Two,Three]
-.Four:
-Five.`;
-      expect(await translate(content)).toEqual(`[quote,译Two,译Three]
-.译Four:
-译Five.`);
-    });
-    it('syntax highlight', async () => {
-      const content = `[quote,One]
-____
-Two: Three
-
-Four: Five
-
-Six: Seven
-____`;
-      expect(await translate(content)).toEqual(`[quote,译One]
-____
-译Two: 译Three
-
-译Four: 译Five
-
-译Six: 七
-____`);
-    });
-
-    it('shorthand', async () => {
-      const content = `"One"
--- Two, Three`;
-      expect(await translate(content)).toEqual(`"译One"
--- 译Two, 译Three`);
-    });
-
-    it('markdown', async () => {
-      const content = `> > One
->
-> Two
->
-> > Three
->
-> * Four
-> * Five
-> * Six
->
-> > Seven
->
-> Eight.`;
-      const rebuilt = `____
-____
-译One
-____
-译Two
-
-____
-译Three
-____
-* 译Four
-* 译Five
-* 译Six
-
-____
-七
-____
-八.
-____`;
-      expect(await translate(content)).toEqual(rebuilt);
-    });
-
+  it('breakPage', async () => {
+    expect(await adocTranslate(Examples.breakPageAdoc)).toEqual(Examples.breakPageNormalized);
+  });
+  it('unorderedListSimple', async () => {
+    expect(await adocTranslate(Examples.unorderedListSimpleAdoc)).toEqual(Examples.unorderedListSimpleAdocCn);
+  });
+  it('unorderedListWithParagraphs', async () => {
+    expect(await adocTranslate(Examples.unorderedListWithParagraphsAdoc)).toEqual(Examples.unorderedListWithParagraphsAdocCn);
+  });
+  it('orderedList', async () => {
+    expect(await adocTranslate(Examples.orderedListAdoc)).toEqual(Examples.orderedListAdocCn);
+  });
+  it('mixedList', async () => {
+    expect(await adocTranslate(Examples.mixedListAdoc)).toEqual(Examples.mixedListAdocCn);
+  });
+  it('descriptionListSimple', async () => {
+    expect(await adocTranslate(Examples.descriptionListSimpleAdoc)).toEqual(Examples.descriptionListSimpleAdocCn);
+  });
+  it('descriptionListComplex', async () => {
+    expect(await adocTranslate(Examples.descriptionListComplexAdoc)).toEqual(Examples.descriptionListComplexAdocCn);
+  });
+  it('textFormatSimple', async () => {
+    expect(await adocTranslate(Examples.textFormatSimpleAdoc)).toEqual(Examples.textFormatSimpleAdocCn);
+  });
+  it('textFormatNested', async () => {
+    expect(await adocTranslate(Examples.textFormatNestedAdoc)).toEqual(Examples.textFormatNestedAdocCn);
+  });
+  it('textFormatLiteralMonospace', async () => {
+    expect(await adocTranslate(Examples.textFormatLiteralMonospaceAdoc)).toEqual(Examples.textFormatLiteralMonospaceAdocCn);
+  });
+  it('textFormatCustomSpan', async () => {
+    expect(await adocTranslate(Examples.textFormatCustomSpanAdoc)).toEqual(Examples.textFormatCustomSpanAdocCn);
+  });
+  it('autoLinks', async () => {
+    expect(await adocTranslate(Examples.autoLinksAdoc)).toEqual(Examples.autoLinksAdocCn);
+  });
+  it('enclosedLink', async () => {
+    expect(await adocTranslate(Examples.enclosedLinkAdoc)).toEqual(Examples.enclosedLinkAdocCn);
+  });
+  it('autoLinkEscaped', async () => {
+    expect(await adocTranslate(Examples.autoLinkEscapedAdoc)).toEqual(Examples.autoLinkEscapedAdocCn);
+  });
+  it('urlMacro', async () => {
+    expect(await adocTranslate(Examples.urlMacroAdoc)).toEqual(Examples.urlMacroAdocCn);
+  });
+  it('textInterpolation', async () => {
+    expect(await adocTranslate(Examples.textInterpolationAdoc)).toEqual(Examples.textInterpolationAdocCn);
+  });
+  it('crossReferenceBasic', async () => {
+    expect(await adocTranslate(Examples.crossReferenceBasicAdoc)).toEqual(Examples.crossReferenceBasicAdocCn);
+  });
+  it('crossReferenceWithTitle', async () => {
+    expect(await adocTranslate(Examples.crossReferenceWithTitleAdoc)).toEqual(Examples.crossReferenceWithTitleAdocCn);
+  });
+  it('crossReferenceNature', async () => {
+    expect(await adocTranslate(Examples.crossReferenceNatureAdoc)).toEqual(Examples.crossReferenceNatureAdocCn);
+  });
+  it('crossReferenceToOtherDocument', async () => {
+    expect(await adocTranslate(Examples.crossReferenceToOtherDocumentAdoc)).toEqual(Examples.crossReferenceToOtherDocumentAdocCn);
+  });
+  it('footnotes', async () => {
+    expect(await adocTranslate(Examples.footnotesAdoc)).toEqual(Examples.footnotesAdocCn);
+  });
+  it('imageBlock', async () => {
+    expect(await adocTranslate(Examples.imageBlockAdoc)).toEqual(Examples.imageBlockAdocCn);
+  });
+  it('imageInline', async () => {
+    expect(await adocTranslate(Examples.imageInlineAdoc)).toEqual(Examples.imageInlineAdocCn);
+  });
+  it('imageBlockWithTitleAndAttributes', async () => {
+    expect(await adocTranslate(Examples.imageBlockWithTitleAndAttributesAdoc)).toEqual(Examples.imageBlockWithTitleAndAttributesAdocCn);
+  });
+  it('imageWithPositionalAttributes', async () => {
+    expect(await adocTranslate(Examples.imageWithPositionalAttributesAdoc)).toEqual(Examples.imageWithPositionalAttributesAdocCn);
+  });
+  it('video', async () => {
+    expect(await adocTranslate(Examples.videoAdoc)).toEqual(Examples.videoAdocCn);
+  });
+  it('icon', async () => {
+    expect(await adocTranslate(Examples.iconAdoc)).toEqual(Examples.iconAdocCn);
+  });
+  it('keyboardMacro', async () => {
+    expect(await adocTranslate(Examples.keyboardMacroAdoc)).toEqual(Examples.keyboardMacroAdocCn);
+  });
+  it('buttonMacro', async () => {
+    expect(await adocTranslate(Examples.buttonMacroAdoc)).toEqual(Examples.buttonMacroAdocCn);
+  });
+  it('menuMacro', async () => {
+    expect(await adocTranslate(Examples.menuMacroAdoc)).toEqual(Examples.menuMacroAdocCn);
+  });
+  it('admonitionSimple', async () => {
+    expect(await adocTranslate(Examples.admonitionSimpleAdoc)).toEqual(Examples.admonitionSimpleAdocCn);
+  });
+  it('admonitionComplex', async () => {
+    expect(await adocTranslate(Examples.admonitionComplexAdoc)).toEqual(Examples.admonitionComplexAdocCn);
+  });
+  it('sidebarSimple', async () => {
+    expect(await adocTranslate(Examples.sidebarSimpleAdoc)).toEqual(Examples.sidebarSimpleAdocCn);
+  });
+  it('sidebarComplex', async () => {
+    expect(await adocTranslate(Examples.sidebarComplexAdoc)).toEqual(Examples.sidebarComplexAdocCn);
+  });
+  it('exampleBlockSimple', async () => {
+    expect(await adocTranslate(Examples.exampleBlockSimpleAdoc)).toEqual(Examples.exampleBlockSimpleAdocCn);
+  });
+  it('exampleBlockComplex', async () => {
+    expect(await adocTranslate(Examples.exampleBlockComplexAdoc)).toEqual(Examples.exampleBlockComplexAdocCn);
+  });
+  it('blockQuoteSimple', async () => {
+    expect(await adocTranslate(Examples.blockQuoteSimpleAdoc)).toEqual(Examples.blockQuoteSimpleAdocCn);
+  });
+  it('blockQuoteHighlight', async () => {
+    expect(await adocTranslate(Examples.blockQuoteHighlightAdoc)).toEqual(Examples.blockQuoteHighlightAdocCn);
+  });
+  it('blockQuoteShorthand', async () => {
+    expect(await adocTranslate(Examples.blockQuoteShorthandAdoc)).toEqual(Examples.blockQuoteShorthandAdocCn);
+  });
+  it('blockQuoteMarkdown', async () => {
+    expect(await adocTranslate(Examples.blockQuoteMarkdownAdoc)).toEqual(Examples.blockQuoteMarkdownAdocCn);
   });
   it('verse', async () => {
-    const content = `[verse,One,Two]
-Three
-Four.`;
-    expect(await translate(content)).toEqual(content);
+    expect(await adocTranslate(Examples.verseAdoc)).toEqual(Examples.verseAdocCn);
   });
-  describe('source code blocks', () => {
-    it('simple', async () => {
-      const content = `[source,ruby]
-----
-require 'sinatra'
-
-get '/hi' do
-  "Hello World!"
-end
-----`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('indent', async () => {
-      const content = `[source,ruby,indent=0]
-----
-  require 'sinatra'
-
-  get '/hi' do
-    "Hello World!"
-  end
-----`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('highlight', async () => {
-      const content = `[source#hello,ruby]
-----
-require 'sinatra'
-
-get '/hi' do
-  "Hello World!"
-end
-----`;
-      expect(await translate(content)).toEqual(content);
-    });
-
-    it('highlight lines', async () => {
-      const content = `[source%linenums,ruby,highlight=2..5]
-----
-ORDERED_LIST_KEYWORDS = {
-  'loweralpha' => 'a',
-  'lowerroman' => 'i',
-  'upperalpha' => 'A',
-  'upperroman' => 'I',
-}
-----`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('listing blocks', async () => {
-      const content = `[subs=+attributes]
-----
-One _two_
-three \`four\`:
-
-{replace-me}
-
-Five
-----`;
-      expect(await translate(content)).toEqual(content);
-    });
-
-    it('literal style syntax', async () => {
-      const content = `[literal]
-....
-error: One
-Two: Three? y/n
-....`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('delimited literal block', async () => {
-      const content = `....
-One: Two *three*?
-
-Four: Five ...
-....`;
-      expect(await translate(content)).toEqual(content);
-    });
-
-    it('callouts', async () => {
-      const content = `[source,ruby]
-----
-require 'sinatra' <1>
-
-get '/hi' do <2> <3>
-  "Hello World!"
-end
-----
-
-<1> One
-<2> Two
-<3> Three`;
-      expect(await translate(content)).toEqual(`[source,ruby]
-----
-require 'sinatra' <1>
-
-get '/hi' do <2> <3>
-  "Hello World!"
-end
-----
-
-<1> 译One
-<2> 译Two
-<3> 译Three`);
-    });
-    it('with indent', async () => {
-      const content = `[source,ruby,indent=2]
-----
-    def names
-      @name.split ' '
-    end
-----`;
-      expect(await translate(content)).toEqual(content);
-    });
+  it('sourceCodeSimple', async () => {
+    expect(await adocTranslate(Examples.sourceCodeSimpleAdoc)).toEqual(Examples.sourceCodeSimpleAdocCn);
   });
-  describe('tables', () => {
-    it('empty', async () => {
-      const content = `[cols="1,1"]
-|===`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('with title', async () => {
-      const content = `[cols="1,1"]
-.One
-|===`;
-      expect(await translate(content)).toEqual(`[cols="1,1"]
-.译One
-|===`);
-    });
-    it('no header', async () => {
-      const content = `[cols="1,1"]
-|===
-|One, two
-|three, four
-
-|One 1, two 2
-|three 2, four 2
-
-|One 1, two 3
-|three 2, four 3
-|===`;
-      expect(await translate(content)).toEqual(`[cols="1,1"]
-|===
-|译One, 译Two
-|译Three, 译Four
-
-|译One 1, 译Two 2
-|译Three 2, 译Four 2
-
-|译One 1, 译Two 3
-|译Three 2, 译Four 3
-|===`);
-    });
-    it('with header', async () => {
-      const content = `[%footer,cols="1,1"]
-|===
-|One, Two |three 2, four
-
-|One 1, two 2
-|three 2, four 2
-
-|One 1, two 3
-|three 2, four 3
-|===`;
-      expect(await translate(content)).toEqual(`[%footer,cols="1,1"]
-|===
-|译One, 译Two |译Three 2, 译Four
-
-|译One 1, 译Two 2
-|译Three 2, 译Four 2
-
-|译One 1, 译Two 3
-|译Three 2, 译Four 3
-|===`);
-    });
-
-    xit('AsciiDoc block in cell', async () => {
-      const content = `|===
-|One |Two
-
-|Three
-
-* Four
-* Five
-* Six
-
-a|One
-
-* Two
-* Three
-* Four
-|===`;
-      expect(await translate(content)).toEqual(`|===
-|译One |译Two
-
-|译Three
-
-* 译Four
-* 译Five
-* 译Six
-
-a|译One
-
-* 译Two
-* 译Three
-* 译Four
-|===`);
-    });
-    it('col span and row span', async () => {
-      const content = `|===
-|Column 1, header row |Column 2, header row |Column 3, header row |Column 4, header row
-
-|One, two
-2.3+|three
-|four
-
-|one, two
-|three, four
-|===`;
-      expect(await translate(content)).toEqual(`|===
-|COLUMN 1, HEADER ROW |COLUMN 2, HEADER ROW |COLUMN 3, HEADER ROW |COLUMN 4, HEADER ROW
-
-|译One, 译Two
-2.3+|译Three
-|译Four
-
-|译One, 译Two
-|译Three, 译Four
-|===`);
-    });
-
-    it('table width', async () => {
-      const content = `[%autowidth.stretch]
-|===
-|Column 1, header row |Column 2, header row |Column 3, header row
-
-|One, Two
-|One, Two
-|One, Two
-|===`;
-      expect(await translate(content)).toEqual(`[%autowidth.stretch]
-|===
-|COLUMN 1, HEADER ROW |COLUMN 2, HEADER ROW |COLUMN 3, HEADER ROW
-
-|译One, 译Two
-|译One, 译Two
-|译One, 译Two
-|===`);
-    });
+  it('sourceCodeNoIndent', async () => {
+    expect(await adocTranslate(Examples.sourceCodeNoIndentAdoc)).toEqual(Examples.sourceCodeNoIndentAdocCn);
   });
-  describe('STEM formula', () => {
-    // TODO: 修改 Html5Converter，把公式翻译成不会被翻译的格式。
-    xit('inline', async () => {
-      const content = `stem:[sqrt(4) = 2]
-
-Water (stem:[H_2O]) is a critical component.`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('block', async () => {
-      const content = `[stem]
-++++
-sqrt(4) = 2
-++++`;
-      expect(await translate(content)).toEqual(content);
-    });
-    it('mixed', async () => {
-      const content = `= One
-Two <two@example.org>
-:stem: latexmath
-
-[asciimath]
-++++
-sqrt(4) = 2
-++++`;
-      expect(await translate(content)).toEqual(`= 译One
-Two <two@example.org>
-:stem: latexmath
-
-[asciimath]
-++++
-sqrt(4) = 2
-++++`);
-    });
+  it('sourceCodeHighlight', async () => {
+    expect(await adocTranslate(Examples.sourceCodeHighlightAdoc)).toEqual(Examples.sourceCodeHighlightAdocCn);
   });
-
-  describe('open blocks', () => {
-    it('simple', async () => {
-      const content = `--
-one
-two
---`;
-      expect(await translate(content)).toEqual(`--
-译One
-译Two
---`);
-    });
+  it('sourceCodeHighlightLines', async () => {
+    expect(await adocTranslate(Examples.sourceCodeHighlightLinesAdoc)).toEqual(Examples.sourceCodeHighlightLinesAdocCn);
   });
-  describe('escape', () => {
-    const title = 'TIP: ';
-    it('+', async () => {
-      const content = title + 'one `+two.*+` three `+++four.five.*+++`';
-      expect(await translate(content)).toEqual('TIP: 译One `two.*` 译Three `four.five.*`');
-    });
-    it('**', async () => {
-      const content = title + '**one**';
-      expect(await translate(content)).toEqual(`TIP: *译One*`);
-    });
-    it('${}', async () => {
-      const content = title + '${two}';
-      expect(await translate(content)).toEqual('TIP: ${译Two}');
-    });
+  it('listingBlock', async () => {
+    expect(await adocTranslate(Examples.listingBlockAdoc)).toEqual(Examples.listingBlockAdocCn);
+  });
+  it('literalBlockWithStyle', async () => {
+    expect(await adocTranslate(Examples.literalBlockWithStyleAdoc)).toEqual(Examples.literalBlockWithStyleAdocCn);
+  });
+  it('literalBlockWithDelimiter', async () => {
+    expect(await adocTranslate(Examples.literalBlockWithDelimiterAdoc)).toEqual(Examples.literalBlockWithDelimiterAdocCn);
+  });
+  it('sourceCodeCallouts', async () => {
+    expect(await adocTranslate(Examples.sourceCodeCalloutsAdoc)).toEqual(Examples.sourceCodeCalloutsAdocCn);
+  });
+  it('sourceCodeWithIndent', async () => {
+    expect(await adocTranslate(Examples.sourceCodeWithIndentAdoc)).toEqual(Examples.sourceCodeWithIndentAdocCn);
+  });
+  it('tableEmpty', async () => {
+    expect(await adocTranslate(Examples.tableEmptyAdoc)).toEqual(Examples.tableEmptyAdocCn);
+  });
+  it('tableWithTitle', async () => {
+    expect(await adocTranslate(Examples.tableWithTitleAdoc)).toEqual(Examples.tableWithTitleAdocCn);
+  });
+  it('tableWithoutHeader', async () => {
+    expect(await adocTranslate(Examples.tableWithoutHeaderAdoc)).toEqual(Examples.tableWithoutHeaderAdocCn);
+  });
+  it('tableWithHeader', async () => {
+    expect(await adocTranslate(Examples.tableWithHeaderAdoc)).toEqual(Examples.tableWithHeaderAdocCn);
+  });
+  it('tableAlignment', async () => {
+    expect(await adocTranslate(Examples.tableAlignmentAdoc)).toEqual(Examples.tableAlignmentAdocCn);
+  });
+  it('tableFormatCellContent', async () => {
+    expect(await adocTranslate(Examples.tableFormatCellContentAdoc)).toEqual(Examples.tableFormatCellContentAdocCn);
+  });
+  it('tableOverrideStyle', async () => {
+    expect(await adocTranslate(Examples.tableOverrideStyleAdoc)).toEqual(Examples.tableOverrideStyleAdocCn);
+  });
+  xit('tableAdocBlockInCell', async () => {
+    // TODO: 处理表格中的嵌套 AsciiDoc
+    // TODO: 还原 source 的格式
+    expect(await adocTranslate(Examples.tableAdocBlockInCellAdoc)).toEqual(Examples.tableAdocBlockInCellAdocCn);
+  });
+  it('tableColSpanAndRowSpan', async () => {
+    expect(await adocTranslate(Examples.tableColSpanAndRowSpanAdoc)).toEqual(Examples.tableColSpanAndRowSpanAdocCn);
+  });
+  it('tableWidth', async () => {
+    expect(await adocTranslate(Examples.tableWidthAdoc)).toEqual(Examples.tableWidthAdocCn);
+  });
+  it('tableCustomSeparator', async () => {
+    expect(await adocTranslate(Examples.tableCustomSeparatorAdoc)).toEqual(Examples.tableCustomSeparatorAdocCn);
+  });
+  it('tableCsv', async () => {
+    expect(await adocTranslate(Examples.tableCsvAdoc)).toEqual(Examples.tableCsvAdocCn);
+  });
+  it('tableEscapePipeChar', async () => {
+    expect(await adocTranslate(Examples.tableEscapePipeCharAdoc)).toEqual(Examples.tableEscapePipeCharAdocCn);
+  });
+  it('stemInline', async () => {
+    expect(await adocTranslate(Examples.stemInlineAdoc)).toEqual(Examples.stemInlineAdocCn);
+  });
+  it('stemBlock', async () => {
+    expect(await adocTranslate(Examples.stemBlockAdoc)).toEqual(Examples.stemBlockAdocCn);
+  });
+  it('stemMixed', async () => {
+    expect(await adocTranslate(Examples.stemMixedAdoc)).toEqual(Examples.stemMixedAdocCn);
+  });
+  it('openBlockSimple', async () => {
+    expect(await adocTranslate(Examples.openBlockSimpleAdoc)).toEqual(Examples.openBlockSimpleAdocCn);
+  });
+  it('openBlockComplex', async () => {
+    expect(await adocTranslate(Examples.openBlockComplexAdoc)).toEqual(Examples.openBlockComplexAdocCn);
+  });
+  it('includeSimple', async () => {
+    expect(await adocTranslate(Examples.includeSimpleAdoc)).toEqual(Examples.includeSimpleAdocCn);
+  });
+  it('includeWithAttributes', async () => {
+    expect(await adocTranslate(Examples.includeWithAttributesAdoc)).toEqual(Examples.includeWithAttributesAdocCn);
+  });
+  it('includeUnresolvedDirective', async () => {
+    expect(await adocTranslate(Examples.includeUnresolvedDirectiveAdoc)).toEqual(Examples.includeUnresolvedDirectiveAdocCn);
+  });
+  it('escapeSimple', async () => {
+    expect(await adocTranslate(Examples.escapeSimpleAdoc)).toEqual(Examples.escapeSimpleAdocCn);
+  });
+  it('escapePlus', async () => {
+    expect(await adocTranslate(Examples.escapePlusAdoc)).toEqual(Examples.escapePlusAdocCn);
+  });
+  it('escapeStarStar', async () => {
+    expect(await adocTranslate(Examples.escapeStarStarAdoc)).toEqual(Examples.escapeStarStarAdocCn);
+  });
+  it('escapeDollarBrace', async () => {
+    expect(await adocTranslate(Examples.escapeDollarBraceAdoc)).toEqual(Examples.escapeDollarBraceAdocCn);
+  });
+  it('conditionalDirective', async () => {
+    expect(await adocTranslate(Examples.conditionalDirectiveAdoc)).toEqual(Examples.conditionalDirectiveAdocCn);
   });
 });

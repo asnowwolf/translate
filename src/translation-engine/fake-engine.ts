@@ -1,6 +1,6 @@
 import { TranslationEngine } from './translation-engine';
 import { delay } from '../dom/delay';
-import { DomChildNode, DomDocumentFragment, DomElement, DomNode, DomParentNode, DomText } from '../dom/parse5/dom-models';
+import { DomDocumentFragment, DomElement, DomNode, DomParentNode, DomText } from '../dom/parse5/dom-models';
 import { simpleEmailPattern, urlSchemaPattern } from './url-patterns';
 
 function isTranslatableText(text: string): boolean {
@@ -11,36 +11,18 @@ function translateText(text: string): string {
   if (!isTranslatableText(text)) {
     return text;
   }
-  return `译${text}`;
-}
-
-function isTranslatable(node: DomNode): boolean {
-  return node && node instanceof DomText && isTranslatableText(node.value);
-}
-
-function shouldTranslate(node: DomChildNode): boolean {
-  if (!isTranslatable(node)) {
-    return false;
+  if (text.startsWith('[') && text.endsWith(']')) {
+    const content = text.substring(1, text.length - 1);
+    return `[译${content}]`;
+  } else {
+    return `译${text}`;
   }
-  // 找到之前的连续文本节点
-  const prevTextNodes: DomText[] = [];
-  let prev = node.previousSibling();
-  while (prev && prev instanceof DomText) {
-    prevTextNodes.unshift(prev);
-    prev = prev.previousSibling();
-  }
-  // 如果这些文本节点中有任何一个是可翻译的，则返回false
-  return !prevTextNodes.some(it => isTranslatable(it));
 }
 
 function translate(node: DomNode): void {
   if (node instanceof DomText) {
     // 网址和邮件地址不翻译
     if (simpleEmailPattern.test(node.value) || urlSchemaPattern.test(node.value)) {
-      return;
-    }
-
-    if (!shouldTranslate(node)) {
       return;
     }
 
@@ -57,10 +39,32 @@ function translate(node: DomNode): void {
   }
 }
 
+function mergeTextNodes(dom: DomParentNode): void {
+  let text = '';
+  for (let i = dom.childNodes.length - 1; i >= 0; i--) {
+    const node = dom.childNodes[i];
+    if (node instanceof DomText) {
+      text = node.value + text;
+      const previousSibling = node.previousSibling();
+      if (!(previousSibling instanceof DomText) || previousSibling instanceof DomText && /\n+/.test(previousSibling.textContent)) {
+        node.value = text;
+        text = '';
+      } else {
+        node.remove();
+      }
+    }
+
+    if (node instanceof DomParentNode) {
+      mergeTextNodes(node);
+    }
+  }
+}
+
 export class FakeTranslationEngine extends TranslationEngine {
   protected async doTranslateHtml(texts: string[]): Promise<string[]> {
     return delay(200).then(() => Promise.all(texts.map(text => {
       const dom = DomDocumentFragment.parse(text);
+      mergeTextNodes(dom);
       translate(dom);
       return dom.toHtml();
     })));

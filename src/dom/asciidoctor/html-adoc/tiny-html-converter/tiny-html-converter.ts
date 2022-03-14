@@ -1,282 +1,50 @@
 import { Asciidoctor } from '@asciidoctor/core';
-import { DomDocument, DomElement, DomNode } from '../../../parse5/dom-models';
-import { AdocNodeTypes } from '../../utils/adoc-node-types';
-import { typeToTag } from '../quotes';
-import AbstractNode = Asciidoctor.AbstractNode;
-import AbstractConverter = Asciidoctor.AbstractConverter;
-import Section = Asciidoctor.Section;
-import Block = Asciidoctor.Block;
+import { AbstractNode, AdocNodeRendererMap } from '../../utils/adoc-node-renderer';
+import { TinyFallbackRenderer } from './tiny-fallback-renderer';
+import { TinyDocumentRenderer } from './tiny-document-renderer';
+import { TinySectionRenderer } from './tiny-section-renderer';
+import { TinyParagraphRenderer } from './tiny-paragraph-renderer';
+import { TinyOutlineRenderer } from './tiny-outline-renderer';
+import { TinyAdmonitionRenderer } from './tiny-admonition-renderer';
+import { TinyAudioRenderer } from './tiny-audio-renderer';
+import { TinyColistRenderer } from './tiny-colist-renderer';
+import { TinyDlistRenderer } from './tiny-dlist-renderer';
+import { TinyExampleRenderer } from './tiny-example-renderer';
+import { TinyFloatingTitleRenderer } from './tiny-floating-title-renderer';
+import { TinyImageRenderer } from './tiny-image-renderer';
+import { TinyListingRenderer } from './tiny-listing-renderer';
+import { TinyLiteralRenderer } from './tiny-literal-renderer';
+import { TinyStemRenderer } from './tiny-stem-renderer';
+import { TinyOlistRenderer } from './tiny-olist-renderer';
+import { TinyOpenRenderer } from './tiny-open-renderer';
+import { TinyPageBreakRenderer } from './tiny-page-break-renderer';
+import { TinyPreambleRenderer } from './tiny-preamble-renderer';
+import { TinyQuoteRenderer } from './tiny-quote-renderer';
+import { TinyThematicBreakRenderer } from './tiny-thematic-break-renderer';
+import { TinySidebarRenderer } from './tiny-sidebar-renderer';
+import { TinyTableRenderer } from './tiny-table-renderer';
+import { TinyTocRenderer } from './tiny-toc-renderer';
+import { TinyUlistRenderer } from './tiny-ulist-renderer';
+import { TinyVerseRenderer } from './tiny-verse-renderer';
+import { TinyVideoRenderer } from './tiny-video-renderer';
+import { TinyInlineAnchorRenderer } from './tiny-inline-anchor-renderer';
+import { TinyInlineBreakRenderer } from './tiny-inline-break-renderer';
+import { TinyInlineButtonRenderer } from './tiny-inline-button-renderer';
+import { TinyInlineCalloutRenderer } from './tiny-inline-callout-renderer';
+import { TinyInlineFootnoteRenderer } from './tiny-inline-footnote-renderer';
+import { TinyInlineImageRenderer } from './tiny-inline-image-renderer';
+import { TinyInlineIndextermRenderer } from './tiny-inline-indexterm-renderer';
+import { TinyInlineKbdRenderer } from './tiny-inline-kbd-renderer';
+import { TinyInlineMenuRenderer } from './tiny-inline-menu-renderer';
+import { TinyInlineQuotedRenderer } from './tiny-inline-quoted-renderer';
+import { TinyListItemRenderer } from './tiny-list-item-renderer';
 
-export interface AdocNodeRenderer<T extends AbstractNode> {
-  render(node: T): DomNode;
-}
-
-export type AdocNodeRendererMap = { [K in keyof AdocNodeTypes]?: AdocNodeRenderer<AdocNodeTypes[K]> };
-
-class TinyFallbackRenderer implements AdocNodeRenderer<AbstractNode> {
-  render(node: AbstractNode): DomNode {
-    throw new Error(`Unknown node type: ${node.getNodeName()}`);
-  }
-}
-
-class TinyDocumentRenderer implements AdocNodeRenderer<Asciidoctor.Document> {
-  render(node: Asciidoctor.Document): DomNode {
-    const dom = DomDocument.parse('<!doctype html><html><head></head><body></body></html>');
-    dom.title = node.getTitle();
-    dom.body.innerHTML = node.getContent();
-    return dom;
-  }
-}
-
-class TinySectionRenderer implements AdocNodeRenderer<Section> {
-  render(node: Section): DomNode {
-    const result = new DomElement('section', [{ name: 'title', value: node.getTitle() }]);
-    result.innerHTML = node.getContent();
-    return result;
-  }
-}
-
-class TinyParagraphRenderer implements AdocNodeRenderer<Block> {
-  render(node: Block): DomNode {
-    const result = new DomElement('p');
-    result.innerHTML = node.getContent();
-    return result;
-  }
-}
-
-class TinyOutlineRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyAdmonitionRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyAudioRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyColistRenderer implements AdocNodeRenderer<Asciidoctor.List> {
-  render(node: Asciidoctor.List): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyDlistRenderer implements AdocNodeRenderer<Asciidoctor.List> {
-  render(node: Asciidoctor.List): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyExampleRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyFloatingTitleRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyImageRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyListingRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyLiteralRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyStemRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyOlistRenderer implements AdocNodeRenderer<Asciidoctor.List> {
-  render(node: Asciidoctor.List): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyOpenRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyPageBreakRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyPreambleRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyQuoteRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyThematicBreakRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinySidebarRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyTableRenderer implements AdocNodeRenderer<Asciidoctor.Table> {
-  render(node: Asciidoctor.Table): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyTocRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyUlistRenderer implements AdocNodeRenderer<Asciidoctor.List> {
-  render(node: Asciidoctor.List): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyVerseRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyVideoRenderer implements AdocNodeRenderer<Asciidoctor.Block> {
-  render(node: Asciidoctor.Block): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineAnchorRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineBreakRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineButtonRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineCalloutRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineFootnoteRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineImageRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineIndextermRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineKbdRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineMenuRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement('');
-    return result;
-  }
-}
-
-class TinyInlineQuotedRenderer implements AdocNodeRenderer<Asciidoctor.Inline> {
-  render(node: Asciidoctor.Inline): DomNode {
-    const result = new DomElement(typeToTag(node.getType()));
-    result.innerHTML = node.getText();
-    return result;
-  }
-}
-
-export class TinyHtmlConverter implements AbstractConverter {
+/**
+ * 一个精简的 HTML 转换器，为的是生成便于翻译和转回 adoc 的 HTML 格式，这个格式尽可能和 markdown 生成的 HTML 相似，以便作为中间码与 markdown 互转。
+ *
+ * 公共属性：adoc-node=node.getNodeName()
+ */
+export class TinyHtmlConverter implements Asciidoctor.AbstractConverter {
   renderers: AdocNodeRendererMap = {
     'document': new TinyDocumentRenderer(),
     'embedded': new TinyDocumentRenderer(),
@@ -287,9 +55,10 @@ export class TinyHtmlConverter implements AbstractConverter {
     'colist': new TinyColistRenderer(),
     'dlist': new TinyDlistRenderer(),
     'example': new TinyExampleRenderer(),
-    'floating-title': new TinyFloatingTitleRenderer(),
+    'floating_title': new TinyFloatingTitleRenderer(),
     'image': new TinyImageRenderer(),
     'listing': new TinyListingRenderer(),
+    'list_item': new TinyListItemRenderer(),
     'literal': new TinyLiteralRenderer(),
     'stem': new TinyStemRenderer(),
     'olist': new TinyOlistRenderer(),
@@ -322,11 +91,6 @@ export class TinyHtmlConverter implements AbstractConverter {
     const nodeName = transform ?? node.getNodeName();
     const renderer = this.renderers[nodeName] ?? this.fallbackRenderer;
 
-    const result = renderer.render(node);
-    if ('toHtml' in result) {
-      return result.toHtml();
-    } else {
-      return result.outerHTML;
-    }
+    return renderer.render(node).replace(/>\n+</g, '><');
   }
 }

@@ -10,9 +10,10 @@ export interface AdocNodeTypes {
   colist: Asciidoctor.List;
   dlist: Asciidoctor.List;
   example: Asciidoctor.Block;
-  'floating-title': Asciidoctor.Block;
+  'floating_title': Asciidoctor.Block;
   image: Asciidoctor.Block;
   listing: Asciidoctor.Block;
+  list_item: Asciidoctor.ListItem;
   literal: Asciidoctor.Block;
   stem: Asciidoctor.Block;
   olist: Asciidoctor.List;

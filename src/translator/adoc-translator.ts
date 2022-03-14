@@ -1,14 +1,20 @@
 import { TranslationEngine } from '../translation-engine/translation-engine';
 import { Adoc } from '../dom/asciidoctor/utils/adoc';
 import { Asciidoctor } from '@asciidoctor/core';
-import { adocToHtml } from '../dom/asciidoctor/html-adoc/adoc-to-html';
-import { htmlToAdoc } from '../dom/asciidoctor/html-adoc/html-to-adoc';
+import { tinyHtmlToAdoc } from '../dom/asciidoctor/html-adoc/tiny-html-to-adoc';
+import { adocToTinyHtml } from '../dom/asciidoctor/html-adoc/adoc-to-tiny-html';
+import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
+import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 import AbstractNode = Asciidoctor.AbstractNode;
 import Cell = Asciidoctor.Table.Cell;
 
 function translateAdoc(engine: TranslationEngine, text: string): Promise<string> {
-  const html = adocToHtml(text);
-  return engine.translateHtml(html).then(translation => htmlToAdoc(translation));
+  text = text.toString();
+  if (!text) {
+    return Promise.resolve('');
+  }
+  const html = adocToTinyHtml(text).replace(/\bprop-alt=/g, 'alt=');
+  return engine.translateHtml(html).then(translation => tinyHtmlToAdoc(translation.replace(/\balt=/g, 'prop-alt=')));
 }
 
 function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string) {
@@ -18,7 +24,7 @@ function translateAttribute(engine: TranslationEngine, node: AbstractNode, attri
   }
 }
 
-export function adocTranslate(node: AbstractNode, engine: TranslationEngine) {
+export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine): void {
   if (Adoc.isAbstractBlock(node)) {
     const title = node.getTitle();
     if (title) {
@@ -26,11 +32,11 @@ export function adocTranslate(node: AbstractNode, engine: TranslationEngine) {
     }
     translateAttribute(engine, node, 'title');
     if (Adoc.isList(node)) {
-      node.getItems().forEach((it) => adocTranslate(it, engine));
+      node.getItems().forEach((it) => adocDomTranslate(it, engine));
     } else if (Adoc.isDescriptionList(node)) {
-      node.getItems().flat(9).forEach((it) => adocTranslate(it, engine));
+      node.getItems().flat(9).forEach((it) => adocDomTranslate(it, engine));
     } else {
-      node.getBlocks().filter(it => it !== node).forEach((it) => adocTranslate(it, engine));
+      node.getBlocks().filter(it => it !== node).forEach((it) => adocDomTranslate(it, engine));
     }
   }
   if (Adoc.isDocument(node)) {
@@ -40,10 +46,9 @@ export function adocTranslate(node: AbstractNode, engine: TranslationEngine) {
   if (Adoc.isSection(node)) {
     translateAdoc(engine, node.getTitle()).then(translation => node.setTitle(translation));
   }
-  if (Adoc.isParagraph(node) || Adoc.isAdmonition(node) || Adoc.isExample(node) || Adoc.isQuote(node)) {
-    for (let i = 0; i < node.lines.length; ++i) {
-      translateAdoc(engine, node.lines[i]).then(translation => node.lines[i] = translation);
-    }
+  if (Adoc.isParagraph(node) || Adoc.isAdmonition(node) || Adoc.isExample(node) || Adoc.isQuote(node) ||
+    Adoc.isSidebar(node) || Adoc.isVerse(node) || Adoc.isListing(node) && node.getStyle() !== 'source') {
+    translateAdoc(engine, node.lines.join('\n')).then(translation => node.lines = translation?.split('\n'));
   }
 
   if (Adoc.isQuote(node)) {
@@ -60,11 +65,32 @@ export function adocTranslate(node: AbstractNode, engine: TranslationEngine) {
     translateAttribute(engine, node, 'alt');
   }
 
+  if (Adoc.isBlockResource(node)) {
+    translateAttribute(engine, node, 'poster');
+  }
+
   if (Adoc.isTable(node)) {
     const rows = node.getRows();
     [...rows.head, ...rows.body, ...rows.foot].flat(9).forEach((it: Cell) => {
-      const html = adocToHtml(it.text);
-      engine.translateHtml(html).then(translation => it.text = htmlToAdoc(translation));
+      if (it.getStyle() === 'asciidoc') {
+        translateAdoc(engine, it.text).then(translation => it.text = translation);
+      } else {
+        engine.translateHtml(it.text).then(translation => it.text = translation);
+      }
     });
   }
+  if (Adoc.isVerse(node)) {
+    translateAttribute(engine, node, 'attribution');
+    translateAttribute(engine, node, 'citetitle');
+  }
 }
+
+export async function adocTranslate(input: string): Promise<string> {
+  const builder = new AdocBuilder();
+  const engine = new FakeTranslationEngine();
+  const dom = builder.parse(input);
+  adocDomTranslate(dom, engine);
+  await engine.flush();
+  return builder.build(dom);
+}
+

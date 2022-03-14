@@ -17,6 +17,7 @@ declare module '@asciidoctor/core' {
 
     interface RubyMap {
       $$keys: (string | { key: number, key_hash: number, value: string })[];
+      $$smap: { [key: string]: any };
     }
 
     interface AbstractNode {
@@ -31,6 +32,11 @@ declare module '@asciidoctor/core' {
 
     interface Document {
       blocks: AbstractBlock[];
+      attributes_modified: {
+        hash: {
+          $$keys: string[];
+        }
+      };
     }
 
     interface InlineIndexTermAttributes {
@@ -72,14 +78,16 @@ declare module '@asciidoctor/core' {
   }
 
 
+  type SubstitutionType = 'specialcharacters' | 'quotes' | 'attributes' | 'replacements' | 'macros' | 'post_replacements' | 'callouts';
+
   interface Asciidoctor {
     Substitutors: {
       $$const: {
-        VERBATIM_SUBS: string[];
-        REFTEXT_SUBS: string[];
-        NORMAL_SUBS: string[];
-        HEADER_SUBS: string[];
-        BASIC_SUBS: string[];
+        VERBATIM_SUBS: SubstitutionType[];
+        REFTEXT_SUBS: SubstitutionType[];
+        NORMAL_SUBS: SubstitutionType[];
+        HEADER_SUBS: SubstitutionType[];
+        BASIC_SUBS: SubstitutionType[];
       }
     };
     Reader: typeof Asciidoctor.Reader;

@@ -12,17 +12,6 @@ import Table = Asciidoctor.Table;
 
 type SubstitutionMode = Asciidoctor['Substitutors']['$$const'];
 
-function setSubstitutionMode(adoc: Asciidoctor, mode: SubstitutionMode): SubstitutionMode {
-  const consts = adoc.Substitutors.$$const;
-  const result = { ...consts };
-  consts.BASIC_SUBS = mode.BASIC_SUBS;
-  consts.HEADER_SUBS = mode.HEADER_SUBS;
-  consts.NORMAL_SUBS = mode.NORMAL_SUBS;
-  consts.REFTEXT_SUBS = mode.REFTEXT_SUBS;
-  consts.VERBATIM_SUBS = mode.VERBATIM_SUBS;
-  return result;
-}
-
 export class Adoc {
   static isParagraph(node: AbstractNode): node is Block {
     return node.getNodeName() === 'paragraph';
@@ -33,7 +22,7 @@ export class Adoc {
   }
 
   static isDocument(node: AbstractNode): node is Document {
-    return node.getNodeName() === 'document';
+    return node.getNodeName() === 'document' || node.getNodeName() === 'embedded';
   }
 
   static isAbstractBlock(node: AbstractNode): node is AbstractBlock {
@@ -60,8 +49,20 @@ export class Adoc {
     return node.getNodeName() === 'list_item';
   }
 
-  static disableSubstitution(adoc: Asciidoctor): void {
-    setSubstitutionMode(adoc, {
+  static setSubstitutionMode(adoc: Asciidoctor, mode: SubstitutionMode): SubstitutionMode {
+    const consts = adoc.Substitutors.$$const;
+    const result = { ...consts };
+    consts.BASIC_SUBS = mode.BASIC_SUBS;
+    consts.HEADER_SUBS = mode.HEADER_SUBS;
+    consts.NORMAL_SUBS = mode.NORMAL_SUBS;
+    consts.REFTEXT_SUBS = mode.REFTEXT_SUBS;
+    consts.VERBATIM_SUBS = mode.VERBATIM_SUBS;
+    return result;
+  }
+
+
+  static setSubstitutionsForAdoc(adoc: Asciidoctor): void {
+    this.setSubstitutionMode(adoc, {
       BASIC_SUBS: [],
       HEADER_SUBS: [],
       NORMAL_SUBS: [],
@@ -70,8 +71,8 @@ export class Adoc {
     });
   }
 
-  static enableSubstitution(adoc: Asciidoctor): void {
-    setSubstitutionMode(adoc, {
+  static setSubstitutionsForDefaultHtml(adoc: Asciidoctor): void {
+    this.setSubstitutionMode(adoc, {
       BASIC_SUBS: ['specialcharacters'],
       HEADER_SUBS: ['specialcharacters', 'attributes'],
       NORMAL_SUBS: ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'],
@@ -80,8 +81,22 @@ export class Adoc {
     });
   }
 
+  static setSubstitutionsForTranslatableHtml(adoc: Asciidoctor): void {
+    this.setSubstitutionMode(adoc, {
+      BASIC_SUBS: ['specialcharacters'],
+      HEADER_SUBS: ['specialcharacters', 'attributes'],
+      NORMAL_SUBS: ['specialcharacters', 'quotes', 'attributes', 'macros'],
+      REFTEXT_SUBS: ['specialcharacters', 'quotes'],
+      VERBATIM_SUBS: ['specialcharacters', 'callouts'],
+    });
+  }
+
   static isBlockImage(node: AbstractNode): node is Block {
     return node.getNodeName() === 'image';
+  }
+
+  static isBlockResource(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'video' || node.getNodeName() === 'audio';
   }
 
   static isAdmonition(node: AbstractNode): node is Block {
@@ -98,5 +113,36 @@ export class Adoc {
 
   static isTable(node: AbstractNode): node is Table {
     return node.getNodeName() === 'table';
+  }
+
+  static isSidebar(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'sidebar';
+  }
+
+  static isVerse(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'verse';
+  }
+
+  static isListing(node: AbstractNode): node is Block {
+    return node.getNodeName() === 'listing';
+  }
+
+  static hasLines(node: AbstractNode): node is Block {
+    return 'lines' in node;
+  }
+
+  static escapeDirectives(content: string): string {
+    return content
+      .replace(/^\[(.*)indent=("?)(\d+)("?)(.*)]$/gm, '[$1rawIndent=$2$3$4$5]')
+      .replace(/^((?:ifdef|ifndef|ifeval|endif)::\[.*])$/gm, '`begin-directive:[$1]end-directive`')
+      .replace(/^(include::.*?])$/gm, '`begin-directive:[$1]end-directive`')
+      .replace(/^(\/\/ *(?:tag|end)::.*?])$/gm, '`begin-directive:[$1]end-directive`');
+  }
+
+  static unescapeDirectives(content: string): string {
+    return content
+      .replace(/^\[(.*)rawIndent=("?)(\d+)("?)(.*)]$/gm, '[$1indent=$2$3$4$5]')
+      .replace(/^`begin-directive:\[(.*?)]end-directive`$/gm, '$1')
+      .replace(/^Unresolved directive in .* - (.*)$/gm, '$1');
   }
 }

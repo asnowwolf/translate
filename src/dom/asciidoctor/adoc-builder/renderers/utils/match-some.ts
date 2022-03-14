@@ -1,4 +1,4 @@
-export function matchAny(name: string, valueOrPatterns: (string | RegExp)[]): boolean {
+export function matchSome(name: string, valueOrPatterns: readonly (string | RegExp)[]): boolean {
   return valueOrPatterns.some(valueOrPattern => {
     if (typeof valueOrPattern === 'string') {
       return name === valueOrPattern;

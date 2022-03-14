@@ -7,6 +7,7 @@ const quotes = [
   { type: 'mark', tag: 'mark', char: '#' },
   { type: 'superscript', tag: 'sup', char: '^' },
   { type: 'subscript', tag: 'sub', char: '~' },
+  { type: 'asciimath', tag: 'code', char: '' },
 ];
 
 export function quoteTagToChar(node: DomElement): string {
@@ -16,10 +17,14 @@ export function quoteTagToChar(node: DomElement): string {
   return quotes.find(it => it.tag === node.tagName.toLowerCase())?.char;
 }
 
+export function quoteTypeToChar(node: DomElement): string {
+  return quotes.find(it => it.type === node.getAttribute('prop-type').toLowerCase())?.char;
+}
+
 export function quoteCharToTag(char: string): string {
   return quotes.find(it => it.char === char)?.tag;
 }
 
-export function typeToTag(type: string): string {
+export function quoteTypeToTag(type: string): string {
   return quotes.find(it => it.type === type)?.tag;
 }
