@@ -12,8 +12,17 @@ interface BlockQuoteAttributes {
 export class BlockQuoteRenderer extends BlockNodeRenderer<AbstractBlock> {
   positionalAttributes = [{ name: 'style', position: 1 }, { name: 'attribution', position: 2 }, { name: 'citetitle', position: 3 }];
 
+  protected getDefaultAttributes(node: Asciidoctor.AbstractBlock): { [p: string]: any } {
+    const hasAnotherPositionalAttribute = this.positionalAttributes.some(it => it.name !== 'style' && node.hasAttribute(it.name));
+    if (!isQuote(node) || hasAnotherPositionalAttribute) {
+      return {};
+    } else {
+      return { style: 'quote' };
+    }
+  }
+
   protected getBlockAttributes(node: AbstractBlock): AttributeEntry[] {
-    if (!needDelimiter(node)) {
+    if (isQuote(node) && !needDelimiter(node)) {
       return [];
     } else {
       return this.getNonDefaultAttributes(node);
@@ -22,22 +31,18 @@ export class BlockQuoteRenderer extends BlockNodeRenderer<AbstractBlock> {
 
   protected renderBody(node: AbstractBlock): string {
     const children = this.renderChildren(node);
-    if (!needDelimiter(node)) {
+    if (isQuote(node) && !needDelimiter(node)) {
       const attributes = node.getAttributes() as BlockQuoteAttributes;
       const attribution = attributes.attribution;
       const citetitle = attributes.citetitle;
       return `"${children}"\n-- ${[attribution, citetitle].filter(it => !!it).join(', ')}`;
     } else {
-      const delimiter = isMultiBlock(node) || isTopLevel(node) ? '____' : '';
+      const delimiter = needDelimiter(node) ? '____' : '';
       return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
     }
   }
 }
 
-function isTopLevel(node: AbstractBlock) {
-  return node.getParent().getNodeName() !== 'document';
-}
-
-function isMultiBlock(node: AbstractBlock) {
-  return node.getBlocks().length > 1;
+function isQuote(node: Asciidoctor.AbstractBlock): boolean {
+  return node.getStyle() === 'quote';
 }

@@ -1,6 +1,7 @@
 import { InlineableAttribute } from './utils/inlineable-attributes';
 import { matchSome } from './utils/match-some';
 import { Asciidoctor } from '@asciidoctor/core';
+import { uniqBy } from 'lodash';
 import AbstractNode = Asciidoctor.AbstractNode;
 import AttributeEntry = Asciidoctor.Document.AttributeEntry;
 
@@ -27,28 +28,27 @@ export abstract class BaseNodeRenderer<T extends AbstractNode> implements NodeRe
     const result = $$keys
       .map(($$key) => {
         if (typeof $$key === 'string') {
-          if (!this.isPositionalAttribute($$key)) {
-            return { position: undefined, name: $$key, value: node.getAttribute($$key), negate: false };
-          }
+          const position = this.positionalAttributes.find(it => it.name === $$key)?.position;
+          return [
+            { position: undefined, name: $$key, value: node.getAttribute($$key), negate: false },
+            position && { position: position, name: $$key, value: node.getAttribute($$key), negate: false },
+          ];
+        }
+        const positionalAttribute = this.positionalAttributes.find(it => it.position === $$key.key);
+        if (positionalAttribute) {
+          const name = positionalAttribute.name;
+          // 由于 setAttribute 不会更改 $$keys 中的 value，因此这里要重新取一下属性值
+          const value = node.getAttribute(name);
+          return { position: $$key.key, name, value, negate: false };
         } else {
-          const positionalAttribute = this.positionalAttributes.find(it => it.position === $$key.key);
-          if (positionalAttribute) {
-            const name = positionalAttribute.name;
-            // 由于 setAttribute 不会更改 $$keys 中的 value，因此这里要重新取一下属性值
-            const value = node.getAttribute(name);
-            return { position: $$key.key, name, value, negate: false };
-          } else {
-            return { position: $$key.key, name: '1', value: $$key.value, negate: false };
-          }
+          return { position: $$key.key, name: '1', value: $$key.value, negate: false };
         }
       })
+      .flat()
       .filter(it => !!it)
       .filter(it => !matchSome(it.name, [...this.globalIgnoredAttributeNames, ...this.ignoredAttributeNames]));
-    return moveIdToFirst(result.filter(it => !correspondingPositionalExists(it, result)));
-  }
-
-  private isPositionalAttribute($$key: string) {
-    return this.positionalAttributes.some(it => it.name === $$key);
+    const uniqAttributes = uniqBy(result, it => `${it.position}-${it.name}=${it.value}`);
+    return moveIdToFirst(uniqAttributes.filter(it => !correspondingPositionalExists(it, result)));
   }
 
   protected getDefaultAttributes(node: T): { [name: string]: any } {

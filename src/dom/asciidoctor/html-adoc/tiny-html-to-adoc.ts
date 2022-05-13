@@ -212,5 +212,5 @@ export function tinyHtmlDomToAdoc(tinyHtmlDoc: DomDocumentFragment | DomDocument
 
 export function tinyHtmlToAdoc(tinyHtml: string): string {
   const adoc = tinyHtmlDomToAdoc(DomDocument.parse(tinyHtml));
-  return Adoc.unescapeDirectives(adoc.convert({ backend: 'adoc' }).trim());
+  return adoc.convert({ backend: 'adoc' }).trim();
 }

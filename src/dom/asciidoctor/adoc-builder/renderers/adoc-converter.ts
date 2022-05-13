@@ -14,7 +14,6 @@ import { AdmonitionRenderer } from './admonition-renderer';
 import { SidebarRenderer } from './sidebar-renderer';
 import { ExampleRenderer } from './example-renderer';
 import { BlockQuoteRenderer } from './block-quote-renderer';
-import { VerseRenderer } from './verse-renderer';
 import { SourceCodeRenderer } from './source-code-renderer';
 import { CalloutListRenderer } from './callout-list-renderer';
 import { TableRenderer } from './table-renderer';
@@ -43,7 +42,7 @@ export class AdocConverter implements Asciidoctor.AbstractConverter {
     'sidebar': new SidebarRenderer(),
     'example': new ExampleRenderer(),
     'quote': new BlockQuoteRenderer(),
-    'verse': new VerseRenderer(),
+    'verse': new BlockQuoteRenderer(),
     'listing': new SourceCodeRenderer(),
     'literal': new SourceCodeRenderer(),
     'colist': new CalloutListRenderer(),

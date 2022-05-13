@@ -1,5 +1,6 @@
 import { BlockNodeRenderer } from './block-node-renderer';
 import { Asciidoctor } from '@asciidoctor/core';
+import { needDelimiter } from './utils/need-delimiter';
 import AbstractBlock = Asciidoctor.AbstractBlock;
 import AttributeEntry = Asciidoctor.Document.AttributeEntry;
 
@@ -17,7 +18,7 @@ export class ExampleRenderer extends BlockNodeRenderer<AbstractBlock> {
 
   renderBody(node: AbstractBlock): string {
     const children = this.renderChildren(node);
-    const delimiter = node.content_model === 'simple' ? '' : '====';
+    const delimiter = needDelimiter(node) ? '====' : '';
     return [delimiter, children.trim(), delimiter].filter(it => !!it).join('\n');
   }
 }

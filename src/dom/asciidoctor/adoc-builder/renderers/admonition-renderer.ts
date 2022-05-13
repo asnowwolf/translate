@@ -5,6 +5,9 @@ import AbstractBlock = Asciidoctor.AbstractBlock;
 import AttributeEntry = Asciidoctor.Document.AttributeEntry;
 
 export class AdmonitionRenderer extends BlockNodeRenderer<AbstractBlock> {
+  positionalAttributes = [{ name: 'style', position: 1 }];
+  ignoredAttributeNames = ['name', 'textlabel'];
+
   renderBody(node: AbstractBlock): string {
     const children = this.renderChildren(node);
     const prefix = !needDelimiter(node) ? `${node.getStyle()}: ` : '';
@@ -18,6 +21,5 @@ export class AdmonitionRenderer extends BlockNodeRenderer<AbstractBlock> {
 }
 
 function isDefaultValue(it: AttributeEntry, node: AbstractBlock) {
-  return ['style', 'name', 'textlabel'].includes(it.name) &&
-    it.value.toString().toLowerCase() === node.getStyle()?.toLowerCase();
+  return it.name === 'style' && !needDelimiter(node) && it.value.toString().toLowerCase() === node.getStyle()?.toLowerCase();
 }

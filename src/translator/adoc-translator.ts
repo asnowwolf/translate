@@ -25,6 +25,29 @@ function translateAttribute(engine: TranslationEngine, node: AbstractNode, attri
   }
 }
 
+function mergeLines(englishLines: string[], chineseLines: string[]): string[] {
+  if (englishLines.length !== chineseLines.length) {
+    throw 'Cannot merge!';
+  }
+  const result = [];
+  for (let i = 0; i < englishLines.length; ++i) {
+    const english = englishLines[i];
+    const chinese = chineseLines[i];
+    if (english && english !== chinese) {
+      result.push(english);
+      result.push('');
+      result.push(chinese);
+      const isLastLine = i === englishLines.length - 1;
+      if (!isLastLine) {
+        result.push('');
+      }
+    } else {
+      result.push(english);
+    }
+  }
+  return result;
+}
+
 export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine): void {
   if (Adoc.isAbstractBlock(node)) {
     const title = node.getTitle();
@@ -47,9 +70,12 @@ export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine):
   if (Adoc.isSection(node)) {
     translateAdoc(engine, node.getTitle()).then(translation => node.setTitle(translation));
   }
-  if (Adoc.isParagraph(node) || Adoc.isAdmonition(node) || Adoc.isExample(node) || Adoc.isQuote(node) ||
-    Adoc.isSidebar(node) || Adoc.isVerse(node) || Adoc.isListing(node) && node.getStyle() !== 'source') {
-    translateAdoc(engine, node.lines.join('\n')).then(translation => node.lines = translation?.split('\n'));
+  if (Adoc.hasLines(node) && !['source', 'asciimath', 'literal'].includes(node.getStyle())) {
+    translateAdoc(engine, node.lines.join('\n')).then(translation => {
+      const englishLines = node.lines.join('\n').split('\n\n');
+      const chineseLines = translation.trim().split('\n\n');
+      return node.lines = mergeLines(englishLines, chineseLines);
+    });
   }
 
   if (Adoc.isQuote(node)) {

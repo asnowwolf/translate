@@ -7,7 +7,7 @@ export function adocToTinyHtml(content: string, options?: ProcessorOptions): str
   const adoc = createAsciidoctor();
   Adoc.setSubstitutionsForTranslatableHtml(adoc);
   try {
-    const html = adoc.convert(Adoc.escapeDirectives(content), {
+    const html = adoc.convert(content, {
       ...options,
       backend: 'tiny-html',
       attributes: { outfilesuffix: '.html', experimental: true },

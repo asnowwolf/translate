@@ -55,6 +55,8 @@ Preamble paragraph
 == Section title`;
   static readonly documentWithPreambleAdocCn = `= 译Document Title
 
+Preamble paragraph
+
 译Preamble paragraph
 
 == 译Section title`;
@@ -100,7 +102,11 @@ Last updated 2000-01-01 00:00:00 +0000
   static readonly paragraphAdoc = `paragraph1
 
 paragraph2`;
-  static readonly paragraphAdocCn = `译paragraph1
+  static readonly paragraphAdocCn = `paragraph1
+
+译paragraph1
+
+paragraph2
 
 译paragraph2`;
   static readonly paragraphHtml = `<div class="paragraph">
@@ -142,7 +148,10 @@ paragraph2`;
   static readonly sectionWithTitleAndAttributesNormalized = this.sectionWithTitleAndAttributesAdoc;
   static readonly indexTermBlockSimpleAdoc = `I, King Arthur.
 (((knight, "Arthur, King")))`;
-  static readonly indexTermBlockSimpleAdocCn = `译I, King Arthur.
+  static readonly indexTermBlockSimpleAdocCn = `I, King Arthur.
+(((knight, "Arthur, King")))
+
+译I, King Arthur.
 (((译knight, "译Arthur, King")))`;
   static readonly indexTermBlockSimpleHtml = `<div class="paragraph">
 <p>I, King Arthur.
@@ -157,6 +166,10 @@ paragraph2`;
 (((Create Git repository)))
 To create a new git repository,`;
   static readonly indexTermBlockComplexAdocCn = `=== 译Create a new Git repository
+
+(((Repository, create)))
+(((Create Git repository)))
+To create a new git repository,
 
 (((译Repository, 译create)))
 (((译Create Git repository)))
@@ -173,7 +186,9 @@ To create a new git repository,</p>
 To create a new git repository,</p></section></article>`;
   static readonly indexTermBlockComplexNormalized = this.indexTermBlockComplexAdoc;
   static readonly indexTermInlineAdoc = `((abc, def)) ghi`;
-  static readonly indexTermInlineAdocCn = `((译abc, 译def))译 ghi`;
+  static readonly indexTermInlineAdocCn = `((abc, def)) ghi
+
+((译abc, 译def))译 ghi`;
   static readonly indexTermInlineHtml = `<div class="paragraph">
 <p>abc, def ghi</p>
 </div>`;
@@ -241,11 +256,15 @@ To create a new git repository,</p></section></article>`;
 * [x] Bill Bryson
 
 def`;
-  static readonly unorderedListWithParagraphsAdocCn = `译abc
+  static readonly unorderedListWithParagraphsAdocCn = `abc
+
+译abc
 
 * [ ] 译Edgar Allan Poe
 ** 译Sheri S. Tepper
 * [x] 译Bill Bryson
+
+def
 
 译def`;
   static readonly unorderedListWithParagraphsHtml = `<div class="paragraph">
@@ -491,14 +510,18 @@ Produce::
   static readonly descriptionListComplexTiny = `<article adoc-name="document"><dl adoc-name="dlist"><dt>Dairy</dt><dd><ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Milk" attr-Marker="*">Milk</li><li adoc-name="list_item" attr-Text="Eggs" attr-Marker="*">Eggs</li></ul></dd><dt>Bakery</dt><dd><ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Bread" attr-Marker="*">Bread</li></ul></dd><dt>Produce</dt><dd><ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Bananas" attr-Marker="*">Bananas</li></ul></dd></dl></article>`;
   static readonly descriptionListComplexNormalized = this.descriptionListComplexAdoc;
   static readonly textFormatSimpleAdoc = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!`;
-  static readonly textFormatSimpleAdocCn = `译That is *译strong* _译emphasis_ \`monospace\` #译highlight# ~译sub~ ^译sup^ *译unconstrained strong*译 stuff!`;
+  static readonly textFormatSimpleAdocCn = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!
+
+译That is *译strong* _译emphasis_ \`monospace\` #译highlight# ~译sub~ ^译sup^ *译unconstrained strong*译 stuff!`;
   static readonly textFormatSimpleHtml = `<div class="paragraph">
 <p>That is <strong>strong</strong> <em>emphasis</em> <code>monospace</code> <mark>highlight</mark> <sub>sub</sub> <sup>sup</sup> <strong>unconstrained strong</strong> stuff!</p>
 </div>`;
   static readonly textFormatSimpleTiny = `<article adoc-name="document"><p adoc-name="paragraph">That is <strong adoc-name="inline_quoted" prop-type="strong" prop-alt="">strong</strong> <em adoc-name="inline_quoted" prop-type="emphasis" prop-alt="">emphasis</em> <code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">monospace</code> <mark adoc-name="inline_quoted" prop-type="mark" prop-alt="">highlight</mark> <sub adoc-name="inline_quoted" prop-type="subscript" prop-alt="">sub</sub> <sup adoc-name="inline_quoted" prop-type="superscript" prop-alt="">sup</sup> <strong adoc-name="inline_quoted" prop-type="strong" prop-alt="">unconstrained strong</strong> stuff!</p></article>`;
   static readonly textFormatSimpleNormalized = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ *unconstrained strong* stuff!`;
   static readonly textFormatNestedAdoc = `\`*_monospace bold italic phrase_*\` & \`\`*_char_*\`\`acter\`\`*_s_*\`\``;
-  static readonly textFormatNestedAdocCn = `\`*_monospace bold italic phrase_*\` & \`*_char_*\`译acter\`\`*_s_*\`\``;
+  static readonly textFormatNestedAdocCn = `\`*_monospace bold italic phrase_*\` & \`\`*_char_*\`\`acter\`\`*_s_*\`\`
+
+\`*_monospace bold italic phrase_*\` & \`*_char_*\`译acter\`\`*_s_*\`\``;
   static readonly textFormatNestedHtml = `<div class="paragraph">
 <p><code><strong><em>monospace bold italic phrase</em></strong></code> &amp; <code><strong><em>char</em></strong></code>acter<code><strong><em>s</em></strong></code></p>
 </div>`;
@@ -506,7 +529,10 @@ Produce::
   static readonly textFormatNestedNormalized = this.textFormatNestedAdoc;
   static readonly textFormatLiteralMonospaceAdoc = `You can reference the value of a document attribute using
 the syntax \`{name}\`, where  is the attribute name.`;
-  static readonly textFormatLiteralMonospaceAdocCn = `译You can reference the value of a document attribute using
+  static readonly textFormatLiteralMonospaceAdocCn = `You can reference the value of a document attribute using
+the syntax \`{name}\`, where  is the attribute name.
+
+译You can reference the value of a document attribute using
 译the syntax \`{name}\`译, where  is the attribute name.`;
   static readonly textFormatLiteralMonospaceHtml = `<div class="paragraph">
 <p>You can reference the value of a document attribute using
@@ -516,7 +542,9 @@ the syntax <code>{name}</code>, where  is the attribute name.</p>
 the syntax <code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">{name}</code>, where  is the attribute name.</p></article>`;
   static readonly textFormatLiteralMonospaceNormalized = this.textFormatLiteralMonospaceAdoc;
   static readonly textFormatCustomSpanAdoc = `The text [.underline]#underline me# is underlined.`;
-  static readonly textFormatCustomSpanAdocCn = `译The text [.underline]#译underline me#译 is underlined.`;
+  static readonly textFormatCustomSpanAdocCn = `The text [.underline]#underline me# is underlined.
+
+译The text [.underline]#译underline me#译 is underlined.`;
   static readonly textFormatCustomSpanHtml = `<div class="paragraph">
 <p>The text <span class="underline">underline me</span> is underlined.</p>
 </div>`;
@@ -524,7 +552,10 @@ the syntax <code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">{n
   static readonly textFormatCustomSpanNormalized = this.textFormatCustomSpanAdoc;
   static readonly autoLinksAdoc = `The homepage for the Asciidoctor Project is https://www.asciidoctor.org.
 Email us at hello@example.com to say hello.`;
-  static readonly autoLinksAdocCn = `译The homepage for the Asciidoctor Project is https://www.asciidoctor.org.
+  static readonly autoLinksAdocCn = `The homepage for the Asciidoctor Project is https://www.asciidoctor.org.
+Email us at hello@example.com to say hello.
+
+译The homepage for the Asciidoctor Project is https://www.asciidoctor.org.
 译Email us at hello@example.com译 to say hello.`;
   static readonly autoLinksHtml = `<div class="paragraph">
 <p>The homepage for the Asciidoctor Project is <a href="https://www.asciidoctor.org" class="bare">https://www.asciidoctor.org</a>.
@@ -534,7 +565,9 @@ Email us at <a href="mailto:hello@example.com">hello@example.com</a> to say hell
 Email us at <a adoc-name="inline_anchor" prop-type="link" prop-alt="" prop-target="mailto:hello@example.com">hello@example.com</a> to say hello.</p></article>`;
   static readonly autoLinksNormalized = this.autoLinksAdoc;
   static readonly enclosedLinkAdoc = `You will often see https://example.org used in examples.`;
-  static readonly enclosedLinkAdocCn = `译You will often see https://example.org译 used in examples.`;
+  static readonly enclosedLinkAdocCn = `You will often see https://example.org used in examples.
+
+译You will often see https://example.org译 used in examples.`;
   static readonly enclosedLinkHtml = `<div class="paragraph">
 <p>You will often see <a href="https://example.org" class="bare">https://example.org</a> used in examples.</p>
 </div>`;
@@ -543,7 +576,11 @@ Email us at <a adoc-name="inline_anchor" prop-type="link" prop-alt="" prop-targe
   static readonly autoLinkEscapedAdoc = `Once launched, the site will be available at \\https://example.org.
 
 If you cannot access the site, email \\help@example.org for assistance.`;
-  static readonly autoLinkEscapedAdocCn = `译Once launched, the site will be available at \\https://example.org.
+  static readonly autoLinkEscapedAdocCn = `Once launched, the site will be available at \\https://example.org.
+
+译Once launched, the site will be available at \\https://example.org.
+
+If you cannot access the site, email \\help@example.org for assistance.
 
 译If you cannot access the site, email \\help@example.org for assistance.`;
   static readonly autoLinkEscapedHtml = `<div class="paragraph">
@@ -555,7 +592,9 @@ If you cannot access the site, email \\help@example.org for assistance.`;
   static readonly autoLinkEscapedTiny = `<article adoc-name="document"><p adoc-name="paragraph">Once launched, the site will be available at https://example.org.</p><p adoc-name="paragraph">If you cannot access the site, email help@example.org for assistance.</p></article>`;
   static readonly autoLinkEscapedNormalized = this.autoLinkEscapedAdoc;
   static readonly urlMacroAdoc = `Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^, role=green].`;
-  static readonly urlMacroAdocCn = `译Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*译mailing list*^, role=green].`;
+  static readonly urlMacroAdocCn = `Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^, role=green].
+
+译Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*译mailing list*^, role=green].`;
   static readonly urlMacroHtml = `<div class="paragraph">
 <p>Chat with other Asciidoctor users on the <a href="https://discuss.asciidoctor.org/" class="green" target="_blank" rel="noopener"><strong>mailing list</strong></a>.</p>
 </div>`;
@@ -567,6 +606,8 @@ If you cannot access the site, email \\help@example.org for assistance.`;
 This URL has repeating underscores {link-with-underscores}.`;
   static readonly textInterpolationAdocCn = `= 译Document Title
 :link-with-underscores: https://asciidoctor.org/now_this__link_works.html
+
+This URL has repeating underscores {link-with-underscores}.
 
 译This URL has repeating underscores {link-with-underscores}.`;
   static readonly textInterpolationHtml = `<!DOCTYPE html>
@@ -599,28 +640,36 @@ Last updated 2000-01-01 00:00:00 +0000
   static readonly textInterpolationTiny = `<article adoc-name="document" data-doctitle="Document Title" data-link-with-underscores="https://asciidoctor.org/now_this__link_works.html"><p adoc-name="paragraph">This URL has repeating underscores <a adoc-name="inline_anchor" data-role="bare" prop-type="link" prop-alt="" prop-target="https://asciidoctor.org/now_this__link_works.html">https://asciidoctor.org/now_this__link_works.html</a>.</p></article>`;
   static readonly textInterpolationNormalized = this.textInterpolationAdoc;
   static readonly crossReferenceBasicAdoc = `The section <<anchors>> describes how automatic anchors work.`;
-  static readonly crossReferenceBasicAdocCn = `译The section <<anchors,译anchors>>译 describes how automatic anchors work.`;
+  static readonly crossReferenceBasicAdocCn = `The section <<anchors>> describes how automatic anchors work.
+
+译The section <<anchors,译anchors>>译 describes how automatic anchors work.`;
   static readonly crossReferenceBasicHtml = `<div class="paragraph">
 <p>The section <a href="#anchors">[anchors]</a> describes how automatic anchors work.</p>
 </div>`;
   static readonly crossReferenceBasicTiny = `<article adoc-name="document"><p adoc-name="paragraph">The section <a adoc-name="inline_anchor" data-fragment="anchors" data-refid="anchors" prop-type="xref" prop-alt="" prop-target="#anchors">anchors</a> describes how automatic anchors work.</p></article>`;
   static readonly crossReferenceBasicNormalized = this.crossReferenceBasicAdoc;
   static readonly crossReferenceWithTitleAdoc = `Learn how to <<link-macro-attributes,use attributes within the link macro>>.`;
-  static readonly crossReferenceWithTitleAdocCn = `译Learn how to <<link-macro-attributes,译use attributes within the link macro>>.`;
+  static readonly crossReferenceWithTitleAdocCn = `Learn how to <<link-macro-attributes,use attributes within the link macro>>.
+
+译Learn how to <<link-macro-attributes,译use attributes within the link macro>>.`;
   static readonly crossReferenceWithTitleHtml = `<div class="paragraph">
 <p>Learn how to <a href="#link-macro-attributes">use attributes within the link macro</a>.</p>
 </div>`;
   static readonly crossReferenceWithTitleTiny = `<article adoc-name="document"><p adoc-name="paragraph">Learn how to <a adoc-name="inline_anchor" data-fragment="link-macro-attributes" data-refid="link-macro-attributes" prop-type="xref" prop-alt="" prop-target="#link-macro-attributes">use attributes within the link macro</a>.</p></article>`;
   static readonly crossReferenceWithTitleNormalized = this.crossReferenceWithTitleAdoc;
   static readonly crossReferenceNatureAdoc = `Refer to <<Internal Cross References>>.`;
-  static readonly crossReferenceNatureAdocCn = `译Refer to <<Internal Cross References,译Internal Cross References>>.`;
+  static readonly crossReferenceNatureAdocCn = `Refer to <<Internal Cross References>>.
+
+译Refer to <<Internal Cross References,译Internal Cross References>>.`;
   static readonly crossReferenceNatureHtml = `<div class="paragraph">
 <p>Refer to <a href="#Internal Cross References">[Internal Cross References]</a>.</p>
 </div>`;
   static readonly crossReferenceNatureTiny = `<article adoc-name="document"><p adoc-name="paragraph">Refer to <a adoc-name="inline_anchor" data-fragment="Internal Cross References" data-refid="Internal Cross References" prop-type="xref" prop-alt="" prop-target="#Internal Cross References">Internal Cross References</a>.</p></article>`;
   static readonly crossReferenceNatureNormalized = this.crossReferenceNatureAdoc;
   static readonly crossReferenceToOtherDocumentAdoc = `Refer to <<document-b.adoc#section-b,Section B>> for more information.`;
-  static readonly crossReferenceToOtherDocumentAdocCn = `译Refer to <<document-b.adoc#section-b,译Section B>>译 for more information.`;
+  static readonly crossReferenceToOtherDocumentAdocCn = `Refer to <<document-b.adoc#section-b,Section B>> for more information.
+
+译Refer to <<document-b.adoc#section-b,译Section B>>译 for more information.`;
   static readonly crossReferenceToOtherDocumentHtml = `<div class="paragraph">
 <p>Refer to <a href="document-b.html#section-b">Section B</a> for more information.</p>
 </div>`;
@@ -633,11 +682,19 @@ doublefootnote:[The double hail-and-rainbow level makes my toes tingle.]
 A bold statement!footnote:disclaimer[Opinions are my own.]
 
 Another outrageous statement.footnote:disclaimer[]`;
-  static readonly footnotesAdocCn = `译The hail-and-rainbow protocol can be initiated at five levels:
+  static readonly footnotesAdocCn = `The hail-and-rainbow protocol can be initiated at five levels:
+
+译The hail-and-rainbow protocol can be initiated at five levels:
+
+doublefootnote:[The double hail-and-rainbow level makes my toes tingle.]
 
 译doublefootnote:[译The double hail-and-rainbow level makes my toes tingle.]
 
+A bold statement!footnote:disclaimer[Opinions are my own.]
+
 译A bold statement!footnote:disclaimer[译Opinions are my own.]
+
+Another outrageous statement.footnote:disclaimer[]
 
 译Another outrageous statement.footnote:disclaimer[]`;
   static readonly footnotesHtml = `<div class="paragraph">
@@ -675,7 +732,11 @@ Another outrageous statement.footnote:disclaimer[]`;
   static readonly imageInlineAdoc = `Click image:play.png[] to get the party started.
 
 Click image:pause.png[Pause] when you need a break.`;
-  static readonly imageInlineAdocCn = `译Click image:play.png[译play]译 to get the party started.
+  static readonly imageInlineAdocCn = `Click image:play.png[] to get the party started.
+
+译Click image:play.png[译play]译 to get the party started.
+
+Click image:pause.png[Pause] when you need a break.
 
 译Click image:pause.png[译Pause]译 when you need a break.`;
   static readonly imageInlineHtml = `<div class="paragraph">
@@ -728,7 +789,9 @@ Your browser does not support the video tag.
   static readonly iconTiny = `<article adoc-name="document"><p adoc-name="paragraph"><img adoc-name="inline_image" data-link="https://rubygems.org/downloads/whizbang-1.0.0.gem" data-window="_blank" data-default-alt="download" prop-type="icon" prop-alt="download" prop-target="download" /></p></article>`;
   static readonly iconNormalized = this.iconAdoc;
   static readonly keyboardMacroAdoc = `the hortkey is kbd:[Ctrl+F11]`;
-  static readonly keyboardMacroAdocCn = `译the hortkey is kbd:[Ctrl+F11]`;
+  static readonly keyboardMacroAdocCn = `the hortkey is kbd:[Ctrl+F11]
+
+译the hortkey is kbd:[Ctrl+F11]`;
   static readonly keyboardMacroHtml = `<div class="paragraph">
 <p>the hortkey is kbd:[Ctrl+F11]</p>
 </div>`;
@@ -737,7 +800,11 @@ Your browser does not support the video tag.
   static readonly buttonMacroAdoc = `Press the btn:[OK] button when you are finished.
 
 Select a file in the file navigator and click btn:[Open].`;
-  static readonly buttonMacroAdocCn = `译Press the btn:[OK]译 button when you are finished.
+  static readonly buttonMacroAdocCn = `Press the btn:[OK] button when you are finished.
+
+译Press the btn:[OK]译 button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].
 
 译Select a file in the file navigator and click btn:[译Open].`;
   static readonly buttonMacroHtml = `<div class="paragraph">
@@ -751,7 +818,11 @@ Select a file in the file navigator and click btn:[Open].`;
   static readonly menuMacroAdoc = `To save the file, select menu:File[Save].
 
 Select menu:View[Zoom > Reset > Now] to reset the zoom level to the default setting.`;
-  static readonly menuMacroAdocCn = `译To save the file, select menu:译File[译Save].
+  static readonly menuMacroAdocCn = `To save the file, select menu:File[Save].
+
+译To save the file, select menu:译File[译Save].
+
+Select menu:View[Zoom > Reset > Now] to reset the zoom level to the default setting.
 
 译Select menu:译View[译Zoom > 译Reset > 译Now]译 to reset the zoom level to the default setting.`;
   static readonly menuMacroHtml = `<div class="paragraph">
@@ -766,10 +837,18 @@ Select menu:View[Zoom > Reset > Now] to reset the zoom level to the default sett
 
 WARNING: Wolpertingers are known to nest in server racks.
 Enter at your own risk.`;
-  static readonly admonitionSimpleAdocCn = `译abc
+  static readonly admonitionSimpleAdocCn = `abc
 
-WARNING: 译Wolpertingers are known to nest in server racks.
-译Enter at your own risk.`;
+译abc
+
+[WARNING]
+====
+Wolpertingers are known to nest in server racks.
+Enter at your own risk.
+
+译Wolpertingers are known to nest in server racks.
+译Enter at your own risk.
+====`;
   static readonly admonitionSimpleHtml = `<div class="paragraph">
 <p>abc</p>
 </div>
@@ -801,6 +880,8 @@ While werewolves are hardy community members, keep in mind the following dietary
   static readonly admonitionComplexAdocCn = `[IMPORTANT]
 .译Feeding the Werewolves
 ====
+While werewolves are hardy community members, keep in mind the following dietary concerns:
+
 译While werewolves are hardy community members, keep in mind the following dietary concerns:
 
 . 译They are allergic to cinnamon.
@@ -840,9 +921,13 @@ While werewolves are hardy community members, keep in mind the following dietary
   static readonly sidebarSimpleAdoc = `[sidebar]
 Sidebars are used to visually separate auxiliary bits of content
 that supplement the main text.`;
-  static readonly sidebarSimpleAdocCn = `[sidebar]
+  static readonly sidebarSimpleAdocCn = `****
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
+
 译Sidebars are used to visually separate auxiliary bits of content
-译that supplement the main text.`;
+译that supplement the main text.
+****`;
   static readonly sidebarSimpleHtml = `<div class="sidebarblock">
 <div class="content">
 Sidebars are used to visually separate auxiliary bits of content
@@ -861,10 +946,18 @@ TIP: They can contain any type of content.
 ****`;
   static readonly sidebarComplexAdocCn = `.译Optional Title
 ****
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
+
 译Sidebars are used to visually separate auxiliary bits of content
 译that supplement the main text.
 
-TIP: 译They can contain any type of content.
+[TIP]
+====
+They can contain any type of content.
+
+译They can contain any type of content.
+====
 ****`;
   static readonly sidebarComplexHtml = `<div class="sidebarblock">
 <div class="content">
@@ -895,7 +988,11 @@ that supplement the main text.</p><figure adoc-name="admonition" attr-Style="TIP
 This is an example of an example block.`;
   static readonly exampleBlockSimpleAdocCn = `[example]
 .译Optional title
-译This is an example of an example block.`;
+====
+This is an example of an example block.
+
+译This is an example of an example block.
+====`;
   static readonly exampleBlockSimpleHtml = `<div class="exampleblock">
 <div class="title">Example 1. Optional title</div>
 <div class="content">
@@ -912,7 +1009,11 @@ He could hear doves *cooing* in the pine trees branches.
 ====`;
   static readonly exampleBlockComplexAdocCn = `.译Onomatopoeia
 ====
+The book hit the floor with a *thud*.
+
 译The book hit the floor with a *译thud*.
+
+He could hear doves *cooing* in the pine trees branches.
 
 译He could hear doves *译cooing*译 in the pine trees branches.
 ====`;
@@ -929,12 +1030,16 @@ He could hear doves *cooing* in the pine trees branches.
 </div>`;
   static readonly exampleBlockComplexTiny = `<article adoc-name="document"><blockquote adoc-name="example" attr-Title="Onomatopoeia" attr-Style="example" attr-Caption="Example 1. " attr-Numeral="1" type-attr-Numeral="number" data-title="Onomatopoeia" data-attribute_entries="[{&quot;name&quot;:&quot;example-number&quot;,&quot;value&quot;:1,&quot;negate&quot;:false}]" type-data-attribute_entries="object"><p adoc-name="paragraph">The book hit the floor with a <strong adoc-name="inline_quoted" prop-type="strong" prop-alt="">thud</strong>.</p><p adoc-name="paragraph">He could hear doves <strong adoc-name="inline_quoted" prop-type="strong" prop-alt="">cooing</strong> in the pine trees branches.</p></blockquote></article>`;
   static readonly exampleBlockComplexNormalized = this.exampleBlockComplexAdoc;
-  static readonly blockQuoteSimpleAdoc = `[quote,Captain James T. Kirk,Star Trek IV: The Voyage Home]
-.After landing the cloaked Klingon bird of prey in Golden Gate park:
-Everybody remember where we parked.`;
+  static readonly blockQuoteSimpleAdoc = `.After landing the cloaked Klingon bird of prey in Golden Gate park:
+"Everybody remember where we parked."
+-- Captain James T. Kirk, Star Trek IV: The Voyage Home`;
   static readonly blockQuoteSimpleAdocCn = `[quote,译Captain James T. Kirk,译Star Trek IV: The Voyage Home]
 .译After landing the cloaked Klingon bird of prey in Golden Gate park:
-译Everybody remember where we parked.`;
+____
+Everybody remember where we parked.
+
+译Everybody remember where we parked.
+____`;
   static readonly blockQuoteSimpleHtml = `<div class="quoteblock">
 <div class="title">After landing the cloaked Klingon bird of prey in Golden Gate park:</div>
 <blockquote>
@@ -957,9 +1062,15 @@ Dennis: Oh, what a giveaway!
 ____`;
   static readonly blockQuoteHighlightAdocCn = `[quote,译Monty Python and the Holy Grail]
 ____
+Dennis: Come and see the violence inherent in the system.
+
 译Dennis: Come and see the violence inherent in the system.
 
+King Arthur: Bloody peasant!
+
 译King Arthur: Bloody peasant!
+
+Dennis: Oh, what a giveaway!
 
 译Dennis: Oh, what a giveaway!
 ____`;
@@ -984,9 +1095,14 @@ ____`;
   static readonly blockQuoteShorthandAdoc = `"I hold it that a little rebellion now and then is a good thing,
 and as necessary in the political world as storms in the physical."
 -- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11`;
-  static readonly blockQuoteShorthandAdocCn = `"译I hold it that a little rebellion now and then is a good thing,
-译and as necessary in the political world as storms in the physical."
--- 译Thomas Jefferson, 译Papers of Thomas Jefferson: Volume 11`;
+  static readonly blockQuoteShorthandAdocCn = `[quote,译Thomas Jefferson,译Papers of Thomas Jefferson: Volume 11]
+____
+I hold it that a little rebellion now and then is a good thing,
+and as necessary in the political world as storms in the physical.
+
+译I hold it that a little rebellion now and then is a good thing,
+译and as necessary in the political world as storms in the physical.
+____`;
   static readonly blockQuoteShorthandHtml = `<div class="quoteblock">
 <blockquote>
 I hold it that a little rebellion now and then is a good thing,
@@ -1015,11 +1131,17 @@ and as necessary in the political world as storms in the physical.</blockquote><
 > Yep. AsciiDoc and Markdown share a lot of common syntax already.`;
   static readonly blockQuoteMarkdownAdocCn = `____
 ____
+What's new?
+
 译What's new?
 ____
+I've got Markdown in my AsciiDoc!
+
 译I've got Markdown in my AsciiDoc!
 
 ____
+Like what?
+
 译Like what?
 ____
 * 译Blockquotes
@@ -1027,8 +1149,12 @@ ____
 * 译Fenced code blocks
 
 ____
+Is there more?
+
 译Is there more?
 ____
+Yep. AsciiDoc and Markdown share a lot of common syntax already.
+
 译Yep. AsciiDoc and Markdown share a lot of common syntax already.
 ____`;
   static readonly blockQuoteMarkdownHtml = `<div class="quoteblock">
@@ -1098,8 +1224,13 @@ ____`;
 The fog comes
 on little cat feet.`;
   static readonly verseAdocCn = `[verse,译Carl Sandburg,译two lines from the poem Fog]
+____
+The fog comes
+on little cat feet.
+
 译The fog comes
-译on little cat feet.`;
+译on little cat feet.
+____`;
   static readonly verseHtml = `<div class="verseblock">
 <pre class="content">The fog comes
 on little cat feet.</pre>
@@ -1153,7 +1284,7 @@ get '/hi' do
 end</code></pre>
 </div>
 </div>`;
-  static readonly sourceCodeNoIndentTiny = `<article adoc-name="document"><code adoc-name="listing" attr-Style="source" data-rawIndent="0" data-language="ruby">require 'sinatra'
+  static readonly sourceCodeNoIndentTiny = `<article adoc-name="document"><code adoc-name="listing" attr-Style="source" data-indent="0" data-language="ruby">require 'sinatra'
 
 get '/hi' do
 "Hello World!"
@@ -1224,12 +1355,22 @@ value when rendered.
 ----`;
   static readonly listingBlockAdocCn = `[subs=+attributes]
 ----
+This is a _delimited listing block_
+with the \`subs\` attribute assigned
+the incremental value \`+attributes\`.
+This attribute reference:
+
 译This is a _译delimited listing block_
 译with the \`subs\`译 attribute assigned
 译the incremental value \`+attributes\`.
 译This attribute reference:
 
+{replace-me}
+
 译{replace-me}
+
+will be replaced with the attribute's
+value when rendered.
 
 译will be replaced with the attribute's
 译value when rendered.
@@ -1376,9 +1517,9 @@ end
   end</code></pre>
 </div>
 </div>`;
-  static readonly sourceCodeWithIndentTiny = `<article adoc-name="document"><code adoc-name="listing" attr-Style="source" data-rawIndent="2" data-language="ruby">def names
-@name.split ' '
-end</code></article>`;
+  static readonly sourceCodeWithIndentTiny = `<article adoc-name="document"><code adoc-name="listing" attr-Style="source" data-indent="2" data-language="ruby">  def names
+  @name.split ' '
+  end</code></article>`;
   static readonly sourceCodeWithIndentNormalized = this.sourceCodeWithIndentAdoc;
   static readonly tableEmptyAdoc = `[cols="1,1"]
 |===`;
@@ -2028,6 +2169,8 @@ The Lumineers,Ho Hey,Folk Rock
 Water (stem:[H_2O]) is a critical component.`;
   static readonly stemInlineAdocCn = `stem:[sqrt(4) = 2]
 
+Water (stem:[H_2O]) is a critical component.
+
 译Water (stem:[H_2O]译) is a critical component.`;
   static readonly stemInlineHtml = `<div class="paragraph">
 <p>\\$sqrt(4) = 2\\$</p>
@@ -2132,6 +2275,9 @@ An open block can be an anonymous container,
 or it can masquerade as any other block.
 --`;
   static readonly openBlockSimpleAdocCn = `--
+An open block can be an anonymous container,
+or it can masquerade as any other block.
+
 译An open block can be an anonymous container,
 译or it can masquerade as any other block.
 --`;
@@ -2155,7 +2301,11 @@ It is used to present information related to the main content.
 --`;
   static readonly openBlockComplexAdocCn = `.译Related information
 ****
+This is aside text.
+
 译This is aside text.
+
+It is used to present information related to the main content.
 
 译It is used to present information related to the main content.
 ****`;
@@ -2177,26 +2327,32 @@ It is used to present information related to the main content.
   static readonly includeSimpleHtml = `<div class="paragraph">
 <p><a href="./test/fixtures/include.adoc" class="bare">./test/fixtures/include.adoc</a></p>
 </div>`;
-  static readonly includeSimpleTiny = `<article adoc-name="document"><p adoc-name="paragraph"><code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">begin-directive:[include::./test/fixtures/include.adoc[]]end-directive</code></p></article>`;
+  static readonly includeSimpleTiny = `<article adoc-name="document"><p adoc-name="paragraph"><a adoc-name="inline_anchor" data-role="bare" prop-type="link" prop-alt="" prop-target="./test/fixtures/include.adoc">./test/fixtures/include.adoc</a></p></article>`;
   static readonly includeSimpleNormalized = this.includeSimpleAdoc;
   static readonly includeWithAttributesAdoc = `include::filename.txt[lines="1..10,15..20"]`;
   static readonly includeWithAttributesAdocCn = `include::filename.txt[lines="1..10,15..20"]`;
   static readonly includeWithAttributesHtml = `<div class="paragraph">
 <p><a href="filename.txt" class="bare">filename.txt</a></p>
 </div>`;
-  static readonly includeWithAttributesTiny = `<article adoc-name="document"><p adoc-name="paragraph"><code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">begin-directive:[include::filename.txt[lines="1..10,15..20"]]end-directive</code></p></article>`;
+  static readonly includeWithAttributesTiny = `<article adoc-name="document"><p adoc-name="paragraph"><a adoc-name="inline_anchor" data-role="bare" prop-type="link" prop-alt="" prop-target="filename.txt">filename.txt</a></p></article>`;
   static readonly includeWithAttributesNormalized = this.includeWithAttributesAdoc;
   static readonly includeUnresolvedDirectiveAdoc = `include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]`;
   static readonly includeUnresolvedDirectiveAdocCn = `include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]`;
   static readonly includeUnresolvedDirectiveHtml = `<div class="paragraph">
 <p><a href="{docs-groovy}/cli/usingthecli/run/WebApplication.groovy" class="bare">{docs-groovy}/cli/usingthecli/run/WebApplication.groovy</a></p>
 </div>`;
-  static readonly includeUnresolvedDirectiveTiny = `<article adoc-name="document"><p adoc-name="paragraph"><code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">begin-directive:[include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]]end-directive</code></p></article>`;
+  static readonly includeUnresolvedDirectiveTiny = `<article adoc-name="document"><p adoc-name="paragraph"><a adoc-name="inline_anchor" data-role="bare" prop-type="link" prop-alt="" prop-target="{docs-groovy}/cli/usingthecli/run/WebApplication.groovy">{docs-groovy}/cli/usingthecli/run/WebApplication.groovy</a></p></article>`;
   static readonly includeUnresolvedDirectiveNormalized = this.includeUnresolvedDirectiveAdoc;
   static readonly escapeSimpleAdoc = `TIP: Spring Boot's -- "\`JarFile\`" '\`JarFile\`' Class: \`\`abc\`\`
 <ab>&`;
-  static readonly escapeSimpleAdocCn = `TIP: 译Spring Boot's -- "\`译JarFile\`" '\`译JarFile\`'译 Class: \`abc\`
-译<ab>&`;
+  static readonly escapeSimpleAdocCn = `[TIP]
+====
+Spring Boot's -- "\`JarFile\`" '\`JarFile\`' Class: \`\`abc\`\`
+<ab>&
+
+译Spring Boot's -- "\`译JarFile\`" '\`译JarFile\`'译 Class: \`abc\`
+译<ab>&
+====`;
   static readonly escapeSimpleHtml = `<div class="admonitionblock tip">
 <table>
 <tr>
@@ -2214,7 +2370,12 @@ Spring Boot&#8217;s&#8201;&#8212;&#8201;&#8220;JarFile&#8221; &#8216;JarFile&#82
 &lt;ab&gt;&amp;</figure></article>`;
   static readonly escapeSimpleNormalized = this.escapeSimpleAdoc;
   static readonly escapePlusAdoc = `TIP: properties such as \`+logging.*+\` and \`+++spring.main.*+++\``;
-  static readonly escapePlusAdocCn = `TIP: 译properties such as \`logging.*\`译 and \`spring.main.*\``;
+  static readonly escapePlusAdocCn = `[TIP]
+====
+properties such as \`+logging.*+\` and \`+++spring.main.*+++\`
+
+译properties such as \`logging.*\`译 and \`spring.main.*\`
+====`;
   static readonly escapePlusHtml = `<div class="admonitionblock tip">
 <table>
 <tr>
@@ -2230,7 +2391,12 @@ properties such as <code>logging.*</code> and <code>spring.main.*</code>
   static readonly escapePlusTiny = `<article adoc-name="document"><figure adoc-name="admonition" attr-Style="TIP" attr-Caption="Tip" data-name="tip" data-textlabel="Tip">properties such as <code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">logging.*</code> and <code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">spring.main.*</code></figure></article>`;
   static readonly escapePlusNormalized = this.escapePlusAdoc;
   static readonly escapeStarStarAdoc = `TIP: **bold**`;
-  static readonly escapeStarStarAdocCn = `TIP: *译bold*`;
+  static readonly escapeStarStarAdocCn = `[TIP]
+====
+**bold**
+
+*译bold*
+====`;
   static readonly escapeStarStarHtml = `<div class="admonitionblock tip">
 <table>
 <tr>
@@ -2246,7 +2412,12 @@ properties such as <code>logging.*</code> and <code>spring.main.*</code>
   static readonly escapeStarStarTiny = `<article adoc-name="document"><figure adoc-name="admonition" attr-Style="TIP" attr-Caption="Tip" data-name="tip" data-textlabel="Tip"><strong adoc-name="inline_quoted" prop-type="strong" prop-alt="">bold</strong></figure></article>`;
   static readonly escapeStarStarNormalized = this.escapeStarStarAdoc;
   static readonly escapeDollarBraceAdoc = `TIP: \${foo}`;
-  static readonly escapeDollarBraceAdocCn = `TIP: 译\${foo}`;
+  static readonly escapeDollarBraceAdocCn = `[TIP]
+====
+\${foo}
+
+译\${foo}
+====`;
   static readonly escapeDollarBraceHtml = `<div class="admonitionblock tip">
 <table>
 <tr>
@@ -2275,6 +2446,6 @@ endif::[]`;
 <h3 id="_section_title">Section Title</h3>
 
 </div>`;
-  static readonly conditionalDirectiveTiny = `<article adoc-name="document"><p adoc-name="paragraph"><code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">begin-directive:[ifeval::["{spring-boot-artifactory-repo}" != "release"]]end-directive</code></p><section adoc-name="section" attr-Level="2" type-attr-Level="number" attr-SectionName="section" attr-Title="Section Title" attr-Id="_section_title"><p adoc-name="paragraph"><code adoc-name="inline_quoted" prop-type="monospaced" prop-alt="">begin-directive:[endif::[]]end-directive</code></p></section></article>`;
+  static readonly conditionalDirectiveTiny = `<article adoc-name="document"><section adoc-name="section" attr-Level="2" type-attr-Level="number" attr-SectionName="section" attr-Title="Section Title" attr-Id="_section_title"></section></article>`;
   static readonly conditionalDirectiveNormalized = this.conditionalDirectiveAdoc;
 }
