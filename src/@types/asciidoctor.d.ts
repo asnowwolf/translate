@@ -58,6 +58,8 @@ declare module '@asciidoctor/core' {
       interface Cell {
         text: string;
 
+        style: string;
+
         getAttributes(): CellAttributes;
       }
 

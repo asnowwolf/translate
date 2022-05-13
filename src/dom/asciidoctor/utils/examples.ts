@@ -1565,14 +1565,30 @@ end
 |===`;
   static readonly tableWithoutHeaderAdocCn = `[cols="1,1"]
 |===
-|译Cell in column 1, row 1
-|译Cell in column 2, row 1
+a|Cell in column 1, row 1
 
-|译Cell in column 1, row 2
-|译Cell in column 2, row 2
+译Cell in column 1, row 1
 
-|译Cell in column 1, row 3
-|译Cell in column 2, row 3
+a|Cell in column 2, row 1
+
+译Cell in column 2, row 1
+
+a|Cell in column 1, row 2
+
+译Cell in column 1, row 2
+
+a|Cell in column 2, row 2
+
+译Cell in column 2, row 2
+
+a|Cell in column 1, row 3
+
+译Cell in column 1, row 3
+
+a|Cell in column 2, row 3
+
+译Cell in column 2, row 3
+
 |===`;
   static readonly tableWithoutHeaderHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1616,17 +1632,38 @@ end
 |===
 |译Cell in column 1, header row |译Cell in column 2, header row
 
-|译Cell in column 1, row 2
-|译Cell in column 2, row 2
+a|Cell in column 1, row 2
 
-|译Cell in column 1, row 3
-|译Cell in column 2, row 3
+译Cell in column 1, row 2
 
-|译Cell in column 1, row 4
-|译Cell in column 2, row 4
+a|Cell in column 2, row 2
 
-|译Cell in column 1, footer row
-|译Cell in column 2, footer row
+译Cell in column 2, row 2
+
+a|Cell in column 1, row 3
+
+译Cell in column 1, row 3
+
+a|Cell in column 2, row 3
+
+译Cell in column 2, row 3
+
+a|Cell in column 1, row 4
+
+译Cell in column 1, row 4
+
+a|Cell in column 2, row 4
+
+译Cell in column 2, row 4
+
+a|Cell in column 1, footer row
+
+译Cell in column 1, footer row
+
+a|Cell in column 2, footer row
+
+译Cell in column 2, footer row
+
 |===`;
   static readonly tableWithHeaderHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1680,17 +1717,42 @@ end
   static readonly tableAlignmentAdocCn = `|===
 |译Column Name |译Column Name |译Column Name
 
-|译Left-aligned content.
-^|译Center-aligned content.
->|译Right-aligned content.
+a|Left-aligned content.
 
-|译Top-aligned content.
-.^|译Middle-aligned content.
-.>|译Bottom-aligned content.
+译Left-aligned content.
 
-.^|译Top-right-aligned content.
-^.^|译Middle-center-aligned content.
->.>|译Bottom-right-aligned content.
+^a|Center-aligned content.
+
+译Center-aligned content.
+
+>a|Right-aligned content.
+
+译Right-aligned content.
+
+a|Top-aligned content.
+
+译Top-aligned content.
+
+.^a|Middle-aligned content.
+
+译Middle-aligned content.
+
+.>a|Bottom-aligned content.
+
+译Bottom-aligned content.
+
+.^a|Top-right-aligned content.
+
+译Top-right-aligned content.
+
+^.^a|Middle-center-aligned content.
+
+译Middle-center-aligned content.
+
+>.>a|Bottom-right-aligned content.
+
+译Bottom-right-aligned content.
+
 |===`;
   static readonly tableAlignmentHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1740,14 +1802,30 @@ s|strong,
   static readonly tableFormatCellContentAdocCn = `|===
 |译Column 1 |译Column 2
 
-a|译asciidoc,
-e|译emphasis,
+a|asciidoc,
 
-h|译header,
-l|译literal,
+译asciidoc,
 
-m|译monospaced,
-s|译strong,
+a|emphasis,
+
+译emphasis,
+
+a|header,
+
+译header,
+
+a|literal,
+
+译literal,
+
+a|monospaced,
+
+译monospaced,
+
+a|strong,
+
+译strong,
+
 |===`;
   static readonly tableFormatCellContentHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1796,14 +1874,30 @@ s|strong
 |===
 |译Column 1, header row |译Column 2, header row
 
-|译monospaced
-|译monospaced
+|monospaced
 
-s|译strong
-|译*strong*
+译monospaced
 
-|译default
-|译monospaced
+a|monospaced
+
+译monospaced
+
+|strong
+
+译strong
+
+a|*strong*
+
+*译strong*
+
+|default
+
+译default
+
+a|monospaced
+
+译monospaced
+
 |===`;
   static readonly tableOverrideStyleHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1979,15 +2073,34 @@ print "%s" %(os.uname())</code></article></td></tr></tbody></table></article>`;
   static readonly tableColSpanAndRowSpanAdocCn = `|===
 |译Column 1, header row |译Column 2, header row |译Column 3, header row |译Column 4, header row
 
-|译Cell in column 1, row 2
-2.3+|译This cell spans columns 2 and 3 and rows 2, 3, and 4 because its specifier contains a span of 2.3+
-|译Cell in column 4, row 2
+a|Cell in column 1, row 2
 
-|译Cell in column 1, row 3
-|译Cell in column 4, row 3
+译Cell in column 1, row 2
 
-|译Cell in column 1, row 4
-|译Cell in column 4, row 4
+2.3+a|This cell spans columns 2 and 3 and rows 2, 3, and 4 because its specifier contains a span of 2.3+
+
+译This cell spans columns 2 and 3 and rows 2, 3, and 4 because its specifier contains a span of 2.3+
+
+a|Cell in column 4, row 2
+
+译Cell in column 4, row 2
+
+a|Cell in column 1, row 3
+
+译Cell in column 1, row 3
+
+a|Cell in column 4, row 3
+
+译Cell in column 4, row 3
+
+a|Cell in column 1, row 4
+
+译Cell in column 1, row 4
+
+a|Cell in column 4, row 4
+
+译Cell in column 4, row 4
+
 |===`;
   static readonly tableColSpanAndRowSpanHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2038,13 +2151,30 @@ print "%s" %(os.uname())</code></article></td></tr></tbody></table></article>`;
 |===
 |译Column 1, header row |译Column 2, header row |译Column 3, header row
 
-|译Cell in column 1, row 2
-|译Cell in column 2, row 2
-|译Cell in column 3, row 2
+a|Cell in column 1, row 2
 
-|译Cell in column 1, row 3
-|译Cell in column 2, row 3
-|译Cell in column 3, row 3
+译Cell in column 1, row 2
+
+a|Cell in column 2, row 2
+
+译Cell in column 2, row 2
+
+a|Cell in column 3, row 2
+
+译Cell in column 3, row 2
+
+a|Cell in column 1, row 3
+
+译Cell in column 1, row 3
+
+a|Cell in column 2, row 3
+
+译Cell in column 2, row 3
+
+a|Cell in column 3, row 3
+
+译Cell in column 3, row 3
+
 |===`;
   static readonly tableWidthHtml = `<table class="tableblock frame-all grid-all fit-content stretch">
 <colgroup>
@@ -2081,8 +2211,14 @@ print "%s" %(os.uname())</code></article></td></tr></tbody></table></article>`;
 |===`;
   static readonly tableCustomSeparatorAdocCn = `[cols=2*,separator=¦]
 |===
-¦译The default separator in PSV tables is the | character.
-¦译The | character is often referred to as a pipe.
+a¦The default separator in PSV tables is the | character.
+
+译The default separator in PSV tables is the | character.
+
+a¦The | character is often referred to as a pipe.
+
+译The | character is often referred to as a pipe.
+
 |===`;
   static readonly tableCustomSeparatorHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2108,13 +2244,30 @@ The Lumineers,Ho Hey,Folk Rock
 |===
 |译Artist |译Track |译Genre
 
-|译Baauer
-|译Harlem Shake
-|译Hip Hop
+a|Baauer
 
-|译The Lumineers
-|译Ho Hey
-|译Folk Rock
+译Baauer
+
+a|Harlem Shake
+
+译Harlem Shake
+
+a|Hip Hop
+
+译Hip Hop
+
+a|The Lumineers
+
+译The Lumineers
+
+a|Ho Hey
+
+译Ho Hey
+
+a|Folk Rock
+
+译Folk Rock
+
 |===`;
   static readonly tableCsvHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2153,8 +2306,14 @@ The Lumineers,Ho Hey,Folk Rock
   static readonly tableEscapePipeCharAdocCn = `|===
 |译header 1 with '\\|' |译header 2 without \\|
 
-|译body with \\| 1
-|译body with \`\\| 2\`
+a|body with \\| 1
+
+译body with \\| 1
+
+a|body with \`\\| 2\`
+
+译body with \`\\| 2\`
+
 |===`;
   static readonly tableEscapePipeCharHtml = `<table class="tableblock frame-all grid-all stretch">
 <colgroup>

@@ -8,9 +8,10 @@ import { Translator } from './translator';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 import { containsChinese } from '../dom/common';
 import AbstractNode = Asciidoctor.AbstractNode;
-import Cell = Asciidoctor.Table.Cell;
 import Block = Asciidoctor.Block;
 import AbstractBlock = Asciidoctor.AbstractBlock;
+import Table = Asciidoctor.Table;
+import Cell = Asciidoctor.Table.Cell;
 
 async function translateAdoc(engine: TranslationEngine, text: string): Promise<string> {
   if (containsChinese(text)) {
@@ -77,6 +78,34 @@ function hasTranslated(node: Block): boolean {
   return containsChinese(next.lines.join('\n'));
 }
 
+function translateRows(rows: Table.Cell[][], engine: TranslationEngine): void {
+  rows.map(row => row.map((cell: Cell) => {
+    if (containsChinese(cell.getText())) {
+      return;
+    }
+    cell.style = 'asciidoc';
+    translateAdoc(engine, cell.text).then(translation => {
+      if (translation !== cell.text) {
+        cell.text = `${cell.text}\n\n${translation}`;
+      }
+    });
+  }));
+}
+
+function translateHeadRows(rows: Table.Cell[][], engine: TranslationEngine): void {
+  rows.map(row => row.map((cell: Cell) => {
+    if (containsChinese(cell.getText())) {
+      return;
+    }
+    // 标题行不支持 asciidoc 模式，因此只做简单的替换
+    translateAdoc(engine, cell.text).then(translation => {
+      if (translation !== cell.text) {
+        cell.text = translation;
+      }
+    });
+  }));
+}
+
 export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine): void {
   if (Adoc.isAbstractBlock(node)) {
     if (!Adoc.isDocument(node)) {
@@ -132,16 +161,9 @@ export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine):
 
   if (Adoc.isTable(node)) {
     const rows = node.getRows();
-    [...rows.head, ...rows.body, ...rows.foot].flat(9).forEach((it: Cell) => {
-      if (containsChinese(it.getText())) {
-        return;
-      }
-      if (it.getStyle() === 'asciidoc') {
-        translateAdoc(engine, it.text).then(translation => it.text = translation);
-      } else {
-        engine.translateHtml(it.text).then(translation => it.text = translation);
-      }
-    });
+    translateHeadRows(rows.head, engine);
+    translateRows(rows.body, engine);
+    translateRows(rows.foot, engine);
   }
   if (Adoc.isVerse(node)) {
     translateAttribute(engine, node, 'attribution');
