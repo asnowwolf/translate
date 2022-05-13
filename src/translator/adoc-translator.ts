@@ -83,9 +83,9 @@ function translateRows(rows: Table.Cell[][], engine: TranslationEngine): void {
     if (containsChinese(cell.getText())) {
       return;
     }
-    cell.style = 'asciidoc';
     translateAdoc(engine, cell.text).then(translation => {
       if (translation !== cell.text) {
+        cell.style = 'asciidoc';
         cell.text = `${cell.text}\n\n${translation}`;
       }
     });
