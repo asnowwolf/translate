@@ -9,10 +9,11 @@ export class ExampleRenderer extends BlockNodeRenderer<AbstractBlock> {
 
   protected getBlockAttributes(node: AbstractBlock): AttributeEntry[] {
     const blockAttributes = super.getBlockAttributes(node);
-    if (node.content_model === 'simple') {
-      return blockAttributes;
-    } else {
+    // 如果有分隔符，解析器就能直接判断出来 style 是 example，所以可以省略 style
+    if (needDelimiter(node)) {
       return blockAttributes.filter(it => it.name !== 'style');
+    } else {
+      return blockAttributes;
     }
   }
 
