@@ -3,6 +3,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { homedir } from 'os';
 
 export function containsChinese(text?: string): boolean {
+  text = text?.toString();
   if (!text) {
     return false;
   }
