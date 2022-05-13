@@ -4,7 +4,7 @@ import { PromiseMaker } from '../dom/promise-maker';
 import { delay } from '../dom/delay';
 
 export abstract class TranslationEngine {
-  batchSize = 100;
+  batchSize = 50;
   context: { filename?: string } = {};
 
   async init(): Promise<void> {
