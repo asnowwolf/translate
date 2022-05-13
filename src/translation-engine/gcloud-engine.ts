@@ -11,14 +11,14 @@ export class GoogleCloudTranslationEngine extends TranslationEngine {
   protected async doTranslateHtml(texts: string[]): Promise<string[]> {
     const client = new v3.TranslationServiceClient();
     const parent = this.options.parent;
-    const model = this.options.model === 'none' ? join(parent, 'models', this.options.model) : undefined;
-    const glossary = this.options.glossary === 'none' ? join(parent, 'glossaries', this.options.glossary) : undefined;
+    const model = this.options.model !== 'none' ? join(parent, 'models', this.options.model) : undefined;
+    const glossary = this.options.glossary !== 'none' ? join(parent, 'glossaries', this.options.glossary) : undefined;
     return client.translateText({
       parent,
       contents: texts,
       mimeType: 'text/html', // mime types: text/plain, text/html
       sourceLanguageCode: 'en',
-      targetLanguageCode: 'zh-Hans',
+      targetLanguageCode: 'zh',
       model,
       glossaryConfig: {
         glossary,
