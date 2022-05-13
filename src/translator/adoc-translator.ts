@@ -13,6 +13,17 @@ import AbstractBlock = Asciidoctor.AbstractBlock;
 import Table = Asciidoctor.Table;
 import Cell = Asciidoctor.Table.Cell;
 
+function unwrap(text: string): string {
+  return text
+    .replace(/\bprop-alt=/g, 'alt=')
+    .replace(/^<article adoc-name="document"><p adoc-name="paragraph">(.*)<\/p><\/article>$/gs, '$1');
+}
+
+function wrap(text: string): string {
+  const content = text.replace(/\balt=/g, 'prop-alt=');
+  return `<article adoc-name="document"><p adoc-name="paragraph">${content}</p></article>`;
+}
+
 async function translateAdoc(engine: TranslationEngine, text: string): Promise<string> {
   if (containsChinese(text)) {
     return text;
@@ -21,8 +32,8 @@ async function translateAdoc(engine: TranslationEngine, text: string): Promise<s
   if (!text) {
     return '';
   }
-  const html = adocToTinyHtml(text).replace(/\bprop-alt=/g, 'alt=');
-  return await engine.translateHtml(html).then(translation => tinyHtmlToAdoc(translation.replace(/\balt=/g, 'prop-alt=')));
+  const html = unwrap(adocToTinyHtml(text));
+  return await engine.translateHtml(html).then(translation => tinyHtmlToAdoc(wrap(translation)));
 }
 
 function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string): void {
