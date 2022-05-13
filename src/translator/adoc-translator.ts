@@ -6,26 +6,35 @@ import { adocToTinyHtml } from '../dom/asciidoctor/html-adoc/adoc-to-tiny-html';
 import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
 import { Translator } from './translator';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
+import { containsChinese } from '../dom/common';
 import AbstractNode = Asciidoctor.AbstractNode;
 import Cell = Asciidoctor.Table.Cell;
+import Block = Asciidoctor.Block;
+import AbstractBlock = Asciidoctor.AbstractBlock;
 
-function translateAdoc(engine: TranslationEngine, text: string): Promise<string> {
+async function translateAdoc(engine: TranslationEngine, text: string): Promise<string> {
+  if (containsChinese(text)) {
+    return text;
+  }
   text = text.toString();
   if (!text) {
-    return Promise.resolve('');
+    return '';
   }
   const html = adocToTinyHtml(text).replace(/\bprop-alt=/g, 'alt=');
-  return engine.translateHtml(html).then(translation => tinyHtmlToAdoc(translation.replace(/\balt=/g, 'prop-alt=')));
+  return await engine.translateHtml(html).then(translation => tinyHtmlToAdoc(translation.replace(/\balt=/g, 'prop-alt=')));
 }
 
-function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string) {
+function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string): void {
+  if (attributeName.startsWith('original_') || node.hasAttribute(`original_${attributeName}`)) {
+    return;
+  }
   const attribute = node.getAttribute(attributeName);
   if (attribute) {
     translateAdoc(engine, attribute).then(translation => {
       if (translation) {
         node.setAttribute(attributeName, translation);
         if (attribute !== translation) {
-          node.setAttribute(`original$${attributeName}`, attribute);
+          node.setAttribute(`original_${attributeName}`, attribute);
         }
       }
     });
@@ -55,11 +64,31 @@ function mergeLines(englishLines: string[], chineseLines: string[]): string[] {
   return result;
 }
 
+function hasTranslated(node: Block): boolean {
+  if (containsChinese(node.lines.join('\n'))) {
+    return true;
+  }
+  const parent = node.getParent() as AbstractBlock;
+  const index = parent.getBlocks().indexOf(node);
+  const next = parent.getBlocks()[index + 1];
+  if (!next || next.getNodeName() !== node.getNodeName()) {
+    return false;
+  }
+  return containsChinese(next.lines.join('\n'));
+}
+
 export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine): void {
   if (Adoc.isAbstractBlock(node)) {
-    const title = node.getTitle();
-    if (title) {
-      translateAdoc(engine, title).then(translation => translation && node.setTitle(translation));
+    if (!Adoc.isDocument(node)) {
+      const title = node.getTitle();
+      if (title && !node.hasAttribute(`original_title`) && !containsChinese(title)) {
+        translateAdoc(engine, title).then(translation => {
+          if (translation && translation !== title) {
+            node.setAttribute(`original_title`, title);
+            node.setTitle(translation);
+          }
+        });
+      }
     }
     translateAttribute(engine, node, 'title');
     if (Adoc.isList(node)) {
@@ -70,19 +99,17 @@ export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine):
       node.getBlocks().filter(it => it !== node).forEach((it) => adocDomTranslate(it, engine));
     }
   }
-  if (Adoc.isDocument(node)) {
-    translateAttribute(engine, node, 'doctitle');
-    translateAttribute(engine, node, 'description');
-  }
-  if (Adoc.isSection(node)) {
-    translateAdoc(engine, node.getTitle()).then(translation => node.setTitle(translation));
-  }
-  if (Adoc.hasLines(node) && !['source', 'asciimath', 'literal'].includes(node.getStyle())) {
+  if (Adoc.hasLines(node) && !['source', 'asciimath', 'literal'].includes(node.getStyle()) && !hasTranslated(node)) {
     translateAdoc(engine, node.lines.join('\n')).then(translation => {
       const englishLines = node.lines.join('\n').split('\n\n');
       const chineseLines = translation.trim().split('\n\n');
       return node.lines = mergeLines(englishLines, chineseLines);
     });
+  }
+
+  if (Adoc.isDocument(node)) {
+    translateAttribute(engine, node, 'doctitle');
+    translateAttribute(engine, node, 'description');
   }
 
   if (Adoc.isQuote(node)) {
@@ -106,6 +133,9 @@ export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine):
   if (Adoc.isTable(node)) {
     const rows = node.getRows();
     [...rows.head, ...rows.body, ...rows.foot].flat(9).forEach((it: Cell) => {
+      if (containsChinese(it.getText())) {
+        return;
+      }
       if (it.getStyle() === 'asciidoc') {
         translateAdoc(engine, it.text).then(translation => it.text = translation);
       } else {
