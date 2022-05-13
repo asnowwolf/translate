@@ -189,6 +189,9 @@ function toAdocLines(domNode: DomNode): string {
 }
 
 function decompile(adoc: Asciidoctor, adocNode: AbstractNode, domNode: DomElement): void {
+  if (!adocNode || !domNode) {
+    return;
+  }
   const name = domNode.getAttribute('adoc-name');
   const node = createAdocNode(adoc, adocNode, name);
   if (Adoc.isAbstractBlock(node) && !Adoc.isDocument(node)) {
