@@ -8,6 +8,13 @@ export const command = `translate <sourceGlobs...>`;
 
 export const describe = '自动翻译 sourceGlob 中的文件，支持 html 和 markdown 两种格式';
 
+enum TranslationDomainType {
+  angular = 'angular',
+  ng = 'ng',
+  spring = 'spring',
+  custom = 'custom',
+}
+
 export const builder: CommandBuilder = {
   sourceGlobs: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
@@ -29,6 +36,17 @@ export const builder: CommandBuilder = {
     type: 'string',
     description: '当使用 dict 引擎时，指定要使用的字典文件，目前只支持 sqlite 格式。',
   },
+  domain: {
+    type: 'string',
+    description: '翻译时要使用的子领域，如 angular、spring 等，如果为 custom，则必须指定 parent 和 model 参数',
+    choices: [
+      TranslationDomainType.angular,
+      TranslationDomainType.ng,
+      TranslationDomainType.spring,
+      TranslationDomainType.custom,
+    ],
+    default: TranslationDomainType.angular,
+  },
   parent: {
     type: 'string',
     description: 'GCE 中的父项目，默认为本作者的项目',
@@ -36,7 +54,7 @@ export const builder: CommandBuilder = {
   },
   model: {
     type: 'string',
-    description: '要使用的自定义 AutoML 模型，默认为 Angular 的。none 表示不用任何模型',
+    description: '要使用的自定义 AutoML 模型，默认为 Angular 的模型。none 表示不用任何模型',
     default: 'TRL9199068616738092360',
   },
   glossary: {
@@ -73,9 +91,10 @@ interface Params {
   mustIncludesTag: string;
   mustExcludesTag: string;
   jsonProperties: string[];
+  domain: TranslationDomainType;
+  parent: string;
   model: string;
   glossary: string;
-  parent: string;
 }
 
 export const handler = async function (params: Params) {
@@ -83,6 +102,17 @@ export const handler = async function (params: Params) {
   if (filenames.length === 0) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
+  }
+  switch (params.domain) {
+    case TranslationDomainType.angular:
+    case TranslationDomainType.ng:
+      params.parent = 'projects/ralph-gde/locations/us-central1';
+      params.model = 'TRL9199068616738092360';
+      break;
+    case TranslationDomainType.spring:
+      params.parent = 'projects/ralph-gde/locations/us-central1';
+      params.model = 'TRL5769675172126654464';
+      break;
   }
   const translationEngine = getTranslationEngine(params.engine, {
     dict: params.dict,
