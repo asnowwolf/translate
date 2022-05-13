@@ -6,6 +6,7 @@ import { MarkdownTranslator } from './markdown-translator';
 import { JsdocTranslator } from './jsdoc-translator';
 import { DbTranslator } from './db-translator';
 import { JsonTranslator } from './json-translator';
+import { AdocTranslator } from './adoc-translator';
 
 export function getTranslator(filename: string, engine: TranslationEngine, options: Record<string, any> = {}): Translator {
   const extension = extname(filename);
@@ -25,6 +26,8 @@ export function getTranslator(filename: string, engine: TranslationEngine, optio
       return new JsdocTranslator(engine, options);
     case '.json':
       return new JsonTranslator(engine, options);
+    case '.adoc':
+      return new AdocTranslator(engine, options);
     default:
       throw new Error(`不支持的文件类型: ${extension}`);
   }

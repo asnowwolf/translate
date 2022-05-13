@@ -4,6 +4,7 @@ import { Asciidoctor } from '@asciidoctor/core';
 import { tinyHtmlToAdoc } from '../dom/asciidoctor/html-adoc/tiny-html-to-adoc';
 import { adocToTinyHtml } from '../dom/asciidoctor/html-adoc/adoc-to-tiny-html';
 import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
+import { Translator } from './translator';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 import AbstractNode = Asciidoctor.AbstractNode;
 import Cell = Asciidoctor.Table.Cell;
@@ -85,12 +86,16 @@ export function adocDomTranslate(node: AbstractNode, engine: TranslationEngine):
   }
 }
 
-export async function adocTranslate(input: string): Promise<string> {
+export async function adocTranslate(input: string, engine: TranslationEngine = new FakeTranslationEngine()): Promise<string> {
   const builder = new AdocBuilder();
-  const engine = new FakeTranslationEngine();
   const dom = builder.parse(input);
   adocDomTranslate(dom, engine);
   await engine.flush();
   return builder.build(dom);
 }
 
+export class AdocTranslator extends Translator {
+  async translate(text: string): Promise<string> {
+    return adocTranslate(text, this.engine);
+  }
+}

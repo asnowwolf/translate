@@ -36,12 +36,15 @@ export const handler = async function ({ dictFile, engine }: ExportsParams) {
     const entries = await dict.query();
     const exporter = new Exporter();
     const result = exporter.export(entries);
+    const basename = basenameWithoutExt(dictFile);
     if (engine === TranslationEngineType.ms) {
       const english = result.map(it => it.english).join('\n');
-      const basename = basenameWithoutExt(dictFile);
       writeFileSync(`${basename}_en-US.align`, english, 'utf8');
       const chinese = result.map(it => it.chinese).join('\n');
       writeFileSync(`${basename}_zh-Hans.align`, chinese, 'utf8');
+    } else {
+      const content = result.map(it => `${it.english}\t${it.chinese}`).join('\n');
+      writeFileSync(`${basename}.tsv`, content, 'utf8');
     }
   } finally {
     await dict.close();
