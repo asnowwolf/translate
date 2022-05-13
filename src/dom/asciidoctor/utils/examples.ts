@@ -10,7 +10,9 @@ Kismet R. Lee <kismet@asciidoctor.org>; B. Steppenwolf
 v1.0.0, 2020-01-01
 :description: 译The document's description.
 :sectanchors:
-:url-repo: https://my-git-repo.com`;
+:url-repo: https://my-git-repo.com
+:original$doctitle: Document Title
+:original$description: The document's description.`;
   static readonly documentHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,6 +56,7 @@ Preamble paragraph
 
 == Section title`;
   static readonly documentWithPreambleAdocCn = `= 译Document Title
+:original$doctitle: Document Title
 
 Preamble paragraph
 
@@ -137,7 +140,7 @@ paragraph2
   static readonly sectionWithTitleAndAttributesAdoc = `[positional_attribute_1,positional_attribute_2,named_attribute=value,positional_attribute_3]
 .Kizmet's Favorite Authors
 === Section Title`;
-  static readonly sectionWithTitleAndAttributesAdocCn = `[positional_attribute_1,positional_attribute_2,named_attribute=value,positional_attribute_3]
+  static readonly sectionWithTitleAndAttributesAdocCn = `[positional_attribute_1,positional_attribute_2,named_attribute=value,positional_attribute_3,original$title=Kizmet's Favorite Authors]
 .译Kizmet's Favorite Authors
 === 译Section Title`;
   static readonly sectionWithTitleAndAttributesHtml = `<div class="sect2">
@@ -606,6 +609,7 @@ If you cannot access the site, email \\help@example.org for assistance.
 This URL has repeating underscores {link-with-underscores}.`;
   static readonly textInterpolationAdocCn = `= 译Document Title
 :link-with-underscores: https://asciidoctor.org/now_this__link_works.html
+:original$doctitle: Document Title
 
 This URL has repeating underscores {link-with-underscores}.
 
@@ -721,7 +725,8 @@ Another outrageous statement.footnote:disclaimer[]
   static readonly footnotesTiny = `<article adoc-name="document"><p adoc-name="paragraph">The hail-and-rainbow protocol can be initiated at five levels:</p><p adoc-name="paragraph">double<span adoc-name="inline_footnote" data-index="1" type-data-index="number" prop-alt="">The double hail-and-rainbow level makes my toes tingle.</span></p><p adoc-name="paragraph">A bold statement!<span adoc-name="inline_footnote" attr-Id="disclaimer" data-index="2" type-data-index="number" prop-type="ref" prop-alt="">Opinions are my own.</span></p><p adoc-name="paragraph">Another outrageous statement.<span adoc-name="inline_footnote" data-index="2" type-data-index="number" prop-type="xref" prop-alt="" prop-target="disclaimer">Opinions are my own.</span></p></article>`;
   static readonly footnotesNormalized = this.footnotesAdoc;
   static readonly imageBlockAdoc = `image::sunset.jpg["Mesa Verde Sunset, by JAVH"]`;
-  static readonly imageBlockAdocCn = `image::sunset.jpg["译Mesa Verde Sunset, by JAVH"]`;
+  static readonly imageBlockAdocCn = `[original$alt="Mesa Verde Sunset, by JAVH"]
+image::sunset.jpg["译Mesa Verde Sunset, by JAVH"]`;
   static readonly imageBlockHtml = `<div class="imageblock">
 <div class="content">
 <img src="sunset.jpg" alt="Mesa Verde Sunset, by JAVH">
@@ -750,7 +755,7 @@ Click image:pause.png[Pause] when you need a break.
   static readonly imageBlockWithTitleAndAttributesAdoc = `[#img-sunset,link=https://www.flickr.com/photos/javh/5448336655]
 .A mountain sunset
 image::sunset.jpg[Sunset,200,100]`;
-  static readonly imageBlockWithTitleAndAttributesAdocCn = `[#img-sunset,link=https://www.flickr.com/photos/javh/5448336655]
+  static readonly imageBlockWithTitleAndAttributesAdocCn = `[#img-sunset,link=https://www.flickr.com/photos/javh/5448336655,original$alt=Sunset]
 .译A mountain sunset
 image::sunset.jpg[译Sunset,200,100]`;
   static readonly imageBlockWithTitleAndAttributesHtml = `<div id="img-sunset" class="imageblock">
@@ -762,7 +767,8 @@ image::sunset.jpg[译Sunset,200,100]`;
   static readonly imageBlockWithTitleAndAttributesTiny = `<article adoc-name="document"><img adoc-name="image" attr-Title="A mountain sunset" attr-Caption="Figure 1. " attr-Numeral="1" type-attr-Numeral="number" attr-Id="img-sunset" data-attribute_entries="[{&quot;name&quot;:&quot;figure-number&quot;,&quot;value&quot;:1,&quot;negate&quot;:false}]" type-data-attribute_entries="object" data-link="https://www.flickr.com/photos/javh/5448336655" data-id="img-sunset" data-alt="Sunset" data-width="200" data-height="100" data-target="sunset.jpg"/></article>`;
   static readonly imageBlockWithTitleAndAttributesNormalized = this.imageBlockWithTitleAndAttributesAdoc;
   static readonly imageWithPositionalAttributesAdoc = `image::tiger.png[Tiger,200,200,float=right,align=center]`;
-  static readonly imageWithPositionalAttributesAdocCn = `image::tiger.png[译Tiger,200,200,float=right,align=center]`;
+  static readonly imageWithPositionalAttributesAdocCn = `[original$alt=Tiger]
+image::tiger.png[译Tiger,200,200,float=right,align=center]`;
   static readonly imageWithPositionalAttributesHtml = `<div class="imageblock right text-center">
 <div class="content">
 <img src="tiger.png" alt="Tiger" width="200" height="200">
@@ -771,7 +777,8 @@ image::sunset.jpg[译Sunset,200,100]`;
   static readonly imageWithPositionalAttributesTiny = `<article adoc-name="document"><img adoc-name="image" data-alt="Tiger" data-width="200" data-height="200" data-float="right" data-align="center" data-target="tiger.png"/></article>`;
   static readonly imageWithPositionalAttributesNormalized = this.imageWithPositionalAttributesAdoc;
   static readonly videoAdoc = `video::tiger.mp4[Tiger,200,200,float=right,align=center]`;
-  static readonly videoAdocCn = `video::tiger.mp4[译Tiger,200,200,float=right,align=center]`;
+  static readonly videoAdocCn = `[original$poster=Tiger]
+video::tiger.mp4[译Tiger,200,200,float=right,align=center]`;
   static readonly videoHtml = `<div class="videoblock right text-center">
 <div class="content">
 <video src="tiger.mp4" width="200" height="200" poster="Tiger" controls>
@@ -877,7 +884,7 @@ While werewolves are hardy community members, keep in mind the following dietary
 . More than two glasses of orange juice in 24 hours makes them howl in harmony with alarms and sirens.
 . Celery makes them sad.
 ====`;
-  static readonly admonitionComplexAdocCn = `[IMPORTANT]
+  static readonly admonitionComplexAdocCn = `[IMPORTANT,original$title=Feeding the Werewolves]
 .译Feeding the Werewolves
 ====
 While werewolves are hardy community members, keep in mind the following dietary concerns:
@@ -944,7 +951,8 @@ that supplement the main text.
 
 TIP: They can contain any type of content.
 ****`;
-  static readonly sidebarComplexAdocCn = `.译Optional Title
+  static readonly sidebarComplexAdocCn = `[original$title=Optional Title]
+.译Optional Title
 ****
 Sidebars are used to visually separate auxiliary bits of content
 that supplement the main text.
@@ -986,7 +994,7 @@ that supplement the main text.</p><figure adoc-name="admonition" attr-Style="TIP
   static readonly exampleBlockSimpleAdoc = `[example]
 .Optional title
 This is an example of an example block.`;
-  static readonly exampleBlockSimpleAdocCn = `[example]
+  static readonly exampleBlockSimpleAdocCn = `[example,original$title=Optional title]
 .译Optional title
 ====
 This is an example of an example block.
@@ -1007,7 +1015,8 @@ The book hit the floor with a *thud*.
 
 He could hear doves *cooing* in the pine trees branches.
 ====`;
-  static readonly exampleBlockComplexAdocCn = `.译Onomatopoeia
+  static readonly exampleBlockComplexAdocCn = `[original$title=Onomatopoeia]
+.译Onomatopoeia
 ====
 The book hit the floor with a *thud*.
 
@@ -1033,7 +1042,7 @@ He could hear doves *cooing* in the pine trees branches.
   static readonly blockQuoteSimpleAdoc = `.After landing the cloaked Klingon bird of prey in Golden Gate park:
 "Everybody remember where we parked."
 -- Captain James T. Kirk, Star Trek IV: The Voyage Home`;
-  static readonly blockQuoteSimpleAdocCn = `[quote,译Captain James T. Kirk,译Star Trek IV: The Voyage Home]
+  static readonly blockQuoteSimpleAdocCn = `[quote,译Captain James T. Kirk,译Star Trek IV: The Voyage Home,original$title=After landing the cloaked Klingon bird of prey in Golden Gate park:,original$citetitle=Star Trek IV: The Voyage Home,original$attribution=Captain James T. Kirk]
 .译After landing the cloaked Klingon bird of prey in Golden Gate park:
 ____
 Everybody remember where we parked.
@@ -1060,7 +1069,7 @@ King Arthur: Bloody peasant!
 
 Dennis: Oh, what a giveaway!
 ____`;
-  static readonly blockQuoteHighlightAdocCn = `[quote,译Monty Python and the Holy Grail]
+  static readonly blockQuoteHighlightAdocCn = `[quote,译Monty Python and the Holy Grail,original$attribution=Monty Python and the Holy Grail]
 ____
 Dennis: Come and see the violence inherent in the system.
 
@@ -1095,7 +1104,7 @@ ____`;
   static readonly blockQuoteShorthandAdoc = `"I hold it that a little rebellion now and then is a good thing,
 and as necessary in the political world as storms in the physical."
 -- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11`;
-  static readonly blockQuoteShorthandAdocCn = `[quote,译Thomas Jefferson,译Papers of Thomas Jefferson: Volume 11]
+  static readonly blockQuoteShorthandAdocCn = `[quote,译Thomas Jefferson,译Papers of Thomas Jefferson: Volume 11,original$citetitle=Papers of Thomas Jefferson: Volume 11,original$attribution=Thomas Jefferson]
 ____
 I hold it that a little rebellion now and then is a good thing,
 and as necessary in the political world as storms in the physical.
@@ -1223,7 +1232,7 @@ ____`;
   static readonly verseAdoc = `[verse,Carl Sandburg,two lines from the poem Fog]
 The fog comes
 on little cat feet.`;
-  static readonly verseAdocCn = `[verse,译Carl Sandburg,译two lines from the poem Fog]
+  static readonly verseAdocCn = `[verse,译Carl Sandburg,译two lines from the poem Fog,original$attribution=Carl Sandburg,original$citetitle=two lines from the poem Fog]
 ____
 The fog comes
 on little cat feet.
@@ -2206,6 +2215,7 @@ sqrt(4) = 2
   static readonly stemMixedAdocCn = `= 译My Diabolical Mathmatical Opus
 Jamie Moriarty
 :stem: latexmath
+:original$doctitle: My Diabolical Mathmatical Opus
 
 [asciimath]
 ++++
@@ -2299,7 +2309,8 @@ This is aside text.
 
 It is used to present information related to the main content.
 --`;
-  static readonly openBlockComplexAdocCn = `.译Related information
+  static readonly openBlockComplexAdocCn = `[original$title=Related information]
+.译Related information
 ****
 This is aside text.
 

@@ -21,7 +21,14 @@ function translateAdoc(engine: TranslationEngine, text: string): Promise<string>
 function translateAttribute(engine: TranslationEngine, node: AbstractNode, attributeName: string) {
   const attribute = node.getAttribute(attributeName);
   if (attribute) {
-    translateAdoc(engine, attribute).then(translation => translation && node.setAttribute(attributeName, translation));
+    translateAdoc(engine, attribute).then(translation => {
+      if (translation) {
+        node.setAttribute(attributeName, translation);
+        if (attribute !== translation) {
+          node.setAttribute(`original$${attributeName}`, attribute);
+        }
+      }
+    });
   }
 }
 
