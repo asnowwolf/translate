@@ -2,6 +2,7 @@ import { v3 } from '@google-cloud/translate';
 import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { join } from 'path';
+import { delay } from '../dom/delay';
 
 export class GoogleCloudTranslationEngine extends TranslationEngine {
   constructor(private readonly options: TranslationEngineOptions) {
@@ -23,6 +24,13 @@ export class GoogleCloudTranslationEngine extends TranslationEngine {
       glossaryConfig: {
         glossary,
       },
-    }).then(it => it[0]!.translations!.map(it => it.translatedText!!));
+    }).then(it => it[0]!.translations!.map(it => it.translatedText!!)).catch((err) => {
+      if (err.code === ERROR_RESOURCE_EXHAUSTED) {
+        return delay(60 * 1000).then(() => this.doTranslateHtml(texts));
+      }
+      throw err;
+    });
   }
 }
+
+const ERROR_RESOURCE_EXHAUSTED = 8;
