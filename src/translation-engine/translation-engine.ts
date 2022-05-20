@@ -43,7 +43,7 @@ export abstract class TranslationEngine {
     return Promise.all(tasks)
       .then(() => this.buffer = [])
       // add a small delay to ensure that all derived promises(such as Promise.all) are resolved
-      .then(() => delay(100));
+      .then(() => delay(0));
   }
 
   protected abstract doTranslateHtml(texts: string[]): Promise<string[]>;
