@@ -1,7 +1,8 @@
 import { CommandBuilder } from 'yargs';
 import { sync as globby } from 'globby';
-import { Extractor } from '../../extractor/extractor';
 import { SqliteDict } from '../../dict/sqlite-dict';
+import { getExtractorFor } from '../../extractor/get-extractor-for';
+import { groupBy, uniqBy } from 'lodash';
 
 export const command = `extract <outFile> <sourceGlobs...>`;
 
@@ -36,8 +37,17 @@ export const handler = async function ({ sourceGlobs, outFile, filter }: Extract
   const dict = new SqliteDict();
   await dict.open(outFile);
   try {
-    const extractor = new Extractor();
-    await extractor.extractFilesToDict(filenames, dict, new RegExp(filter, 'i'));
+    const allPairs = filenames
+      .map(filename => getExtractorFor(filename).extract(filename))
+      .flat()
+      .filter(it => new RegExp(filter, 'i').test(it.english) || new RegExp(filter, 'i').test(it.chinese));
+    const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
+    const groups = groupBy(pairs, it => it.path);
+    for (const [file, pairs] of Object.entries(groups)) {
+      for (const pair of pairs) {
+        await dict.createOrUpdate(pair.english, pair.chinese, pair.format, { path: file });
+      }
+    }
   } finally {
     await dict.close();
   }
