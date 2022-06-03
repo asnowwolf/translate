@@ -12,6 +12,7 @@ enum TranslationDomainType {
   angular = 'angular',
   ng = 'ng',
   spring = 'spring',
+  material = 'material',
   custom = 'custom',
 }
 
@@ -42,6 +43,7 @@ export const builder: CommandBuilder = {
     choices: [
       TranslationDomainType.angular,
       TranslationDomainType.ng,
+      TranslationDomainType.material,
       TranslationDomainType.spring,
       TranslationDomainType.custom,
     ],
@@ -108,10 +110,17 @@ export const handler = async function (params: Params) {
     case TranslationDomainType.ng:
       params.parent = 'projects/ralph-gde/locations/us-central1';
       params.model = 'TRL9199068616738092360';
+      params.glossary = 'angular';
+      break;
+    case TranslationDomainType.material:
+      params.parent = 'projects/ralph-gde/locations/us-central1';
+      params.model = 'TRL9199068616738092360';
+      params.glossary = 'material';
       break;
     case TranslationDomainType.spring:
       params.parent = 'projects/ralph-gde/locations/us-central1';
       params.model = 'TRL5769675172126654464';
+      params.glossary = 'spring';
       break;
   }
   const translationEngine = getTranslationEngine(params.engine, {
