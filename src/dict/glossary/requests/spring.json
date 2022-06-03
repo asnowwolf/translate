@@ -1,0 +1,12 @@
+{
+  "name": "projects/ralph-gde/locations/us-central1/glossaries/spring",
+  "languagePair": {
+    "sourceLanguageCode": "en",
+    "targetLanguageCode": "zh"
+  },
+  "inputConfig": {
+    "gcsSource": {
+      "inputUri": "gs://nt-glossaries/spring.tsv"
+    }
+  }
+}
