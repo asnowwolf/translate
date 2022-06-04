@@ -28,7 +28,7 @@ interface ExtractParams {
 }
 
 export const handler = async function ({ sourceGlobs, outFile, filter }: ExtractParams) {
-  const filenames = sourceGlobs.map(it => globby(it)).flat();
+  const filenames = globby(sourceGlobs);
   if (filenames.length === 0) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
