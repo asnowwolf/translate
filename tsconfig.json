@@ -24,8 +24,7 @@
     "lib": [
       "es2020",
       "ESNext.Array",
-      "es2018.asyncgenerator",
-      "dom"
+      "es2018.asyncgenerator"
     ]
   },
   "include": [
