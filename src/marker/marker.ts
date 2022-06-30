@@ -138,7 +138,7 @@ function mergeRows(originRow: DomTableRowElement, translationRow: DomTableRowEle
     const originCell = originRow.cells[i];
     const translationCell = translationRow.cells[i];
     if (isDeepStrictEqual(originCell.attrs, translationCell.attrs) && originCell.innerHTML !== translationCell.innerHTML) {
-      originCell.innerHTML = `<p>${originCell.innerHTML}</p><p>${translationCell.innerHTML}</p>`;
+      originCell.innerHTML = `<nt-wrapper>${originCell.innerHTML}</nt-wrapper><nt-wrapper>${translationCell.innerHTML}</nt-wrapper>`;
     }
   }
 }

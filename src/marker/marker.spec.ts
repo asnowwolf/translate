@@ -11,14 +11,14 @@ describe('marker', () => {
     const dom = DomDocumentFragment.parse(`<table>
 <thead>
 <tr>
-  <th>one</th>
-  <th>two</th>
+  <th>one<div>1</div></th>
+  <th>two<div>2</div></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td>一</td>
-  <td>二</td>
+  <td>一<div>1</div></td>
+  <td>二<div>2</div></td>
 </tr>
 <tr>
   <td>three</td>
@@ -44,15 +44,15 @@ describe('marker', () => {
     expect(dom.toHtml()).toEqual(`<table>
 <thead>
 <tr>
-  <th><p>one</p><p>一</p></th>
-  <th><p>two</p><p>二</p></th>
+  <th><nt-wrapper>one<div>1</div></nt-wrapper><nt-wrapper>一<div>1</div></nt-wrapper></th>
+  <th><nt-wrapper>two<div>2</div></nt-wrapper><nt-wrapper>二<div>2</div></nt-wrapper></th>
 </tr>
 </thead>
 <tbody>
 
 <tr>
-  <td><p>three</p><p>三</p></td>
-  <td><p>four</p><p>四</p></td>
+  <td><nt-wrapper>three</nt-wrapper><nt-wrapper>三</nt-wrapper></td>
+  <td><nt-wrapper>four</nt-wrapper><nt-wrapper>四</nt-wrapper></td>
 </tr>
 
 <tr>

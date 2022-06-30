@@ -388,6 +388,7 @@ export class DomTableRowElement extends DomElement {
 }
 
 export type DomSelector = (node: DomElement) => boolean;
-const elementSelectors: DomSelector[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't'].map(it => (node: DomElement) => node.isTagOf(it));
+const elementSelectors: DomSelector[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 't', 'nt-wrapper']
+  .map(it => (node: DomElement) => node.isTagOf(it));
 const attributeSelector: DomSelector = (node: DomElement) => node.hasAttribute('ng-should-translate');
 export const defaultSelectors: DomSelector[] = [...elementSelectors, attributeSelector];
