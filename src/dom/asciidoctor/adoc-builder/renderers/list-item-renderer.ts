@@ -1,5 +1,6 @@
 import { Asciidoctor } from '@asciidoctor/core';
 import { BlockNodeRenderer } from './block-node-renderer';
+import { Adoc } from '../../utils/adoc';
 import ListItem = Asciidoctor.ListItem;
 
 interface ListItemAttribute {
@@ -28,6 +29,23 @@ export class ListItemRenderer extends BlockNodeRenderer<ListItem> {
     const attributes = node.getAttributes() as ListItemAttribute;
     const checkbox = attributes.checkbox === '' ? attributes.checked === '' ? '[x]' : '[ ]' : '';
     const text = [getMarker(node), checkbox, node.getText()].filter(it => !!it?.trim?.()).join(' ');
-    return [text, node.getBlocks().map(it => it.convert()).join('\n').trim()].filter(it => it.trim()).join('\n');
+    const blocks = node.getBlocks();
+    if (!blocks.length) {
+      return text;
+    }
+    if (blocks.length > 1) {
+      for (let i = 0; i < blocks.length; ++i) {
+        const block = blocks[i];
+        if (Adoc.isList(block)) {
+          const wrapper = Adoc.createBlock(node, 'open');
+          wrapper.getBlocks().splice(0, 0, block);
+          blocks[i] = wrapper;
+        }
+      }
+    }
+    const separator = blocks.length === 1 && Adoc.isList(blocks[0]) ? '\n' : '\n+\n';
+    const suffix = blocks.length > 0 && !Adoc.isList(blocks[0]) ? '\n' : '';
+    const contents = blocks.map(it => it.convert().trim());
+    return [text, ...contents].filter(it => !!it).join(separator) + suffix;
   }
 }

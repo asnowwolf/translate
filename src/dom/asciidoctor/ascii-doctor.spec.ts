@@ -71,6 +71,9 @@ describe('ascii-doctor', () => {
   it('descriptionListComplex', () => {
     expect(rebuild(Examples.descriptionListComplexAdoc)).toEqual(Examples.descriptionListComplexNormalized);
   });
+  it('listContinuation', () => {
+    expect(rebuild(Examples.listContinuationAdoc)).toEqual(Examples.listContinuationNormalized);
+  });
   it('textFormatSimple', () => {
     expect(rebuild(Examples.textFormatSimpleAdoc)).toEqual(Examples.textFormatSimpleAdoc);
   });

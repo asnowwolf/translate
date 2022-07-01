@@ -80,6 +80,10 @@ describe('adoc-translator', () => {
     expect(await adocTranslate(Examples.descriptionListComplexAdoc)).toEqual(Examples.descriptionListComplexAdocCn);
     expect(await adocTranslate(Examples.descriptionListComplexAdocCn)).toEqual(Examples.descriptionListComplexAdocCn);
   });
+  it('listContinuation', async () => {
+    expect(await adocTranslate(Examples.listContinuationAdoc)).toEqual(Examples.listContinuationAdocCn);
+    expect(await adocTranslate(Examples.listContinuationAdocCn)).toEqual(Examples.listContinuationAdocCn);
+  });
   it('textFormatSimple', async () => {
     expect(await adocTranslate(Examples.textFormatSimpleAdoc)).toEqual(Examples.textFormatSimpleAdocCn);
     expect(await adocTranslate(Examples.textFormatSimpleAdocCn)).toEqual(Examples.textFormatSimpleAdocCn);
