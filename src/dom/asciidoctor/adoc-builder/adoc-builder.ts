@@ -14,8 +14,8 @@ export class AdocBuilder {
     }
   }
 
-  build(dom: Document): string {
-    const text = Adoc.unescapeDirectives(dom.convert());
+  build(doc: Document): string {
+    const text = Adoc.unescapeDirectives(doc.convert());
     return text.trim();
   }
 }

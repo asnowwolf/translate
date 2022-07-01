@@ -4,8 +4,8 @@ import { AdocBuilder } from './adoc-builder/adoc-builder';
 
 function rebuild(content: string): string {
   const compiler = new AdocBuilder();
-  const dom = compiler.parse(content);
-  return compiler.build(dom);
+  const doc = compiler.parse(content);
+  return compiler.build(doc);
 }
 
 describe('ascii-doctor-e2e', () => {

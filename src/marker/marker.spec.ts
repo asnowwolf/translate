@@ -8,7 +8,7 @@ describe('marker', () => {
     expect(result).toEqual('<!DOCTYPE html><html><head><title>abc</title></head><body class="abc"><h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p></body></html>');
   });
   it('should mark and restructure table', () => {
-    const dom = DomDocumentFragment.parse(`<table>
+    const doc = DomDocumentFragment.parse(`<table>
 <thead>
 <tr>
   <th>one<div>1</div></th>
@@ -40,8 +40,8 @@ describe('marker', () => {
 </tr>
 </tbody>
 </table>`);
-    restructureTable(dom);
-    expect(dom.toHtml()).toEqual(`<table>
+    restructureTable(doc);
+    expect(doc.toHtml()).toEqual(`<table>
 <thead>
 <tr>
   <th><nt-wrapper>one<div>1</div></nt-wrapper><nt-wrapper>一<div>1</div></nt-wrapper></th>
