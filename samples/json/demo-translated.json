@@ -1,0 +1,13 @@
+{
+  "a": 1,
+  "b": "one",
+  "c": {
+    "b": "two",
+    "c": {
+      "b": "three",
+      "bCn": "译three"
+    },
+    "bCn": "译two"
+  },
+  "bCn": "译one"
+}

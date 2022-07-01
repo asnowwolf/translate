@@ -1,26 +1,38 @@
-import { Translator } from './translator';
+import { AbstractTranslator } from './abstract-translator';
 import { SqliteDict } from '../dict/sqlite-dict';
 
-export class DbTranslator extends Translator {
+export class DbTranslator extends AbstractTranslator<any> {
   async translateFile(filename: string): Promise<void> {
     const dict = new SqliteDict();
     await dict.open(filename);
     try {
-      const allEntries = await dict.query();
-      const newEntries = allEntries.filter(it => !it.isRegExp && !it.chinese);
-      newEntries.map(entry => this.engine.translateHtml(entry.english)
-        .then(translation => {
-          entry.chinese = translation.trim();
-          entry.confidence = 'Engine';
-        })
-        .then(() => dict.save(entry)));
-      await this.engine.flush();
+      await this.translateDict(dict);
     } finally {
       await dict.close();
     }
   }
 
-  async translate(text: string): Promise<string> {
-    return Promise.resolve('');
+  async translateDict(dict: SqliteDict): Promise<void> {
+    const allEntries = await dict.query();
+    const newEntries = allEntries.filter(it => !it.isRegExp && !it.chinese);
+    newEntries.map(entry => this.translateSentence(entry.english, entry.format)
+      .then(translation => {
+        entry.chinese = translation.trim();
+        entry.confidence = 'Engine';
+      })
+      .then(() => dict.save(entry)));
+    await this.flush();
+  }
+
+  parse(text: string): any {
+    throw new Error('Method not implemented.');
+  }
+
+  serialize(doc: any): string {
+    throw new Error('Method not implemented.');
+  }
+
+  translateDoc(doc: any): any {
+    throw new Error('Method not implemented.');
   }
 }

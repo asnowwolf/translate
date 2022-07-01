@@ -1,8 +1,10 @@
-import { Translator } from './translator';
-import { TranslationEngine } from '../translation-engine/translation-engine';
-import { IndentationText, JSDocTag, JSDocTagStructure, Node, OptionalKind, Project } from 'ts-morph';
+import { AbstractTranslator } from './abstract-translator';
+import { IndentationText, JSDocTag, JSDocTagStructure, Node, OptionalKind, Project, SourceFile } from 'ts-morph';
 import { isDeepStrictEqual } from 'util';
 import { MarkdownTranslator } from './markdown-translator';
+import { TranslationOptions } from './translation-options';
+import { intersection } from 'lodash';
+import { delay } from '../dom/delay';
 
 function getTagsWithAncestors(node: Node): JSDocTag[] {
   if (!node) {
@@ -18,36 +20,65 @@ function getTagsWithAncestors(node: Node): JSDocTag[] {
   return [...tags, ...getTagsWithAncestors(node.getParent())];
 }
 
-function shouldTranslate(node: Node, options: { mustIncludesTag?: string, mustExcludesTag?: string }): boolean {
+function shouldTranslate(node: Node, options: TranslationOptions): boolean {
   if (!Node.isJSDocableNode(node)) {
     return false;
   }
   const tags = getTagsWithAncestors(node).map(it => it.getTagName());
-  return (!options.mustIncludesTag || tags.includes(options.mustIncludesTag)) &&
-    (!options.mustExcludesTag || !tags.includes(options.mustExcludesTag));
+  return (!options.mustIncludesTags || intersection(tags, options.mustIncludesTags).length > 0) &&
+    (!options.mustExcludesTags || intersection(tags, options.mustExcludesTags).length === 0);
 }
 
-export class JsdocTranslator extends Translator {
-  private readonly markdownTranslator = new MarkdownTranslator(this.engine);
+function preprocess(text: string): string {
+  return text.replace(/(```\w*\n)(.*?)(```\n)/gs, (_, leading, body, tailing) => {
+    return `${leading}${body.replace(/@/g, '&commat;')}${tailing}`;
+  });
+}
 
-  async translate(text: string): Promise<string> {
+function postprocess(text: string): string {
+  return text.replace(/&commat;/g, '@');
+}
+
+function joinChineseLines(text: string): string {
+  return text;
+}
+
+export class JsdocTranslator extends AbstractTranslator<SourceFile> {
+  private markdownTranslator = new MarkdownTranslator(this.engine);
+
+  parse(text: string): SourceFile {
     const project = new Project({ manipulationSettings: { indentationText: IndentationText.TwoSpaces } });
-    const sourceFile = project.createSourceFile('placeholder.ts', text);
-    this.translateNode(sourceFile, this.engine);
-    await this.engine.flush();
-    return sourceFile.getFullText();
+    return project.createSourceFile('placeholder.ts', preprocess(text));
   }
 
-  translateNode(node: Node, engine: TranslationEngine): void {
-    if (Node.isJSDocableNode(node) && shouldTranslate(node, this.options)) {
+  serialize(doc: SourceFile): string {
+    return postprocess(doc.getFullText());
+  }
+
+  async flush(): Promise<void> {
+    await this.markdownTranslator.flush();
+    return super.flush();
+  }
+
+  protected translateSentence(sentence: string): Promise<string> {
+    return this.markdownTranslator.translateContent(sentence).then((result) => result);
+  }
+
+  translateDoc(doc: SourceFile, options: TranslationOptions): SourceFile {
+    this.translateNode(doc, options).then(it => it as SourceFile);
+    return doc;
+  }
+
+  async translateNode(node: Node, options: TranslationOptions): Promise<Node> {
+    if (Node.isJSDocableNode(node) && shouldTranslate(node, options)) {
       const docs = node.getJsDocs();
       for (const doc of docs) {
         const structure = doc.getStructure();
         const tagTasks = structure.tags.map(tag => this.translateTag(tag));
-        const origin = (structure.description as string).trim();
-        const descriptionTask = this.markdownTranslator.translate(origin).then(translation => {
+        const origin = joinChineseLines((structure.description as string).trim());
+        const descriptionTask = this.translateSentence(origin).then(translation => {
           if (translation.trim() !== origin.trim()) {
-            structure.description = trimLastLf(translation);
+            structure.description = removeExtraBlankLines(translation);
           }
         });
         Promise.all([...tagTasks, descriptionTask].filter(it => !!it)).then(() => {
@@ -59,8 +90,9 @@ export class JsdocTranslator extends Translator {
     }
     const children = Array.from(node.getChildren());
     children.forEach((subNode) => {
-      this.translateNode(subNode, engine);
+      this.translateNode(subNode, options);
     });
+    return delay(1000).then(() => node);
   }
 
   translateTag(tag: OptionalKind<JSDocTagStructure>): Promise<void> | undefined {
@@ -69,25 +101,26 @@ export class JsdocTranslator extends Translator {
     if (isBinaryTag(tag)) {
       const [, name, description] = (text ?? '').match(/^((?:{.*?}\s*)?(?:[\w.\[\]]+|\[.*?])\s+)([\s\S]*)$/) ?? [];
       if (description?.trim()) {
-        return this.markdownTranslator.translate(description).then(translation => {
+        return this.translateSentence(description).then(translation => {
           if (translation.trim() !== description.trim()) {
-            tag.text = (name ?? '') + trimLastLf(translation);
+            tag.text = (name ?? '') + removeExtraBlankLines(translation);
           }
         });
       }
     } else if (isUnaryTag(tag)) {
       const [, prefix, description] = (text ?? '').match(/^({.*?}\s*)?([\s\S]*)$/);
       if (description?.trim()) {
-        return this.markdownTranslator.translate(description).then(translation => {
+        return this.translateSentence(description).then(translation => {
           if (translation.trim() !== description.trim()) {
-            tag.text = (prefix ?? '') + trimLastLf(translation);
+            const leadingLines = ['publicApi', 'returns', 'codeGenApi', 'ngModule'].includes(tag.tagName) ? '\n\n' : '';
+            const tailingLines = ['usageNotes', 'description', 'deprecated'].includes(tag.tagName) ? '\n\n' : '';
+            tag.text = leadingLines + (prefix ?? '') + tailingLines + removeExtraBlankLines(translation);
           }
         });
       }
     }
   }
 }
-
 
 // 有两个参数且需要翻译的标记，如 @param a Some value
 function isBinaryTag(tag: OptionalKind<JSDocTagStructure>): boolean {
@@ -100,6 +133,6 @@ function isUnaryTag(tag: OptionalKind<JSDocTagStructure>): boolean {
     'deprecated', 'usageNotes', 'see'].includes(tag.tagName);
 }
 
-function trimLastLf(translation: string) {
-  return translation.replace(/\n$/s, '');
+function removeExtraBlankLines(translation: string) {
+  return translation.replace(/\n$/s, '') + '\n';
 }

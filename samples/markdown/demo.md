@@ -4,13 +4,17 @@ title: one
 
 # Head One
 
-[one][1]
+inline [one][AbC]
 
-[two](2)
+inline [two](AbC)
 
 <a name="1"></a>
 
+<div>abc</div>
+
 Three
+
+no-translate
 
 1. One 11
 1. One 11
@@ -33,6 +37,7 @@ Three
 |--------------|----------|
 | Two 11       | Two 12   |
 | no-translate | Two 12   |
+| no-translate | no-translate   |
 | Three 11     | Three 12 |
 
 <code-example src="/abc"></code-example>

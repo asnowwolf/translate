@@ -1,36 +1,36 @@
-import { Translator } from './translator';
+import { AbstractTranslator } from './abstract-translator';
 import { containsChinese } from '../dom/common';
-import { isDeepStrictEqual } from 'util';
+import { TranslationOptions } from './translation-options';
 
-export class JsonTranslator extends Translator {
-  async translate(text: string): Promise<string> {
-    const obj = JSON.parse(text);
-    this.translateObject(obj);
-    await this.engine.flush();
-    if (isDeepStrictEqual(obj, JSON.parse(text))) {
-      return text;
-    }
-    return JSON.stringify(obj, null, 2);
+export class JsonTranslator extends AbstractTranslator<object> {
+  parse(text: string): object {
+    return JSON.parse(text);
   }
 
-  translateObject(obj: Object): void {
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        const value = obj[key];
-        if (this.options.jsonProperties.includes(key) && typeof value === 'string' && !containsChinese(value)) {
-          this.engine.translateHtml(value)
+  serialize(doc: object): string {
+    return JSON.stringify(doc, null, 2);
+  }
+
+  translateDoc(doc: Object, options: TranslationOptions): Object {
+    for (let key in doc) {
+      if (doc.hasOwnProperty(key)) {
+        const value = doc[key];
+        if (options.jsonProperties?.includes(key) && typeof value === 'string' &&
+          !containsChinese(value) && !containsChinese(doc[`${key}Cn`])) {
+          this.translateSentence(value, 'markdown')
             .then((it) => it.trim())
             .then((translation) => {
-              if (value !== translation) {
-                obj[`${key}Cn`] = translation;
+              if (value !== translation && containsChinese(translation)) {
+                doc[`${key}Cn`] = translation;
               }
             });
         }
         if (value instanceof Object) {
-          this.translateObject(value);
+          this.translateDoc(value, options);
         }
       }
     }
+    return doc;
   }
 }
 

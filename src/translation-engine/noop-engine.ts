@@ -1,8 +1,8 @@
 import { TranslationEngine } from './translation-engine';
-import { htmlToMd, mdToHtml } from '../dom/unified/markdown';
+import { Md } from '../dom/unified/md';
 
 export class NoopTranslationEngine extends TranslationEngine {
-  protected async doTranslateHtml(texts: string[]): Promise<string[]> {
-    return texts.map(text => htmlToMd(mdToHtml(text)).trim());
+  protected async batchTranslate(texts: string[]): Promise<string[]> {
+    return texts.map(text => Md.normalize(text).trim());
   }
 }

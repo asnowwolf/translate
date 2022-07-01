@@ -47,7 +47,6 @@ export const builder: CommandBuilder = {
       TranslationDomainType.spring,
       TranslationDomainType.custom,
     ],
-    default: TranslationDomainType.angular,
   },
   parent: {
     type: 'string',
@@ -56,21 +55,20 @@ export const builder: CommandBuilder = {
   },
   model: {
     type: 'string',
-    description: '要使用的自定义 AutoML 模型，默认为 Angular 的模型。none 表示不用任何模型',
-    default: 'TRL9199068616738092360',
+    description: '要使用的自定义 AutoML 模型。',
   },
   glossary: {
     type: 'string',
-    description: '要使用的词汇表，默认为编程词汇集。none 表示不用任何词汇表',
+    description: '要使用的词汇表，默认为编程词汇集。',
     choices: [
       'programming',
       'angular',
       'material',
     ],
-    default: 'programming',
   },
   jsonProperties: {
     type: 'array',
+    alias: 'jp',
     description: '当进行 json 翻译时，要翻译的属性名称，会自动进行递归查找。',
     default: [],
   },
@@ -134,7 +132,12 @@ export const handler = async function (params: Params) {
     for (const filename of filenames) {
       console.log('translating: ', filename);
       const translator = getTranslator(filename, translationEngine, params);
-      await translator.translateFile(filename);
+      await translator.setup();
+      try {
+        await translator.translateFile(filename, params);
+      } finally {
+        await translator.tearDown();
+      }
     }
   } finally {
     await translationEngine.dispose();

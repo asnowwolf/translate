@@ -233,9 +233,9 @@ To create a new git repository,</p></section></article>`;
   static readonly unorderedListSimpleAdoc = `* [ ] Edgar Allan Poe
 ** Sheri S. Tepper
 * [x] Bill Bryson`;
-  static readonly unorderedListSimpleAdocCn = `* [ ] 译Edgar Allan Poe
-** 译Sheri S. Tepper
-* [x] 译Bill Bryson`;
+  static readonly unorderedListSimpleAdocCn = `* [ ] Edgar Allan Poe$$$译Edgar Allan Poe
+** Sheri S. Tepper$$$译Sheri S. Tepper
+* [x] Bill Bryson$$$译Bill Bryson`;
   static readonly unorderedListSimpleHtml = `<div class="ulist checklist">
 <ul class="checklist">
 <li>
@@ -266,9 +266,9 @@ def`;
 
 译abc
 
-* [ ] 译Edgar Allan Poe
-** 译Sheri S. Tepper
-* [x] 译Bill Bryson
+* [ ] Edgar Allan Poe$$$译Edgar Allan Poe
+** Sheri S. Tepper$$$译Sheri S. Tepper
+* [x] Bill Bryson$$$译Bill Bryson
 
 def
 
@@ -312,16 +312,16 @@ def
 . Step six`;
   static readonly orderedListAdocCn = `[start=4,%reversed,original_title=Title]
 .译Title
-. 译Step four
-.. 译Step four-one
-.. 译Step four-two
-... 译Step four-two-one
-.... 译Step four-two-one-one
-..... 译Step four-two-one-one-one
-...... 译Step four-two-one-one-one-one
-....... 译Step four-two-one-one-one-one-one
-. 译Step five
-. 译Step six`;
+. Step four$$$译Step four
+.. Step four-one$$$译Step four-one
+.. Step four-two$$$译Step four-two
+... Step four-two-one$$$译Step four-two-one
+.... Step four-two-one-one$$$译Step four-two-one-one
+..... Step four-two-one-one-one$$$译Step four-two-one-one-one
+...... Step four-two-one-one-one-one$$$译Step four-two-one-one-one-one
+....... Step four-two-one-one-one-one-one$$$译Step four-two-one-one-one-one-one
+. Step five$$$译Step five
+. Step six$$$译Step six`;
   static readonly orderedListHtml = `<div class="olist arabic">
 <div class="title">Title</div>
 <ol class="arabic" start="4">
@@ -390,13 +390,13 @@ def
 . BSD
 * FreeBSD
 * NetBSD`;
-  static readonly mixedListAdocCn = `. 译Linux
-* 译Fedora
-* 译Ubuntu
-* 译Slackware
+  static readonly mixedListAdocCn = `. Linux$$$译Linux
+* Fedora$$$译Fedora
+* Ubuntu$$$译Ubuntu
+* Slackware$$$译Slackware
 . BSD
-* 译FreeBSD
-* 译NetBSD`;
+* FreeBSD$$$译FreeBSD
+* NetBSD$$$译NetBSD`;
   static readonly mixedListHtml = `<div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -432,15 +432,19 @@ def
 </div>`;
   static readonly mixedListTiny = `<article adoc-name="document"><ol adoc-name="olist" attr-Style="arabic"><li adoc-name="list_item" attr-Text="Linux" attr-Marker=".">Linux<ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Fedora" attr-Marker="*">Fedora</li><li adoc-name="list_item" attr-Text="Ubuntu" attr-Marker="*">Ubuntu</li><li adoc-name="list_item" attr-Text="Slackware" attr-Marker="*">Slackware</li></ul></li><li adoc-name="list_item" attr-Text="BSD" attr-Marker=".">BSD<ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="FreeBSD" attr-Marker="*">FreeBSD</li><li adoc-name="list_item" attr-Text="NetBSD" attr-Marker="*">NetBSD</li></ul></li></ol></article>`;
   static readonly mixedListNormalized = this.mixedListAdoc;
-  static readonly descriptionListSimpleAdoc = `CPU:: The brain of the computer.
+  static readonly descriptionListSimpleAdoc = `.Labeled, single-line
+CPU:: The brain of the computer.
 Hard drive:: Permanent storage for operating system and/or user files.
 Mouse:: A device that provides input to a computer.
 Monitor:: Displays information in visual form using text and graphics.`;
-  static readonly descriptionListSimpleAdocCn = `CPU:: 译The brain of the computer.
-译Hard drive:: 译Permanent storage for operating system and/or user files.
-译Mouse:: 译A device that provides input to a computer.
-译Monitor:: 译Displays information in visual form using text and graphics.`;
+  static readonly descriptionListSimpleAdocCn = `[original_title="Labeled, single-line"]
+.译Labeled, single-line
+CPU:: The brain of the computer.$$$译The brain of the computer.
+Hard drive$$$译Hard drive:: Permanent storage for operating system and/or user files.$$$译Permanent storage for operating system and/or user files.
+Mouse$$$译Mouse:: A device that provides input to a computer.$$$译A device that provides input to a computer.
+Monitor$$$译Monitor:: Displays information in visual form using text and graphics.$$$译Displays information in visual form using text and graphics.`;
   static readonly descriptionListSimpleHtml = `<div class="dlist">
+<div class="title">Labeled, single-line</div>
 <dl>
 <dt class="hdlist1">CPU</dt>
 <dd>
@@ -460,7 +464,7 @@ Monitor:: Displays information in visual form using text and graphics.`;
 </dd>
 </dl>
 </div>`;
-  static readonly descriptionListSimpleTiny = `<article adoc-name="document"><dl adoc-name="dlist"><dt>CPU</dt><dd>The brain of the computer.</dd><dt>Hard drive</dt><dd>Permanent storage for operating system and/or user files.</dd><dt>Mouse</dt><dd>A device that provides input to a computer.</dd><dt>Monitor</dt><dd>Displays information in visual form using text and graphics.</dd></dl></article>`;
+  static readonly descriptionListSimpleTiny = `<article adoc-name="document"><dl adoc-name="dlist" attr-Title="Labeled, single-line"><dt>CPU</dt><dd>The brain of the computer.</dd><dt>Hard drive</dt><dd>Permanent storage for operating system and/or user files.</dd><dt>Mouse</dt><dd>A device that provides input to a computer.</dd><dt>Monitor</dt><dd>Displays information in visual form using text and graphics.</dd></dl></article>`;
   static readonly descriptionListSimpleNormalized = this.descriptionListSimpleAdoc;
   static readonly descriptionListComplexAdoc = `Dairy::
 * Milk
@@ -469,13 +473,13 @@ Bakery::
 * Bread
 Produce::
 * Bananas`;
-  static readonly descriptionListComplexAdocCn = `译Dairy::
-* 译Milk
-* 译Eggs
-译Bakery::
-* 译Bread
-译Produce::
-* 译Bananas`;
+  static readonly descriptionListComplexAdocCn = `Dairy$$$译Dairy::
+* Milk$$$译Milk
+* Eggs$$$译Eggs
+Bakery$$$译Bakery::
+* Bread$$$译Bread
+Produce$$$译Produce::
+* Bananas$$$译Bananas`;
   static readonly descriptionListComplexHtml = `<div class="dlist">
 <dl>
 <dt class="hdlist1">Dairy</dt>
@@ -515,6 +519,59 @@ Produce::
 </div>`;
   static readonly descriptionListComplexTiny = `<article adoc-name="document"><dl adoc-name="dlist"><dt>Dairy</dt><dd><ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Milk" attr-Marker="*">Milk</li><li adoc-name="list_item" attr-Text="Eggs" attr-Marker="*">Eggs</li></ul></dd><dt>Bakery</dt><dd><ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Bread" attr-Marker="*">Bread</li></ul></dd><dt>Produce</dt><dd><ul adoc-name="ulist"><li adoc-name="list_item" attr-Text="Bananas" attr-Marker="*">Bananas</li></ul></dd></dl></article>`;
   static readonly descriptionListComplexNormalized = this.descriptionListComplexAdoc;
+  static readonly listContinuationAdoc = `* The header in AsciiDoc must start with a document title.
++
+The header is optional.
+
+* The header in AsciiDoc must start with a document title.
++
+----
+= Document Title
+----
++
+Keep in mind that the header is optional.
+
+* Optional author and revision information lines immediately follow the document title.
++
+----
+= Document Title
+Doc Writer <doc.writer@asciidoc.org>
+v1.0, 2022-01-01
+----
+
+* grandparent list item
+** parent list item
+*** child list item
+
+paragraph attached to grandparent list item`;
+  static readonly listContinuationNormalized = this.listContinuationAdoc;
+  static readonly listContinuationAdocCn = `* The header in AsciiDoc must start with a document title.$$$译The header in AsciiDoc must start with a document title.
++
+The header is optional.$$$译The header is optional.
+
+* The header in AsciiDoc must start with a document title.$$$译The header in AsciiDoc must start with a document title.
++
+----
+= Document Title
+----
++
+Keep in mind that the header is optional.$$$译Keep in mind that the header is optional.
+
+* Optional author and revision information lines immediately follow the document title.$$$译Optional author and revision information lines immediately follow the document title.
++
+----
+= Document Title
+Doc Writer <doc.writer@asciidoc.org>
+v1.0, 2022-01-01
+----
+
+* grandparent list item$$$译grandparent list item
+** parent list item$$$译parent list item
+*** child list item$$$译child list item
+
+paragraph attached to grandparent list item
+
+译paragraph attached to grandparent list item`;
   static readonly textFormatSimpleAdoc = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!`;
   static readonly textFormatSimpleAdocCn = `That is *strong* _emphasis_ \`monospace\` #highlight# ~sub~ ^sup^ **unconstrained strong** stuff!
 
@@ -894,9 +951,9 @@ While werewolves are hardy community members, keep in mind the following dietary
 
 译While werewolves are hardy community members, keep in mind the following dietary concerns:
 
-. 译They are allergic to cinnamon.
-. 译More than two glasses of orange juice in 24 hours makes them howl in harmony with alarms and sirens.
-. 译Celery makes them sad.
+. They are allergic to cinnamon.$$$译They are allergic to cinnamon.
+. More than two glasses of orange juice in 24 hours makes them howl in harmony with alarms and sirens.$$$译More than two glasses of orange juice in 24 hours makes them howl in harmony with alarms and sirens.
+. Celery makes them sad.$$$译Celery makes them sad.
 ====`;
   static readonly admonitionComplexHtml = `<div class="admonitionblock important">
 <table>
@@ -1156,9 +1213,9 @@ Like what?
 
 译Like what?
 ____
-* 译Blockquotes
-* 译Headings
-* 译Fenced code blocks
+* Blockquotes$$$译Blockquotes
+* Headings$$$译Headings
+* Fenced code blocks$$$译Fenced code blocks
 
 ____
 Is there more?
@@ -1484,9 +1541,9 @@ get '/hi' do <2> <3>
 end
 ----
 
-<1> 译Library import
-<2> 译URL mapping
-<3> 译Response block`;
+<1> Library import$$$译Library import
+<2> URL mapping$$$译URL mapping
+<3> Response block$$$译Response block`;
   static readonly sourceCodeCalloutsHtml = `<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'sinatra' <b class="conum">(1)</b>

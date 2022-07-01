@@ -68,9 +68,11 @@ export class Demo {
    *
    * @see <http://github.com|Nine>
    *
-   * [http://github.com|Nine](http://github.com%7CNine)
+   * [译 http://github.com|Nine](http://github.com%7CNine)
    *
-   * @returns One
+   * @returns
+   *
+   * One
    *
    * 译 One
    *

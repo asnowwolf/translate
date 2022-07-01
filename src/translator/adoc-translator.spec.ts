@@ -1,5 +1,11 @@
 import { Examples } from '../dom/asciidoctor/utils/examples';
-import { adocTranslate } from './adoc-translator';
+import { AdocTranslator } from './adoc-translator';
+import { FakeTranslationEngine } from '../translation-engine/fake-engine';
+
+async function adocTranslate(adoc: string): Promise<string> {
+  const translator = new AdocTranslator(new FakeTranslationEngine());
+  return translator.translateContent(adoc, { filename: 'test.adoc' });
+}
 
 describe('adoc-translator', () => {
   it('document', async () => {

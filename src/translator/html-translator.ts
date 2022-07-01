@@ -1,51 +1,39 @@
-import { Translator } from './translator';
-import { defaultSelectors, DomChildNode, DomDocument, DomElement, DomNode, DomText } from '../dom/parse5/dom-models';
+import { AbstractTranslator } from './abstract-translator';
+import { defaultSelectors, DomChildNode, DomDocument, DomDocumentFragment, DomElement, DomNode, DomText } from '../dom/parse5/dom-models';
 import { containsChinese } from '../dom/common';
-import { NoopTranslationEngine } from '../translation-engine/noop-engine';
 import { sameExceptWhitespace } from './same-except-whitespace';
+import { TranslationOptions } from './translation-options';
 
-export class HtmlTranslator extends Translator {
+export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | DomDocument> {
   private selectors = defaultSelectors;
 
-  async translate(text: string): Promise<string> {
-    return this.translateHtml(text);
-  }
-
-  async translateHtml(text: string): Promise<string> {
-    const doc = DomDocument.parse(text);
-    const result = await this.translateDoc(doc);
-    return result.toHtml();
-  }
-
-  async translateFragment(text: string): Promise<string> {
-    const doc = DomDocument.parse(text);
-    const result = await this.translateDoc(doc);
-    return result.toFragment();
-  }
-
-  async translateDoc(doc: DomDocument): Promise<DomDocument> {
-    this.engine.translateHtml(doc.title).then(title => {
-      doc.title = title?.trim() ?? '';
-    });
-
-    if (!doc.body) {
-      return doc;
+  parse(text: string, options: TranslationOptions = { htmlFragment: true }): DomDocumentFragment | DomDocument {
+    if (options.htmlFragment) {
+      return DomDocumentFragment.parse(text);
+    } else {
+      return DomDocument.parse(text);
     }
+  }
 
-    this.addWrapperForLi(doc.body);
+  serialize(doc: DomDocumentFragment | DomDocument): string {
+    return doc.toHtml();
+  }
+
+  translateDoc(doc: DomDocumentFragment | DomDocument): DomDocumentFragment | DomDocument {
+    if (doc instanceof DomDocument) {
+      this.translateSentence(doc.title, 'html').then(translation => doc.title = translation);
+    }
+    this.addWrapperForLi(doc);
 
     const elements = this.selectors
       .map(selector => Array.from(doc.querySelectorAll(selector)))
       .flat().filter(node => !node.previousElementSibling?.hasAttribute('translation-result'));
 
     const originals = elements.map(it => it.innerHTML);
-    originals.forEach((original, index) => {
-      this.engine.translateHtml(original).then(translation => {
+    originals.map((original, index) =>
+      this.translateSentence(original, 'html').then(translation => {
         this.applyTranslation(elements[index], translation);
-      });
-    });
-
-    await this.engine.flush();
+      }));
     return doc;
   }
 
@@ -53,32 +41,30 @@ export class HtmlTranslator extends Translator {
     if (shouldIgnore(origin)) {
       return;
     }
-    if (!(this.engine instanceof NoopTranslationEngine)) {
-      // 如果译文和原文相同，则摘除原有的 translation-origin 属性，以免被错误的隐藏
-      if (sameExceptWhitespace(origin.innerHTML, translation)) {
-        origin.removeAttribute('translation-origin');
-        return;
-      }
-      const spaces = origin.previousSibling()?.textContent || '';
-      const resultNode = new DomElement(origin.tagName);
-      resultNode.innerHTML = translation;
-      origin.parentNode?.insertBefore(resultNode, origin);
-      if (!spaces.trim()) {
-        const node = new DomText(spaces);
-        origin.parentNode?.insertBefore(node, origin);
-      }
-      // 交换 id
-      const id = origin.getAttribute('id');
-      if (id) {
-        resultNode.setAttribute('id', id);
-        origin.removeAttribute('id');
-      }
-      resultNode.setAttribute('translation-result', 'on');
+    // 如果译文和原文相同，则摘除原有的 translation-origin 属性，以免被错误的隐藏
+    if (sameExceptWhitespace(origin.innerHTML, translation)) {
+      origin.removeAttribute('translation-origin');
+      return;
     }
+    const spaces = origin.previousSibling()?.textContent || '';
+    const resultNode = new DomElement(origin.tagName);
+    resultNode.innerHTML = translation;
+    origin.parentNode?.insertBefore(resultNode, origin);
+    if (!spaces.trim()) {
+      const node = new DomText(spaces);
+      origin.parentNode?.insertBefore(node, origin);
+    }
+    // 交换 id
+    const id = origin.getAttribute('id');
+    if (id) {
+      resultNode.setAttribute('id', id);
+      origin.removeAttribute('id');
+    }
+    resultNode.setAttribute('translation-result', 'on');
     origin.setAttribute('translation-origin', 'off');
   }
 
-  private addWrapperForLi(body: DomElement) {
+  private addWrapperForLi(body: DomDocumentFragment | DomDocument) {
     const li = body.querySelectorAll((it) => it.isTagOf('li', 'td', 'th'));
     li.forEach(it => {
       it.childNodes = wrapChildren(it);
