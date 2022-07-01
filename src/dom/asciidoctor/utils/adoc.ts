@@ -1,4 +1,4 @@
-import { Asciidoctor } from '@asciidoctor/core';
+import asciidoctor, { Asciidoctor } from '@asciidoctor/core';
 import AbstractNode = Asciidoctor.AbstractNode;
 import Block = Asciidoctor.Block;
 import Section = Asciidoctor.Section;
@@ -146,5 +146,13 @@ export class Adoc {
       .replace(/^\[(.*)rawIndent=("?)(\d+)("?)(.*)]$/gm, '[$1indent=$2$3$4$5]')
       .replace(/^`begin-directive:\[(.*?)]end-directive`$/gm, '$1')
       .replace(/^Unresolved directive in .* - (.*)$/gm, '$1');
+  }
+
+  static createBlock(parent: AbstractBlock, context: string): Block {
+    return this.adoc.Block.create(parent, context);
+  }
+
+  static createInline(parent: AbstractBlock, context: string): Inline {
+    return this.adoc.Inline.create(parent, context);
   }
 }
