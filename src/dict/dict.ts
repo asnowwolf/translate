@@ -1,3 +1,5 @@
+import { SentenceFormat } from '../translator/sentence-format';
+
 export type DictEntryConfidence =
 // 人工翻译
   'Manual' |
@@ -16,6 +18,8 @@ export interface DictEntry {
   path: string;
   english: string;
   chinese: string;
+  fingerprint?: string;
+  format: SentenceFormat;
   confidence: DictEntryConfidence;
   isRegExp: boolean;
 }
@@ -32,11 +36,11 @@ export interface Dict {
 
   close(): Promise<void>;
 
-  get(english: string, criteria?: AdditionalCriteria): Promise<DictEntry>;
+  get(english: string, format: SentenceFormat, criteria?: AdditionalCriteria): Promise<DictEntry>;
 
   query(criteria?: AdditionalCriteria): Promise<DictEntry[]>;
 
-  createOrUpdate(english: string, chinese: string, criteria?: AdditionalCriteria): Promise<DictEntry>;
+  createOrUpdate(english: string, chinese: string, format: SentenceFormat, criteria?: AdditionalCriteria): Promise<DictEntry>;
 
   save(entry: DictEntry): Promise<DictEntry>;
 }
