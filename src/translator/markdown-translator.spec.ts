@@ -1,6 +1,7 @@
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 import { MarkdownTranslator } from './markdown-translator';
 import { readFileSync } from 'fs';
+import { NormalizeTranslationEngine } from '../translation-engine/normalize-engine';
 
 describe('markdown-translator', () => {
   it('translate markdown file', async () => {
@@ -22,12 +23,23 @@ describe('markdown-translator', () => {
     const translator = new MarkdownTranslator(engine);
     const result = await translator.translateContent(`| header1 | header2 |
 | :-------- | :------ |
-| <header>one</header>two | <code-example>three</code-example> |`);
+| <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`);
     expect(result).toEqual(`| header1 | header2 |
 | :------ | :------ |
 | 译 header1 | 译 header2 |
-| <header>one</header>two | <code-example>three</code-example> |
-| <header>译 one</header>译 two | <code-example>three</code-example> |`);
+| <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |
+| <header>译 one</header>译 two | <code-example>three</code-example><code-example>four</code-example> |`);
+  });
+
+  it('translate table - no translate', async () => {
+    const engine = new NormalizeTranslationEngine();
+    const translator = new MarkdownTranslator(engine);
+    const result = await translator.translateContent(`| header1 | header2 |
+| :-------- | :------ |
+| <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`);
+    expect(result).toEqual(`| header1 | header2 |
+| :------ | :------ |
+| <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`);
   });
   it('translate table 2', async () => {
     const engine = new FakeTranslationEngine();

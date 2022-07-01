@@ -21,11 +21,6 @@ export class MarkdownTranslator extends AbstractTranslator<Node> {
   }
 
   translateDoc(doc: Node): Node {
-    unistVisit(doc, (node) => {
-      if (node.tableCell) {
-        node.type = 'paragraph';
-      }
-    });
     const result = mapToNodePairs(doc);
     const { nodes, frontMatters } = this.extractNodesAndFrontMatters(result);
 
@@ -52,11 +47,8 @@ export class MarkdownTranslator extends AbstractTranslator<Node> {
           if (!translation) {
             return;
           }
-          if (!original.tableCell && shouldRemoveTranslation(original, translation)) {
+          if (original.type !== 'tableCell' && shouldRemoveTranslation(original, translation)) {
             unistRemove(result, original);
-          }
-          if (original.tableCell) {
-            translation.type = 'tableCell';
           }
           Object.assign(original, translation);
         });
@@ -113,16 +105,11 @@ function preprocess(node: Node): Node {
 
 function postprocess(root: Parent, original: Parent): Node {
   const node = cloneDeep(original);
-  if (original.type) {
-    const translation = root.children[0] as Parent;
-    if (!translation) {
-      return original;
-    }
-    if (translation.type === 'htmlRaw') {
-      node.children = [translation];
-    } else {
-      node.children = translation?.children ?? [];
-    }
+  const translation = root;
+  if (translation.type === 'htmlRaw') {
+    node.children = [translation];
+  } else {
+    node.children = (root?.children ?? []).map(it => cloneDeep(it));
   }
   return node;
 }
@@ -132,7 +119,6 @@ function markNode(root: Node, container: Node): Node {
     unistVisit(root, (node) => {
       if (node.type === 'tableCell') {
         node.translation = true;
-        node.tableCell = true;
       }
     });
   } else {
