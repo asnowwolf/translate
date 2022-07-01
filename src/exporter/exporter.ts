@@ -1,7 +1,7 @@
-import { mdToHtml } from '../dom/unified/markdown';
-import { htmlToText } from '../dom/parse5/dom-utils';
+import { Html } from '../dom/parse5/html-utils';
 import { containsChinese } from '../dom/common';
 import { uniqBy } from 'lodash';
+import { Md } from '../dom/unified/md';
 
 export class Exporter {
   export(entries: { english: string, chinese: string }[]): { english: string, chinese: string }[] {
@@ -17,7 +17,7 @@ function mdToText(md: string): string {
   if (!md) {
     return md;
   }
-  return htmlToText(mdToHtml(md))
+  return Html.toText(Md.toHtml(md))
     .replace(/\n/g, ' ')
     .replace(/\t/g, ' ')
     .replace(/^[\d.]+ */g, '')
