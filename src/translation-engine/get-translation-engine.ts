@@ -3,7 +3,7 @@ import { GoogleCloudTranslationEngine } from './gcloud-engine';
 import { MsTranslationEngine } from './ms-engine';
 import { DictTranslationEngine } from './dict-engine';
 import { FakeTranslationEngine } from './fake-engine';
-import { NoopTranslationEngine } from './noop-engine';
+import { NormalizeTranslationEngine } from './normalize-engine';
 import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { TranslationEngineType } from './translation-engine-type';
@@ -20,8 +20,8 @@ export function getTranslationEngine(engine: TranslationEngineType, options: Tra
       return new DictTranslationEngine(options);
     case TranslationEngineType.fake:
       return new FakeTranslationEngine();
-    case TranslationEngineType.noop:
-      return new NoopTranslationEngine();
+    case TranslationEngineType.normalize:
+      return new NormalizeTranslationEngine();
     default:
       throw new Error('Unknown Translation Engine type');
   }

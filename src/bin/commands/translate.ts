@@ -22,14 +22,14 @@ export const builder: CommandBuilder = {
   },
   engine: {
     type: 'string',
-    description: '要使用的翻译引擎。使用 noop 引擎相当于对 HTML 进行预处理，以减少变更',
+    description: '要使用的翻译引擎。如果使用 normalize 引擎可以对目标进行预处理，以减少变更冲突',
     choices: [
       TranslationEngineType.google,
       TranslationEngineType.gcloud,
       TranslationEngineType.ms,
       TranslationEngineType.dict,
       TranslationEngineType.fake,
-      TranslationEngineType.noop,
+      TranslationEngineType.normalize,
     ],
     default: TranslationEngineType.gcloud,
   },
