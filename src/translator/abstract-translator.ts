@@ -2,6 +2,7 @@ import { TranslationEngine } from '../translation-engine/translation-engine';
 import { readFileSync, writeFileSync } from 'fs';
 import { SentenceFormat } from './sentence-format';
 import { TranslationOptions } from './translation-options';
+import { containsChinese } from '../dom/common';
 
 export abstract class AbstractTranslator<T> {
   constructor(protected readonly engine: TranslationEngine) {
@@ -34,7 +35,9 @@ export abstract class AbstractTranslator<T> {
   abstract parse(text: string, options: TranslationOptions): T;
 
   protected async translateSentence(sentence: string, format: SentenceFormat): Promise<string> {
-    return this.engine.translate(sentence, format);
+    return this.engine.translate(sentence, format)
+      // 翻译结果不包含中文时，说明没有进行实质性翻译，返回原文，以便调用者忽略它
+      .then((translation) => containsChinese(translation) ? translation : sentence);
   }
 
   protected abstract translateDoc(doc: T, options: TranslationOptions): T;
