@@ -13,16 +13,18 @@ import Table = Asciidoctor.Table;
 type SubstitutionMode = Asciidoctor['Substitutors']['$$const'];
 
 export class Adoc {
+  private static adoc = asciidoctor();
+
   static isParagraph(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'paragraph';
+    return node?.getNodeName() === 'paragraph';
   }
 
   static isSection(node: AbstractNode): node is Section {
-    return node.getNodeName() === 'section';
+    return node?.getNodeName() === 'section';
   }
 
   static isDocument(node: AbstractNode): node is Document {
-    return node.getNodeName() === 'document' || node.getNodeName() === 'embedded';
+    return node?.getNodeName() === 'document' || node.getNodeName() === 'embedded';
   }
 
   static isAbstractBlock(node: AbstractNode): node is AbstractBlock {
@@ -34,19 +36,19 @@ export class Adoc {
   }
 
   static isIndexTerm(node: AbstractNode): node is Inline {
-    return node.getNodeName() === 'inline_indexterm';
+    return node?.getNodeName() === 'inline_indexterm';
   }
 
   static isList(node: AbstractNode): node is List {
-    return node.getNodeName() === 'ulist' || node.getNodeName() === 'olist';
+    return node?.getNodeName() === 'ulist' || node.getNodeName() === 'olist';
   }
 
   static isDescriptionList(node: AbstractNode): node is DefList {
-    return node.getNodeName() === 'dlist';
+    return node?.getNodeName() === 'dlist';
   }
 
   static isListItem(node: AbstractNode): node is ListItem {
-    return node.getNodeName() === 'list_item';
+    return node?.getNodeName() === 'list_item';
   }
 
   static setSubstitutionMode(adoc: Asciidoctor, mode: SubstitutionMode): SubstitutionMode {
@@ -92,39 +94,39 @@ export class Adoc {
   }
 
   static isBlockImage(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'image';
+    return node?.getNodeName() === 'image';
   }
 
   static isBlockResource(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'video' || node.getNodeName() === 'audio';
+    return node?.getNodeName() === 'video' || node.getNodeName() === 'audio';
   }
 
   static isAdmonition(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'admonition';
+    return node?.getNodeName() === 'admonition';
   }
 
   static isExample(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'example';
+    return node?.getNodeName() === 'example';
   }
 
   static isQuote(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'quote';
+    return node?.getNodeName() === 'quote';
   }
 
   static isTable(node: AbstractNode): node is Table {
-    return node.getNodeName() === 'table';
+    return node?.getNodeName() === 'table';
   }
 
   static isSidebar(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'sidebar';
+    return node?.getNodeName() === 'sidebar';
   }
 
   static isVerse(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'verse';
+    return node?.getNodeName() === 'verse';
   }
 
   static isListing(node: AbstractNode): node is Block {
-    return node.getNodeName() === 'listing';
+    return node?.getNodeName() === 'listing';
   }
 
   static hasLines(node: AbstractNode): node is Block {
