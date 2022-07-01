@@ -1,11 +1,10 @@
-import { htmlToMd, mdToHtml } from '../dom/unified/markdown';
-import { chunk } from 'lodash';
+import { chunk, groupBy } from 'lodash';
 import { PromiseMaker } from '../dom/promise-maker';
 import { delay } from '../dom/delay';
+import { SentenceFormat } from '../translator/sentence-format';
 
 export abstract class TranslationEngine {
   batchSize = 50;
-  context: { filename?: string } = {};
 
   async init(): Promise<void> {
   }
@@ -13,38 +12,36 @@ export abstract class TranslationEngine {
   async dispose(): Promise<void> {
   }
 
-  translateMd(text: string): Promise<string> {
-    return this.translateHtml(mdToHtml(text.trim())).then(html => htmlToMd(html));
-  }
+  private tasks: { sentence: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
-  private buffer: { html: string, result$: PromiseMaker<string> }[] = [];
-
-  translateHtml(html: string): Promise<string> {
-    if (!html?.trim()) {
-      return Promise.resolve(html);
+  translate(sentence: string, format: SentenceFormat): Promise<string> {
+    if (!sentence?.trim()) {
+      return Promise.resolve(sentence);
     }
-
     const result$ = new PromiseMaker<string>();
-    this.buffer.push({ html, result$ });
+    this.tasks.push({ sentence, format, result$ });
     return result$.promise;
   }
 
+  protected abstract batchTranslate(sentences: string[], format: SentenceFormat): Promise<string[]>;
+
   flush(): Promise<void> {
-    const chunks = chunk(this.buffer, this.batchSize);
-    chunks.forEach(chunk => {
-      this.doTranslateHtml(chunk.map(it => it.html)).then(translations => {
-        chunk.forEach(({ result$ }, index) => {
-          result$.resolve(translations[index]);
+    const groups = groupBy(this.tasks, 'format');
+    Object.entries(groups).forEach(([format, tasks]) => {
+      const chunks = chunk(tasks, this.batchSize);
+      chunks.forEach(chunk => {
+        this.batchTranslate(chunk.map(it => it.sentence), format as SentenceFormat).then(translations => {
+          chunk.forEach(({ result$ }, index) => {
+            result$.resolve(translations[index]);
+          });
         });
       });
     });
 
-    const tasks = this.buffer.map(({ result$ }) => result$.promise);
+    const tasks = this.tasks.map(({ result$ }) => result$.promise);
     return Promise.all(tasks)
-      .then(() => this.buffer = [])
+      .then(() => this.tasks = [])
       // add a small delay to ensure that all derived promises(such as Promise.all) are resolved
       .then(() => delay(0));
   }
-
-  protected abstract doTranslateHtml(texts: string[]): Promise<string[]>;
 }

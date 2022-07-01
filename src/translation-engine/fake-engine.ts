@@ -2,6 +2,8 @@ import { TranslationEngine } from './translation-engine';
 import { delay } from '../dom/delay';
 import { DomDocumentFragment, DomElement, DomNode, DomParentNode, DomText } from '../dom/parse5/dom-models';
 import { simpleEmailPattern, urlSchemaPattern } from './url-patterns';
+import { SentenceFormat } from '../translator/sentence-format';
+import { SentenceFormatter } from './sentence-formatter';
 
 function isTranslatableText(text: string): boolean {
   return /[A-Za-z]/.test(text) && text !== 'no-translate' && !/^[A-Z]+$/.test(text);
@@ -39,10 +41,10 @@ function translate(node: DomNode): void {
   }
 }
 
-function mergeTextNodes(dom: DomParentNode): void {
+function mergeTextNodes(parent: DomParentNode): void {
   let text = '';
-  for (let i = dom.childNodes.length - 1; i >= 0; i--) {
-    const node = dom.childNodes[i];
+  for (let i = parent.childNodes.length - 1; i >= 0; i--) {
+    const node = parent.childNodes[i];
     if (node instanceof DomText) {
       text = node.value + text;
       const previousSibling = node.previousSibling();
@@ -61,12 +63,13 @@ function mergeTextNodes(dom: DomParentNode): void {
 }
 
 export class FakeTranslationEngine extends TranslationEngine {
-  protected async doTranslateHtml(texts: string[]): Promise<string[]> {
+  protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
     return delay(200).then(() => Promise.all(texts.map(text => {
-      const dom = DomDocumentFragment.parse(text);
-      mergeTextNodes(dom);
-      translate(dom);
-      return dom.toHtml();
+      const html = SentenceFormatter.toHtml(text, format);
+      const doc = DomDocumentFragment.parse(html);
+      mergeTextNodes(doc);
+      translate(doc);
+      return SentenceFormatter.fromHtml(doc.toHtml(), format);
     })));
   }
 }

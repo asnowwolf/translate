@@ -1,9 +1,11 @@
 import * as request from 'request-promise-native';
 import { v4 } from 'uuid';
 import { TranslationEngine } from './translation-engine';
+import { SentenceFormat } from '../translator/sentence-format';
+import { SentenceFormatter } from './sentence-formatter';
 
 export class MsTranslationEngine extends TranslationEngine {
-  protected async doTranslateHtml(texts: string[]): Promise<string[]> {
+  protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
     if (!process.env.MS_TRANSLATOR) {
       throw new Error('Environment variable for your subscription key is not set.');
     }
@@ -24,11 +26,11 @@ export class MsTranslationEngine extends TranslationEngine {
         'X-ClientTraceId': v4().toString(),
       },
       body: texts.map(text => ({
-        'text': text,
+        'text': SentenceFormatter.toHtml(text, format),
       })),
       json: true,
     }) as TranslationResult[];
-    return results[0].translations.map(it => it.text);
+    return results[0].translations.map(it => SentenceFormatter.fromHtml(it.text, format));
   }
 }
 
