@@ -1,6 +1,8 @@
 import { Node, Point, Position } from 'unist';
+import { Root } from 'mdast';
 
 export interface UnifiedParser {
+  tree: Root;
   interruptList: any[];
   blockTokenizers: BlockTokenizers;
   options: any;
@@ -15,6 +17,14 @@ export interface UnifiedParser {
   visit(child: Node, node: Node): string;
 
   all(node: Node): string[];
+
+  encode(escape: any, node: Node): string;
+
+  escape(value: any, node: Node, parent: Node): string;
+
+  tokenizeBlock(match: string, point: Point): Node[];
+
+  block(node: Node): string;
 }
 
 interface NodeFactory {
@@ -34,27 +44,39 @@ export interface Tokenizer {
 }
 
 export interface BlockTokenizers {
+  htmlComment: Tokenizer;
+  ngDocDirective: Tokenizer;
+  admonition: Tokenizer;
   thematicBreak: Tokenizer;
-  plainHtml: Tokenizer;
   anchor: Tokenizer;
   list: Tokenizer;
+  htmlBlock: Tokenizer;
 }
 
 export interface InlineTokenizers {
+  htmlClosingTag: Tokenizer;
+  htmlSelfClosingTag: Tokenizer;
+  htmlComment: Tokenizer;
   emphasis: Tokenizer;
   strong: Tokenizer;
   originalId: Tokenizer;
+  htmlInlineExample: Tokenizer;
 }
 
-interface Visitor {
+export interface Visitor {
   (this: UnifiedParser, node: Node, parent?: Node, position?: Position, bullet?: string): string;
 }
 
 export interface Visitors {
+  ngDocDirective: Visitor;
+  link: Visitor;
+  htmlRaw: Visitor;
+  tableCell: Visitor;
   listItem: Visitor;
   strong: Visitor;
   emphasis: Visitor;
   anchor: Visitor;
-  plainHtml: Visitor;
+  htmlBlock: Visitor;
+  htmlInline: Visitor;
   originalId: Visitor;
 }

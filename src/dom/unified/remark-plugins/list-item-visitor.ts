@@ -2,15 +2,6 @@ import { pad } from './utils/pad';
 import { Node, Position } from 'unist';
 import { UnifiedParser } from './unified-parser';
 
-const lineFeed = '\n';
-const space = ' ';
-const leftSquareBracket = '[';
-const rightSquareBracket = ']';
-const lowercaseX = 'x';
-
-const ceil = Math.ceil;
-const blank = lineFeed + lineFeed;
-
 const tabSize = 4;
 
 // Stringify a list item.
@@ -27,46 +18,40 @@ const tabSize = 4;
 // [ ] foo
 // ```
 export function listItemVisitor(this: UnifiedParser, node: Node, parent?: Node, position?: Position, bullet?: string): string {
-  const self = this;
-  const style = self.options.listItemIndent;
-  const marker = node.marker || bullet || self.options.bullet;
+  const style = this.options.listItemIndent;
+  const marker = node.marker || bullet || this.options.bullet;
   const spread = node.spread == null ? true : node.spread;
   const checked = node.checked;
   const children = node.children as Node[];
-  const length = children.length;
-  const values = [];
-  let index = -1;
-  let value;
-  let indent;
-  let spacing;
 
-  while (++index < length) {
-    values[index] = self.visit(children[index], node);
+  const values = children.map(it => this.visit(it, node).trim());
+
+  if (spread) {
+    values.push('');
   }
 
-  value = values.join(spread ? blank : lineFeed);
+  let value = values.join(spread ? '\n\n' : '\n');
 
   if (typeof checked === 'boolean') {
     // Note: I’d like to be able to only add the space between the check and
     // the value, but unfortunately github does not support empty list-items
     // with a checkbox :(
-    value =
-      leftSquareBracket +
-      (checked ? lowercaseX : space) +
-      rightSquareBracket +
-      space +
-      value;
+    value = `[${checked ? 'x' : ' '}] ${value}`;
   }
 
-  if (style === '1' || (style === 'mixed' && value.indexOf(lineFeed) === -1)) {
+  let indent;
+  let spacing;
+  if (style === '1' || (style === 'mixed' && value.indexOf('\n') === -1)) {
     indent = marker.length + 1;
-    spacing = space;
+    spacing = ' ';
   } else {
-    indent = ceil((marker.length + 1) / tabSize) * tabSize;
-    spacing = space.repeat(indent - marker.length);
+    indent = Math.ceil((marker.length + 1) / tabSize) * tabSize;
+    spacing = ' '.repeat(indent - marker.length);
   }
 
-  return value
-    ? marker + spacing + pad(value, indent / tabSize).slice(indent)
-    : marker;
+  if (value) {
+    return marker + spacing + pad(value, indent / tabSize).slice(indent);
+  } else {
+    return marker;
+  }
 }

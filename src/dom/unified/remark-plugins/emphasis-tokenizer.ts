@@ -6,20 +6,15 @@ import { Eater, UnifiedParser } from './unified-parser';
 const word = require('is-word-character');
 const whitespace = require('is-whitespace-character');
 
-const asterisk = '*';
-const underscore = '_';
-const backslash = '\\';
-
 export function emphasisTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
-  const self = this;
   let index = 0;
   let character = value.charAt(index);
 
-  if (character !== asterisk && character !== underscore) {
+  if (character !== '*' && character !== '_') {
     return;
   }
 
-  const pedantic = self.options.pedantic;
+  const pedantic = this.options.pedantic;
   const subvalue = character;
   const marker = character;
   const length = value.length;
@@ -43,7 +38,7 @@ export function emphasisTokenizer(this: UnifiedParser, eat: Eater, value: string
           return;
         }
 
-        if (!pedantic && marker === underscore && word(character)) {
+        if (!pedantic && marker === '_' && word(character)) {
           queue += marker;
           continue;
         }
@@ -60,14 +55,14 @@ export function emphasisTokenizer(this: UnifiedParser, eat: Eater, value: string
         return eat(subvalue + queue + marker)({
           type: 'emphasis',
           marker,
-          children: self.tokenizeInline(queue, now),
+          children: this.tokenizeInline(queue, now),
         });
       }
 
       queue += marker;
     }
 
-    if (!pedantic && character === backslash) {
+    if (!pedantic && character === '\\') {
       queue += character;
       character = value.charAt(++index);
     }
@@ -77,7 +72,7 @@ export function emphasisTokenizer(this: UnifiedParser, eat: Eater, value: string
   }
 }
 
-function locate(value, fromIndex) {
+emphasisTokenizer.locator = function (value, fromIndex) {
   const asterisk = value.indexOf('*', fromIndex);
   const underscore = value.indexOf('_', fromIndex);
 
@@ -90,6 +85,4 @@ function locate(value, fromIndex) {
   }
 
   return underscore < asterisk ? underscore : asterisk;
-}
-
-emphasisTokenizer.locator = locate;
+};
