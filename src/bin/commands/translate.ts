@@ -14,6 +14,7 @@ enum TranslationDomainType {
   spring = 'spring',
   material = 'material',
   custom = 'custom',
+  none = 'none',
 }
 
 export const builder: CommandBuilder = {
@@ -46,6 +47,7 @@ export const builder: CommandBuilder = {
       TranslationDomainType.material,
       TranslationDomainType.spring,
       TranslationDomainType.custom,
+      TranslationDomainType.none,
     ],
   },
   parent: {
