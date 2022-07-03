@@ -18,14 +18,17 @@ export class Marker {
   ) {
   }
 
-  markFile(filename: string): void {
+  markFile(filename: string, mono = false): void {
     const content = readFileSync(filename, 'utf8');
-    writeFileSync(filename, this.mark(content), 'utf8');
+    writeFileSync(filename, this.mark(content, mono), 'utf8');
   }
 
-  mark(content: string): string {
+  mark(content: string, mono = false): string {
     const doc = DomDocument.parse(content);
     this.addTranslationMark(doc);
+    if (mono) {
+      this.monochromatic(doc);
+    }
     return doc.toHtml();
   }
 
@@ -47,6 +50,11 @@ export class Marker {
   markAndSwapAll(body: DomParentNode): void {
     restructureTable(body);
     this.selectors.forEach(selector => markAndSwap(body, selector));
+  }
+
+  monochromatic(parent: DomParentNode): void {
+    parent.querySelectorAll(it => it.hasAttribute('translation-origin')).forEach(it => it.remove());
+    parent.querySelectorAll(it => it.hasAttribute('translation-result')).forEach(it => it.removeAttribute('translation-result'));
   }
 }
 

@@ -81,6 +81,18 @@ describe('marker', () => {
 <script>const a = 1;</script>`);
   });
 
+  it('should generate chinese only translation', () => {
+    const marker = new Marker();
+    const result = marker.mark(`<p id="a">a</p>
+<p id="one">one</p>
+<p id="一">一</p>
+<script>const a = 1;</script>`);
+    expect(result).toEqual(`<p id="a">a</p>
+<p id="one">一</p>
+
+<script>const a = 1;</script>`);
+  });
+
   it('should mark and swap anchors in Hn', () => {
     const doc = DomDocumentFragment.parse(`<h3 id="english_id">
 <a id="english_id" class="anchor" href="#english_id" aria-hidden="true"><span class="octicon octicon-link"></span></a>

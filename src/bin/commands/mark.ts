@@ -10,13 +10,18 @@ export const builder: CommandBuilder = {
   sourceGlobs: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
+  mono: {
+    description: '结果中只包含中文，即只生成单一格式而非对照格式',
+    type: 'boolean',
+  },
 };
 
 interface Params {
   sourceGlobs: string[];
+  mono: boolean;
 }
 
-export const handler = function ({ sourceGlobs }: Params) {
+export const handler = function ({ sourceGlobs, mono }: Params) {
   const filenames = globby(sourceGlobs);
   if (filenames.length === 0) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
@@ -25,6 +30,6 @@ export const handler = function ({ sourceGlobs }: Params) {
   for (const filename of filenames) {
     console.log('marking: ', filename);
     const marker = new Marker();
-    marker.markFile(filename);
+    marker.markFile(filename, mono);
   }
 };
