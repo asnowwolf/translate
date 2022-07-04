@@ -4,5 +4,5 @@ export enum TranslationEngineType {
   ms = 'ms',
   dict = 'dict',
   fake = 'fake',
-  normalize = 'normalize',
+  normalizer = 'normalizer',
 }

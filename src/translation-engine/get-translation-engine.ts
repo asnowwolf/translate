@@ -20,7 +20,7 @@ export function getTranslationEngine(engine: TranslationEngineType, options: Tra
       return new DictTranslationEngine(options);
     case TranslationEngineType.fake:
       return new FakeTranslationEngine();
-    case TranslationEngineType.normalize:
+    case TranslationEngineType.normalizer:
       return new NormalizeTranslationEngine();
     default:
       throw new Error('Unknown Translation Engine type');

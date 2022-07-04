@@ -30,7 +30,7 @@ export const builder: CommandBuilder = {
       TranslationEngineType.ms,
       TranslationEngineType.dict,
       TranslationEngineType.fake,
-      TranslationEngineType.normalize,
+      TranslationEngineType.normalizer,
     ],
     default: TranslationEngineType.gcloud,
   },
