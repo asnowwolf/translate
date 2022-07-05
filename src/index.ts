@@ -1,5 +1,5 @@
 export * from './dom/common';
-export * from './dom/unified/md';
+export * from './dom/unified/markdown';
 export * from './extractor/extractor';
 export * from './injector/injector';
 export * from './marker/marker';

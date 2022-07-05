@@ -1,22 +1,22 @@
-import { Md } from './md';
 import { Parent } from 'mdast';
+import { markdown } from './markdown';
 
 describe('markdown', () => {
   describe('should convert to html and convert back to markdown(normalize)', () => {
     it('heading', () => {
       const md = `# h1`;
       const html = `<h1>h1</h1>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('normalize list items', () => {
-      const ast = Md.parse(`
+      const ast = markdown.parse(`
 1. a
    b
 
@@ -57,44 +57,44 @@ describe('markdown', () => {
    - d2
 
 5. e`;
-      expect(Md.stringify(ast)).toEqual(normalized);
-      expect(Md.stringify(Md.parse(normalized))).toEqual(normalized);
+      expect(markdown.stringify(ast)).toEqual(normalized);
+      expect(markdown.stringify(markdown.parse(normalized))).toEqual(normalized);
     });
 
     it('url', () => {
       const md = `[text](/url "title")`;
       const html = `<p><a href="/url" title="title">text</a></p>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('embedded live-example', () => {
       const md = 'one<live-example src="abc">def</live-example>';
       const html = `<p>one<live-example src="abc">def</live-example></p>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(`<p>one<html-raw value="%3Clive-example%20src%3D%22abc%22%3Edef%3C%2Flive-example%3E"></html-raw></p>`);
+      expect(markdown.toHtml(ast).trim()).toEqual(`<p>one<html-raw value="%3Clive-example%20src%3D%22abc%22%3Edef%3C%2Flive-example%3E"></html-raw></p>`);
     });
 
     it('embedded comment - inline', () => {
       const md = 'a<!--links-->b';
       const html = `<p>a<!--links-->b</p>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('embedded comment - block', () => {
@@ -104,36 +104,36 @@ links
       const html = `<!--
 links
 -->`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('embedded html', () => {
       const md = '<header>a</header>b';
       const html = `<p><tag value="%3Cheader%3E"></tag>a<tag value="%3C%2Fheader%3E"></tag>b</p>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
-      expect(Md.mdFromHtml(html).trim()).toEqual(md);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.mdFromHtml(html).trim()).toEqual(md);
     });
 
     it('embedded br and inline code', () => {
       const md = 'one<br />`<table>`';
       const html = `<p>one<tag value="%3Cbr%20%2F%3E"></tag><code>&#x3C;table></code></p>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('embedded code-example', () => {
@@ -145,11 +145,11 @@ http-server -p 8080
 
 </code-example>`;
       const html = `<html-raw value="%3Ccode-example%20language%3D%22html%22%3E%0A%0Ang%20build%20--prod%0Acd%20dist%0Ahttp-server%20-p%208080%0A%0A%3C%2Fcode-example%3E"></html-raw>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('code-example in list', () => {
@@ -162,11 +162,11 @@ http-server -p 8080
   </code-example>
 
 * item 2`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(`<ul>
+      expect(markdown.toHtml(ast).trim()).toEqual(`<ul>
 <li nt__marker="*"><p>item 1</p><html-raw value="%3Ccode-example%20language%3D%22html%22%3E%0A%0Ahttp-server%20-p%208080%0A%0A%3C%2Fcode-example%3E"></html-raw></li>
 <li nt__marker="*"><p>item 2</p></li>
 </ul>`);
@@ -176,9 +176,9 @@ http-server -p 8080
       const md = `| AngularJS | Angular |
 | :-------- | :------ |
 | <header>Filters</header> <code-example hideCopy format="html" language="html"> &lt;td&gt; &NewLine; &nbsp; {{movie.title &verbar; uppercase}} &NewLine; &lt;/td&gt; </code-example> To filter output in AngularJS templates, use the pipe (<code>&verbar;</code>) character and one or more filters. <br /> This example filters the \`title\` property to uppercase. | <header>Pipes</header> <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="uppercase"></code-example> In Angular you use similar syntax with the pipe (<code>&verbar;</code>) character to filter output, but now you call them **pipes**. Many (but not all) of the built-in filters from AngularJS are built-in pipes in Angular. <br /> For more information, see [Filters/pipes][AioGuideAjsQuickReferenceFiltersPipes]. |`;
-      const ast = Md.parse(md) as Parent;
+      const ast = markdown.parse(md) as Parent;
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     it('embedded filetree', () => {
@@ -192,11 +192,11 @@ http-server -p 8080
         </div>
     </div>
 </div>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(`<html-raw value="%3Cdiv%20class%3D%22filetree%22%3E%0A%20%20%20%20%3Cdiv%20class%3D%22children%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22file%22%3E%0A%20%20%20%20%20%20%20%20%20%20environment.ts%0A%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22file%22%3E%0A%20%20%20%20%20%20%20%20%20%20environment.staging.ts%0A%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%3C%2Fdiv%3E%0A%3C%2Fdiv%3E"></html-raw>`);
+      expect(markdown.toHtml(ast).trim()).toEqual(`<html-raw value="%3Cdiv%20class%3D%22filetree%22%3E%0A%20%20%20%20%3Cdiv%20class%3D%22children%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22file%22%3E%0A%20%20%20%20%20%20%20%20%20%20environment.ts%0A%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22file%22%3E%0A%20%20%20%20%20%20%20%20%20%20environment.staging.ts%0A%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%3C%2Fdiv%3E%0A%3C%2Fdiv%3E"></html-raw>`);
     });
 
     it('angular doc @directives', () => {
@@ -205,10 +205,10 @@ http-server -p 8080
 abc
 
 none @directive`;
-      const ast = Md.parse(md) as Parent;
+      const ast = markdown.parse(md) as Parent;
       expect(ast.children.length).toEqual(3);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     xit('embedded code-example with escape', () => {
@@ -224,56 +224,56 @@ none @directive`;
   &lt;nav [style.backgroundColor]="expression">&lt;/nav>
 
 </code-example>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
     it('embedded block code', () => {
       const md = '```\nvar a = 1;\nvar b = 2;\n```';
       const html = `<pre><code>var a = 1;
 var b = 2;
 </code></pre>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('embedded custom tag', () => {
       const md = `<t>a</t>`;
       const html = `<p><tag value="%3Ct%3E"></tag>a<tag value="%3C%2Ft%3E"></tag></p>`;
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('escaped text', () => {
-      const ast = Md.parse(`&#8220;中文&mdash;&#8221;`);
+      const ast = markdown.parse(`&#8220;中文&mdash;&#8221;`);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(`“中文—”`);
+      expect(markdown.stringify(ast)).toEqual(`“中文—”`);
     });
 
     it('originalId should mark with translate="no"', () => {
       const md = `# h1 {@originalId 123}`;
       const html = '<h1>h1<original-id translate="no" value="123"></original-id></h1>';
-      const ast = Md.parse(md);
+      const ast = markdown.parse(md);
       // 重建 markdown
-      expect(Md.stringify(ast)).toEqual(md);
+      expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
-      expect(Md.mdFromHtml(html)).toEqual(md);
+      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(Md.toHtml(ast).trim()).toEqual(html);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
   });
 
@@ -284,8 +284,8 @@ title: abc
 ---
 
 # Head 1`;
-      const ast = Md.parse(md);
-      expect(Md.stringify(ast)).toEqual(md);
+      const ast = markdown.parse(md);
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     it('reference links', () => {
@@ -296,20 +296,20 @@ title: abc
 # section 2
 
 [1]: http://www.1.com`;
-      const ast = Md.parse(md);
-      expect(Md.stringify(ast)).toEqual(md);
+      const ast = markdown.parse(md);
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     it('strong/italic', () => {
       const md = `*a*_b_`;
-      const ast = Md.parse(md);
-      expect(Md.stringify(ast)).toEqual(md);
+      const ast = markdown.parse(md);
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     it('originalId', () => {
       const md = `# h1 {@originalId 123}`;
-      const ast = Md.parse(md);
-      expect(Md.stringify(ast)).toEqual(md);
+      const ast = markdown.parse(md);
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     xit('complex e2e', () => {
@@ -347,7 +347,7 @@ http-server -p 8080
 
 * a
 * b`;
-      const html = Md.normalize(sample);
+      const html = markdown.normalize(sample);
       expect(html).toEqual(sample);
     });
   });

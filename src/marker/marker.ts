@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import {
   defaultSelectors,
   DomDocument,
+  DomDocumentFragment,
   DomElement,
   DomParentNode,
   DomSelector,
@@ -24,7 +25,7 @@ export class Marker {
   }
 
   mark(content: string, mono = false): string {
-    const doc = DomDocument.parse(content);
+    const doc = parseDoc(content);
     this.addTranslationMark(doc);
     if (mono) {
       this.monochromatic(doc);
@@ -58,6 +59,13 @@ export class Marker {
   }
 }
 
+function parseDoc(content: string): DomDocument | DomDocumentFragment {
+  if (content.includes('<html')) {
+    return DomDocument.parse(content);
+  } else {
+    return DomDocumentFragment.parse(content);
+  }
+}
 
 function toId(slugger, text) {
   return slugger.slug(text);

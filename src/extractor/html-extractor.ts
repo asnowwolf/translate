@@ -1,7 +1,7 @@
 import { AbstractExtractor, SentencePair } from './extractor';
 import { DomDocument, DomElement, DomParentNode } from '../dom/parse5/dom-models';
 import { containsChinese } from '../dom/common';
-import { Md } from '../dom/unified/md';
+import { markdown } from '../dom/unified/markdown';
 
 export class HtmlExtractor extends AbstractExtractor {
   extractSentencePairsFromContent(html: string): SentencePair[] {
@@ -18,8 +18,8 @@ export class HtmlExtractor extends AbstractExtractor {
         origin.removeAttribute('translation-origin');
         result.removeAttribute('translation-result');
         results.push({
-          english: Md.mdFromHtml(origin.innerHTML),
-          chinese: Md.mdFromHtml(result.innerHTML),
+          english: markdown.mdFromHtml(origin.innerHTML),
+          chinese: markdown.mdFromHtml(result.innerHTML),
           format: 'markdown',
         });
       }

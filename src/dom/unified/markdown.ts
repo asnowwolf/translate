@@ -1,5 +1,5 @@
 import { Node, Parent } from 'unist';
-import { Heading, Link, Literal, Paragraph, Table, TableCell, TableRow } from 'mdast';
+import { Heading, Link, Literal, Paragraph, Table, TableCell, TableRow, YAML } from 'mdast';
 import * as unified from 'unified';
 import { VFileCompatible } from 'unified';
 import { customParser } from './remark-plugins/custom-parser-plugin';
@@ -16,8 +16,8 @@ import * as frontmatter from 'remark-frontmatter';
 import * as stringWidth from 'string-width';
 import { containsChinese } from '../common';
 
-export class Md {
-  static isLiteral(node: Node): node is Literal {
+export namespace markdown {
+  export function isLiteral(node: Node): node is Literal {
     return [
       'html',
       'code',
@@ -27,7 +27,7 @@ export class Md {
     ].includes(node.type);
   }
 
-  static isParent(node: Node): node is Parent {
+  export function isParent(node: Node): node is Parent {
     return [
       'root',
       'paragraph',
@@ -45,38 +45,42 @@ export class Md {
     ].includes(node.type);
   }
 
-  static isTranslatableUnit(node: Node): node is Paragraph | Heading {
+  export function isTranslatableUnit(node: Node): node is Paragraph | Heading {
     return node.type === 'paragraph' || node.type === 'heading';
   }
 
-  static isLink(node: Node): node is Link {
+  export function isLink(node: Node): node is Link {
     return node.type === 'link';
   }
 
-  static isTableRow(node: Node): node is TableRow {
+  export function isTableRow(node: Node): node is TableRow {
     return node.type === 'tableRow';
   }
 
-  static isTableCell(node: Node): node is TableCell {
+  export function isTableCell(node: Node): node is TableCell {
     return node.type === 'tableCell';
   }
 
-  static isTable(node: Node): node is Table {
+  export function isTable(node: Node): node is Table {
     return node.type === 'table';
   }
 
-  static isTableFamily(node: Node): node is Table | TableRow | TableCell {
-    return this.isTable(node) || this.isTableRow(node) || this.isTableCell(node);
+  export function isTableFamily(node: Node): node is Table | TableRow | TableCell {
+    return isTable(node) || isTableRow(node) || isTableCell(node);
   }
 
-  static parse(markdown: VFileCompatible): Node {
+  export function isYaml(node: Node): node is YAML {
+    return node.type === 'yaml';
+  }
+
+  export function parse(markdown: VFileCompatible): Node {
     return unified().use(remarkParse)
       .use(frontmatter)
       .use(customParser)
       .parse(markdown);
   }
 
-  static stringify(tree: Node): string {
+  export function stringify(tree: Node): string {
     tree.children = tree.children ?? [];
     return unified().use(remarkStringify, stringifyOptions)
       .use(frontmatter)
@@ -89,12 +93,12 @@ export class Md {
       .trim();
   }
 
-  static toHtml(textOrAst: Node | string): string {
+  export function toHtml(textOrAst: Node | string): string {
     let text: string;
     if (typeof textOrAst === 'string') {
       text = textOrAst;
     } else {
-      text = this.stringify(textOrAst).replace(/^<p>([\s\S]*?)<\/p>$/gi, '$1');
+      text = stringify(textOrAst).replace(/^<p>([\s\S]*?)<\/p>$/gi, '$1');
     }
     return unified().use(remarkParse)
       .use(frontmatter)
@@ -104,15 +108,15 @@ export class Md {
       .processSync(text).contents.toString();
   }
 
-  static fromHtml(html: string): Node {
-    return this.parse(this.mdFromHtml(html));
+  export function fromHtml(html: string): Node {
+    return parse(mdFromHtml(html));
   }
 
-  static mdToHtml(md: string): string {
-    return this.toHtml(md);
+  export function mdToHtml(md: string): string {
+    return toHtml(md);
   }
 
-  static mdFromHtml(html: string): string {
+  export function mdFromHtml(html: string): string {
     if (!html) {
       return html;
     }
@@ -123,26 +127,26 @@ export class Md {
       .processSync(html).contents.toString().trim();
   }
 
-  static normalize(text: string): string {
-    return this.stringify(this.parse(text));
+  export function normalize(text: string): string {
+    return stringify(parse(text));
   }
 
-  static containsChinese(node: Node): boolean {
-    if (Md.isLiteral(node)) {
+  export function nodeContainsChinese(node: Node): boolean {
+    if (isLiteral(node)) {
       return containsChinese(node.value);
-    } else if (Md.isParent(node)) {
-      return node.children.some(it => this.containsChinese(it));
+    } else if (isParent(node)) {
+      return node.children.some(it => nodeContainsChinese(it));
     }
     throw new Error(`Unexpected node type: ${node.type}`);
   }
-}
 
-const stringifyOptions = {
-  emphasis: '*',
-  listItemIndent: 1,
-  incrementListMarker: false,
-  stringLength: stringWidth,
-  paddedTable: false,
-  fences: true,
-  entities: false,
-};
+  const stringifyOptions = {
+    emphasis: '*',
+    listItemIndent: 1,
+    incrementListMarker: false,
+    stringLength: stringWidth,
+    paddedTable: false,
+    fences: true,
+    entities: false,
+  };
+}

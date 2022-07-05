@@ -8,16 +8,16 @@ import * as unistVisit from 'unist-util-visit';
 import * as unistRemove from 'unist-util-remove';
 import { containsChinese } from '../dom/common';
 import { sameExceptWhitespace } from './same-except-whitespace';
-import { Md } from '../dom/unified/md';
+import { markdown } from '../dom/unified/markdown';
 
 export class MarkdownTranslator extends AbstractTranslator<Node> {
   parse(text: string): Node {
-    return Md.parse(text);
+    return markdown.parse(text);
   }
 
   serialize(doc: Node): string {
     this.clearNoTranslatable(doc);
-    return prettify(Md.stringify(doc));
+    return prettify(markdown.stringify(doc));
   }
 
   translateDoc(doc: Node): Node {
@@ -41,8 +41,8 @@ export class MarkdownTranslator extends AbstractTranslator<Node> {
     });
 
     nodes.map(original => {
-      return this.translateSentence(Md.stringify(preprocess(original)), 'markdown')
-        .then(translation => postprocess(Md.parse(translation) as Parent, original as Parent))
+      return this.translateSentence(markdown.stringify(preprocess(original)), 'markdown')
+        .then(translation => postprocess(markdown.parse(translation) as Parent, original as Parent))
         .then(translation => {
           if (!translation) {
             return;
@@ -58,13 +58,13 @@ export class MarkdownTranslator extends AbstractTranslator<Node> {
 
   private clearNoTranslatable(node: Node) {
     unistVisit(node, (node: Node, index: number, parent: Parent) => {
-      if (Md.isLink(node) && node.url?.startsWith('linkRef:')) {
+      if (markdown.isLink(node) && node.url?.startsWith('linkRef:')) {
         const ref = node as unknown as LinkReference;
         ref.type = 'linkReference';
         ref.label = node.url.replace(/^linkRef:/, '');
         ref.identifier = ref.label.toLowerCase();
       }
-      if (Md.isTableRow(node)) {
+      if (markdown.isTableRow(node)) {
         const prev = parent.children[index - 1];
         if (isSameRow(prev, node)) {
           unistRemove(parent, node);
@@ -154,21 +154,21 @@ function shouldTranslate(node: Node, index: number, parent: Parent): boolean {
 }
 
 function shouldRemoveTranslation(original: Node, translation: Node): boolean {
-  return sameExceptWhitespace(Md.stringify(original), Md.stringify(translation));
+  return sameExceptWhitespace(markdown.stringify(original), markdown.stringify(translation));
 }
 
 function isSameRow(prev: Node, current: Node): boolean {
   if (!prev || !current) {
     return false;
   }
-  if (!Md.isTableRow(prev) || !Md.isTableRow(current)) {
+  if (!markdown.isTableRow(prev) || !markdown.isTableRow(current)) {
     return false;
   }
   if (prev.children.length !== current.children.length) {
     return false;
   }
   for (let i = 0; i < prev.children.length; ++i) {
-    if (!sameExceptWhitespace(Md.stringify(prev.children[i]), Md.stringify(current.children[i]))) {
+    if (!sameExceptWhitespace(markdown.stringify(prev.children[i]), markdown.stringify(current.children[i]))) {
       return false;
     }
   }

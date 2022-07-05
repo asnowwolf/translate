@@ -1,8 +1,8 @@
 import { TranslationEngine } from './translation-engine';
-import { Md } from '../dom/unified/md';
+import { markdown } from '../dom/unified/markdown';
 
 export class NormalizeTranslationEngine extends TranslationEngine {
   protected async batchTranslate(texts: string[]): Promise<string[]> {
-    return texts.map(text => Md.normalize(text).trim());
+    return texts.map(text => markdown.normalize(text).trim());
   }
 }

@@ -1,6 +1,6 @@
 import { SentenceFormat } from '../translator/sentence-format';
 import { DomDocumentFragment } from '../dom/parse5/dom-models';
-import { Md } from '../dom/unified/md';
+import { markdown } from '../dom/unified/markdown';
 import { adocToTinyHtml } from '../dom/asciidoctor/html-adoc/adoc-to-tiny-html';
 import { tinyHtmlToAdoc } from '../dom/asciidoctor/html-adoc/tiny-html-to-adoc';
 
@@ -14,7 +14,7 @@ export class SentenceFormatter {
         doc.textContent = sentence;
         return doc.toHtml();
       case 'markdown':
-        return Md.mdToHtml(sentence);
+        return markdown.mdToHtml(sentence);
       case 'asciidoctor':
         return adocToTinyHtml(sentence);
     }
@@ -28,7 +28,7 @@ export class SentenceFormatter {
         const doc = DomDocumentFragment.parse(sentence);
         return doc.textContent;
       case 'markdown':
-        return Md.mdFromHtml(sentence);
+        return markdown.mdFromHtml(sentence);
       case 'asciidoctor':
         return tinyHtmlToAdoc(sentence);
     }

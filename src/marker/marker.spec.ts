@@ -86,7 +86,7 @@ describe('marker', () => {
     const result = marker.mark(`<p id="a">a</p>
 <p id="one">one</p>
 <p id="一">一</p>
-<script>const a = 1;</script>`);
+<script>const a = 1;</script>`, true);
     expect(result).toEqual(`<p id="a">a</p>
 <p id="one">一</p>
 
