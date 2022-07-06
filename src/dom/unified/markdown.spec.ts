@@ -1,5 +1,6 @@
 import { Parent } from 'mdast';
 import { markdown } from './markdown';
+import { FakeTranslationEngine } from '../../translation-engine/fake-engine';
 
 describe('markdown', () => {
   describe('should convert to html and convert back to markdown(normalize)', () => {
@@ -349,6 +350,116 @@ http-server -p 8080
 * b`;
       const html = markdown.normalize(sample);
       expect(html).toEqual(sample);
+    });
+  });
+
+  describe('visit markdown ast', () => {
+    it('extract', async () => {
+      const md = `---
+title: 零
+title$$origin: zero
+---
+
+# one
+
+# 一
+
+two
+
+二
+
+three
+`;
+      const ast = markdown.parse(md);
+      const result = [];
+      await markdown.visit(ast, undefined, async (original, translation) => {
+        result.push({ original, translation });
+        return undefined;
+      });
+      expect(result).toEqual([
+        { original: 'zero', translation: '零' },
+        { original: 'one', translation: '一' },
+        { original: 'two', translation: '二' },
+        { original: 'three' },
+      ]);
+    });
+
+    it('translate', async () => {
+      const md = `---
+title: one
+description: 二
+description$$origin: two
+---
+
+# one
+
+# 一
+
+two
+
+二
+
+three
+
+| four | five |
+| ---- | ---- |
+| 四 | 五 |
+| six | seven |
+
+1. eight
+
+   八
+
+2. nine
+3. ten`;
+      const ast = markdown.parse(md);
+      const engine = new FakeTranslationEngine();
+      markdown.visit(ast, undefined, async (original, translation) => {
+        if (!translation) {
+          return engine.translate(original, 'markdown');
+        } else {
+          return translation;
+        }
+      }).then(doc => {
+        expect(markdown.stringify(doc)).toEqual(`---
+title: 译one
+description: 二
+description$$origin: two
+title$$origin: one
+
+---
+
+# one
+
+# 一
+
+two
+
+二
+
+three
+
+译three
+
+| four | five |
+| ---- | ---- |
+| 四 | 五 |
+| six | seven |
+| 译six | 译seven |
+
+1. eight
+
+   八
+
+2. nine
+
+   译nine
+
+3. ten
+
+   译ten`);
+      });
+      await engine.flush();
     });
   });
 });
