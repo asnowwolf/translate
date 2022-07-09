@@ -10,12 +10,14 @@ export interface SentencePair {
 }
 
 export interface Extractor {
-  extract(filename: string): DictEntry[];
+  extract(filename: string): Promise<DictEntry[]>;
 }
 
-export abstract class AbstractExtractor implements Extractor {
-  extract(filename: string): DictEntry[] {
-    return this.extractSentencePairsFromFile(filename)
+export abstract class AbstractExtractor<T> implements Extractor {
+  async extract(filename: string): Promise<DictEntry[]> {
+    const content = readFileSync(filename, 'utf8');
+    const sentencePairs = await this.extractSentencePairs(this.parse(content));
+    return sentencePairs
       .filter(it => it.english && it.chinese && it.english !== it.chinese)
       .map(it => ({
         id: v4(),
@@ -28,10 +30,7 @@ export abstract class AbstractExtractor implements Extractor {
       }));
   }
 
-  extractSentencePairsFromFile(filename: string): SentencePair[] {
-    const content = readFileSync(filename, 'utf8');
-    return this.extractSentencePairsFromContent(content);
-  }
+  abstract parse(text: string): T;
 
-  abstract extractSentencePairsFromContent(content: string): SentencePair[];
+  abstract extractSentencePairs(dom: T): Promise<SentencePair[]>;
 }
