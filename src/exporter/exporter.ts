@@ -1,4 +1,4 @@
-import { Html } from '../dom/parse5/html-utils';
+import { html } from '../dom/parse5/html';
 import { containsChinese } from '../dom/common';
 import { uniqBy } from 'lodash';
 import { markdown } from '../dom/unified/markdown';
@@ -17,7 +17,7 @@ function mdToText(md: string): string {
   if (!md) {
     return md;
   }
-  return Html.toText(markdown.toHtml(md))
+  return html.toText(markdown.toHtml(md))
     .replace(/\n/g, ' ')
     .replace(/\t/g, ' ')
     .replace(/^[\d.]+ */g, '')

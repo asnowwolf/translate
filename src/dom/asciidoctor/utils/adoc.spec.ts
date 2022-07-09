@@ -1,8 +1,8 @@
-import { Adoc } from './adoc';
+import { adoc } from './adoc';
 
 describe('adoc utils', function () {
   it('escapeDirectives', () => {
-    expect(Adoc.escapeDirectives(`first line of child
+    expect(adoc.escapeDirectives(`first line of child
 
 include::grandchild-include.adoc[]
 
@@ -14,7 +14,7 @@ last line of child`);
   });
 
   it('unescapeDirectives', () => {
-    expect(Adoc.unescapeDirectives(`first line of child
+    expect(adoc.unescapeDirectives(`first line of child
 
 \`begin-directive:[include::grandchild-include.adoc[]]end-directive\`
 

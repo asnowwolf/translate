@@ -1,5 +1,5 @@
 import { Asciidoctor } from '@asciidoctor/core';
-import { Adoc } from '../../utils/adoc';
+import { adoc } from '../../utils/adoc';
 import { AdocNodeRenderer } from '../../utils/adoc-node-renderer';
 import { matchSome } from '../../adoc-builder/renderers/utils/match-some';
 import { omit, uniq } from 'lodash';
@@ -45,7 +45,7 @@ export abstract class BaseTinyNodeRenderer<T extends Asciidoctor.AbstractNode> i
 
   protected renderAttributes(node: T): string {
     function shouldIgnore(name: string, node: T): boolean {
-      return name === 'style' || Adoc.isDocument(node) && !matchSome(name, [
+      return name === 'style' || adoc.isDocument(node) && !matchSome(name, [
         'doctitle',
         'authorcount',
         'firstname',
@@ -99,7 +99,7 @@ export abstract class BaseTinyNodeRenderer<T extends Asciidoctor.AbstractNode> i
       .filter(([name]) => !matchSome(name, ['$positional', ...this.ignoredAttributeNames]))
       .map(([name, value]) => ({ name, value, prefix: 'data' }))
       .filter(it => it.value !== undefined) as Attribute[];
-    if (Adoc.isInline(node)) {
+    if (adoc.isInline(node)) {
       return [
         ...normalAttributes,
         { name: 'type', value: node.getType(), prefix: 'prop' },
@@ -121,7 +121,7 @@ export abstract class BaseTinyNodeRenderer<T extends Asciidoctor.AbstractNode> i
 
     const setters = getSetterNames(node)
       .filter(it => /^set([A-Z])\w+/.test(it))
-      .filter(it => !Adoc.isDocument(node) || it !== 'setTitle')
+      .filter(it => !adoc.isDocument(node) || it !== 'setTitle')
       .filter(it => !['setAttribute', 'setHeaderAttribute', 'setSourcemap'].includes(it));
 
     return setters.map(it => {
@@ -132,9 +132,9 @@ export abstract class BaseTinyNodeRenderer<T extends Asciidoctor.AbstractNode> i
   }
 
   protected getContent(node: T): string {
-    if (Adoc.isAbstractBlock(node)) {
+    if (adoc.isAbstractBlock(node)) {
       return node.getContent();
-    } else if (Adoc.isInline(node)) {
+    } else if (adoc.isInline(node)) {
       return node.getText();
     }
   }

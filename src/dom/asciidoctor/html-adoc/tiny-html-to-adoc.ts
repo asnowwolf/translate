@@ -1,7 +1,7 @@
 import { DomDocument, DomDocumentFragment, DomElement, DomNode, DomText } from '../../parse5/dom-models';
 import { Asciidoctor } from '@asciidoctor/core';
 import { createAsciidoctor } from '../utils/create-asciidoctor';
-import { Adoc } from '../utils/adoc';
+import { adoc } from '../utils/adoc';
 import { quoteTypeToChar } from './quotes';
 import { addQuotes } from '../adoc-builder/renderers/utils/add-quotes';
 import AbstractNode = Asciidoctor.AbstractNode;
@@ -33,17 +33,6 @@ function loadAttributes(domNode: DomElement, adocNode: Asciidoctor.AbstractNode)
         adocNode.setAttribute(name, value);
       }
     });
-}
-
-function createAdocNode(adoc: Asciidoctor, adocNode: Asciidoctor.AbstractNode, nodeName: string): AbstractNode {
-  if (nodeName === 'document' || nodeName === 'embedded' || !nodeName) {
-    return adocNode;
-  }
-  if (nodeName.startsWith('inline_')) {
-    return adoc.Inline.create(adocNode as AbstractBlock, nodeName);
-  } else {
-    return adoc.Block.create(adocNode as AbstractBlock, nodeName);
-  }
 }
 
 function isUnconstrained(domNode: DomElement): boolean {
@@ -188,32 +177,29 @@ function toAdocLines(domNode: DomNode): string {
   }
 }
 
-function decompile(adoc: Asciidoctor, adocNode: AbstractNode, domNode: DomElement): void {
+function decompile(adocNode: AbstractNode, domNode: DomElement): void {
   if (!adocNode || !domNode) {
     return;
   }
   const name = domNode.getAttribute('adoc-name');
-  const node = createAdocNode(adoc, adocNode, name);
-  if (Adoc.isAbstractBlock(node) && !Adoc.isDocument(node)) {
-    (adocNode as AbstractBlock).append(node);
-  }
+  const node = adoc.createNode(adocNode as AbstractBlock, name);
   loadAttributes(domNode, node);
   domNode.children.forEach(it => {
-    decompile(adoc, node, it);
+    decompile(node, it);
   });
-  if (Adoc.hasLines(node)) {
+  if (adoc.hasLines(node)) {
     node.lines = toAdocLines(domNode).split('\n');
   }
 }
 
 export function tinyHtmlDomToAdoc(tinyHtmlDoc: DomDocumentFragment | DomDocument): Asciidoctor.Document {
-  const adoc = createAsciidoctor();
-  const root = adoc.load('', { backend: 'adoc' });
-  decompile(adoc, root, tinyHtmlDoc.querySelector(it => it.isTagOf('article')));
+  const doc = createAsciidoctor();
+  const root = doc.load('', { backend: 'adoc' });
+  decompile(root, tinyHtmlDoc.querySelector(it => it.isTagOf('article')));
   return root;
 }
 
 export function tinyHtmlToAdoc(tinyHtml: string): string {
-  const adoc = tinyHtmlDomToAdoc(DomDocument.parse(tinyHtml));
-  return adoc.convert({ backend: 'adoc' }).trim();
+  const doc = tinyHtmlDomToAdoc(DomDocument.parse(tinyHtml));
+  return doc.convert({ backend: 'adoc' }).trim();
 }

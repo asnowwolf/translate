@@ -1,4 +1,4 @@
-import { Adoc } from '../dom/asciidoctor/utils/adoc';
+import { adoc } from '../dom/asciidoctor/utils/adoc';
 import { Asciidoctor } from '@asciidoctor/core';
 import { tinyHtmlToAdoc } from '../dom/asciidoctor/html-adoc/tiny-html-to-adoc';
 import { adocToTinyHtml } from '../dom/asciidoctor/html-adoc/adoc-to-tiny-html';
@@ -18,8 +18,8 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
   readonly inlinePairSeparator = '$$$';
 
   translateDoc(doc: AbstractNode): AbstractNode {
-    if (Adoc.isAbstractBlock(doc)) {
-      if (!Adoc.isDocument(doc)) {
+    if (adoc.isAbstractBlock(doc)) {
+      if (!adoc.isDocument(doc)) {
         const title = doc.getTitle();
         if (title && !doc.hasAttribute(`original_title`) && !containsChinese(title)) {
           this.translateAdoc(title).then(translation => {
@@ -31,21 +31,21 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
         }
       }
       this.translateAttribute(doc, 'title');
-      if (Adoc.isList(doc)) {
+      if (adoc.isList(doc)) {
         doc.getItems().forEach((it) => this.translateDoc(it));
-      } else if (Adoc.isDescriptionList(doc)) {
+      } else if (adoc.isDescriptionList(doc)) {
         doc.getItems().flat(9).forEach((it) => this.translateDoc(it));
       } else {
         doc.getBlocks().filter(it => it !== doc).forEach((it) => this.translateDoc(it));
       }
     }
-    if (Adoc.hasLines(doc) && !['source', 'asciimath', 'literal'].includes(doc.getStyle()) && !this.hasTranslated(doc)) {
+    if (adoc.hasLines(doc) && !['source', 'asciimath', 'literal'].includes(doc.getStyle()) && !this.hasTranslated(doc)) {
       const text = doc.lines.join('\n');
       this.translateAdoc(text).then(translation => {
         if (sameExceptWhitespace(text, translation)) {
           return;
         }
-        if (Adoc.isListItem(doc.getParent())) {
+        if (adoc.isListItem(doc.getParent())) {
           doc.lines = [[text, translation].join(this.inlinePairSeparator)];
         } else {
           const englishLines = doc.lines.join('\n').split('\n\n');
@@ -55,18 +55,18 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
       });
     }
 
-    if (Adoc.isDocument(doc)) {
+    if (adoc.isDocument(doc)) {
       this.translateAttribute(doc, 'doctitle');
       this.translateAttribute(doc, 'description');
     }
 
-    if (Adoc.isQuote(doc)) {
+    if (adoc.isQuote(doc)) {
       this.translateAttribute(doc, 'title');
       this.translateAttribute(doc, 'citetitle');
       this.translateAttribute(doc, 'attribution');
     }
 
-    if (Adoc.isListItem(doc)) {
+    if (adoc.isListItem(doc)) {
       const text = doc.getText().toString().trim();
       const pairs = text.split(this.inlinePairSeparator);
       if (pairs.length === 2) {
@@ -79,21 +79,21 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
       });
     }
 
-    if (Adoc.isBlockImage(doc)) {
+    if (adoc.isBlockImage(doc)) {
       this.translateAttribute(doc, 'alt');
     }
 
-    if (Adoc.isBlockResource(doc)) {
+    if (adoc.isBlockResource(doc)) {
       this.translateAttribute(doc, 'poster');
     }
 
-    if (Adoc.isTable(doc)) {
+    if (adoc.isTable(doc)) {
       const rows = doc.getRows();
       this.translateHeadRows(rows.head);
       this.translateRows(rows.body);
       this.translateRows(rows.foot);
     }
-    if (Adoc.isVerse(doc)) {
+    if (adoc.isVerse(doc)) {
       this.translateAttribute(doc, 'attribution');
       this.translateAttribute(doc, 'citetitle');
     }

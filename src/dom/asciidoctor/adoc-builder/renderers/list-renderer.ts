@@ -1,13 +1,13 @@
 import { BlockNodeRenderer } from './block-node-renderer';
 import { Asciidoctor } from '@asciidoctor/core';
-import { Adoc } from '../../utils/adoc';
+import { adoc } from '../../utils/adoc';
 import List = Asciidoctor.List;
 import AbstractNode = Asciidoctor.AbstractNode;
 
 function getLevelOf(node: AbstractNode): number {
-  if (Adoc.isList(node)) {
+  if (adoc.isList(node)) {
     return getLevelOf(node.getParent()) + 1;
-  } else if (Adoc.isDocument(node)) {
+  } else if (adoc.isDocument(node)) {
     return -1;
   } else {
     return getLevelOf(node.getParent());

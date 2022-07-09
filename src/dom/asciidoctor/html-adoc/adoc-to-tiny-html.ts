@@ -1,13 +1,13 @@
 import { createAsciidoctor } from '../utils/create-asciidoctor';
 import { Asciidoctor } from '@asciidoctor/core';
-import { Adoc } from '../utils/adoc';
+import { adoc } from '../utils/adoc';
 import ProcessorOptions = Asciidoctor.ProcessorOptions;
 
 export function adocToTinyHtml(content: string, options?: ProcessorOptions): string {
-  const adoc = createAsciidoctor();
-  Adoc.setSubstitutionsForTranslatableHtml(adoc);
+  const doc = createAsciidoctor();
+  adoc.setSubstitutionsForTranslatableHtml(doc);
   try {
-    const html = adoc.convert(content, {
+    const html = doc.convert(content, {
       ...options,
       backend: 'tiny-html',
       attributes: { outfilesuffix: '.html', experimental: true },
@@ -17,6 +17,6 @@ export function adocToTinyHtml(content: string, options?: ProcessorOptions): str
       .replace(/^<article>([\s\S]*?)<\/article>$/g, '$1')
       .trim();
   } finally {
-    Adoc.setSubstitutionsForDefaultHtml(adoc);
+    adoc.setSubstitutionsForDefaultHtml(doc);
   }
 }

@@ -10,49 +10,49 @@ import List = Asciidoctor.List;
 import DefList = Asciidoctor.DescriptionList;
 import Table = Asciidoctor.Table;
 
-type SubstitutionMode = Asciidoctor['Substitutors']['$$const'];
 
-export class Adoc {
-  private static adoc = asciidoctor();
+export namespace adoc {
+  type SubstitutionMode = Asciidoctor['Substitutors']['$$const'];
+  const doc = asciidoctor();
 
-  static isParagraph(node: AbstractNode): node is Block {
+  export function isParagraph(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'paragraph';
   }
 
-  static isSection(node: AbstractNode): node is Section {
+  export function isSection(node: AbstractNode): node is Section {
     return node?.getNodeName() === 'section';
   }
 
-  static isDocument(node: AbstractNode): node is Document {
+  export function isDocument(node: AbstractNode): node is Document {
     return node?.getNodeName() === 'document' || node.getNodeName() === 'embedded';
   }
 
-  static isAbstractBlock(node: AbstractNode): node is AbstractBlock {
+  export function isAbstractBlock(node: AbstractNode): node is AbstractBlock {
     return node.isBlock();
   }
 
-  static isInline(node: AbstractNode): node is Inline {
+  export function isInline(node: AbstractNode): node is Inline {
     return node.isInline();
   }
 
-  static isIndexTerm(node: AbstractNode): node is Inline {
+  export function isIndexTerm(node: AbstractNode): node is Inline {
     return node?.getNodeName() === 'inline_indexterm';
   }
 
-  static isList(node: AbstractNode): node is List {
+  export function isList(node: AbstractNode): node is List {
     return node?.getNodeName() === 'ulist' || node.getNodeName() === 'olist';
   }
 
-  static isDescriptionList(node: AbstractNode): node is DefList {
+  export function isDescriptionList(node: AbstractNode): node is DefList {
     return node?.getNodeName() === 'dlist';
   }
 
-  static isListItem(node: AbstractNode): node is ListItem {
+  export function isListItem(node: AbstractNode): node is ListItem {
     return node?.getNodeName() === 'list_item';
   }
 
-  static setSubstitutionMode(adoc: Asciidoctor, mode: SubstitutionMode): SubstitutionMode {
-    const consts = adoc.Substitutors.$$const;
+  export function setSubstitutionMode(doc: Asciidoctor, mode: SubstitutionMode): SubstitutionMode {
+    const consts = doc.Substitutors.$$const;
     const result = { ...consts };
     consts.BASIC_SUBS = mode.BASIC_SUBS;
     consts.HEADER_SUBS = mode.HEADER_SUBS;
@@ -63,8 +63,8 @@ export class Adoc {
   }
 
 
-  static setSubstitutionsForAdoc(adoc: Asciidoctor): void {
-    this.setSubstitutionMode(adoc, {
+  export function setSubstitutionsForAdoc(doc: Asciidoctor): void {
+    setSubstitutionMode(doc, {
       BASIC_SUBS: [],
       HEADER_SUBS: [],
       NORMAL_SUBS: [],
@@ -73,8 +73,8 @@ export class Adoc {
     });
   }
 
-  static setSubstitutionsForDefaultHtml(adoc: Asciidoctor): void {
-    this.setSubstitutionMode(adoc, {
+  export function setSubstitutionsForDefaultHtml(doc: Asciidoctor): void {
+    setSubstitutionMode(doc, {
       BASIC_SUBS: ['specialcharacters'],
       HEADER_SUBS: ['specialcharacters', 'attributes'],
       NORMAL_SUBS: ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'],
@@ -83,8 +83,8 @@ export class Adoc {
     });
   }
 
-  static setSubstitutionsForTranslatableHtml(adoc: Asciidoctor): void {
-    this.setSubstitutionMode(adoc, {
+  export function setSubstitutionsForTranslatableHtml(doc: Asciidoctor): void {
+    setSubstitutionMode(doc, {
       BASIC_SUBS: ['specialcharacters'],
       HEADER_SUBS: ['specialcharacters', 'attributes'],
       NORMAL_SUBS: ['specialcharacters', 'quotes', 'attributes', 'macros'],
@@ -93,47 +93,47 @@ export class Adoc {
     });
   }
 
-  static isBlockImage(node: AbstractNode): node is Block {
+  export function isBlockImage(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'image';
   }
 
-  static isBlockResource(node: AbstractNode): node is Block {
+  export function isBlockResource(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'video' || node.getNodeName() === 'audio';
   }
 
-  static isAdmonition(node: AbstractNode): node is Block {
+  export function isAdmonition(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'admonition';
   }
 
-  static isExample(node: AbstractNode): node is Block {
+  export function isExample(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'example';
   }
 
-  static isQuote(node: AbstractNode): node is Block {
+  export function isQuote(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'quote';
   }
 
-  static isTable(node: AbstractNode): node is Table {
+  export function isTable(node: AbstractNode): node is Table {
     return node?.getNodeName() === 'table';
   }
 
-  static isSidebar(node: AbstractNode): node is Block {
+  export function isSidebar(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'sidebar';
   }
 
-  static isVerse(node: AbstractNode): node is Block {
+  export function isVerse(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'verse';
   }
 
-  static isListing(node: AbstractNode): node is Block {
+  export function isListing(node: AbstractNode): node is Block {
     return node?.getNodeName() === 'listing';
   }
 
-  static hasLines(node: AbstractNode): node is Block {
+  export function hasLines(node: AbstractNode): node is Block {
     return 'lines' in node;
   }
 
-  static escapeDirectives(content: string): string {
+  export function escapeDirectives(content: string): string {
     return content
       .replace(/^\[(.*)indent=("?)(\d+)("?)(.*)]$/gm, '[$1rawIndent=$2$3$4$5]')
       .replace(/^((?:ifdef|ifndef|ifeval|endif)::\[.*])$/gm, '`begin-directive:[$1]end-directive`')
@@ -141,18 +141,34 @@ export class Adoc {
       .replace(/^(\/\/ *(?:tag|end)::.*?])$/gm, '`begin-directive:[$1]end-directive`');
   }
 
-  static unescapeDirectives(content: string): string {
+  export function unescapeDirectives(content: string): string {
     return content
       .replace(/^\[(.*)rawIndent=("?)(\d+)("?)(.*)]$/gm, '[$1indent=$2$3$4$5]')
       .replace(/^`begin-directive:\[(.*?)]end-directive`$/gm, '$1')
       .replace(/^Unresolved directive in .* - (.*)$/gm, '$1');
   }
 
-  static createBlock(parent: AbstractBlock, context: string): Block {
-    return this.adoc.Block.create(parent, context);
+  export function createBlock(parent: AbstractBlock, context: string): Block {
+    return doc.Block.create(parent, context);
   }
 
-  static createInline(parent: AbstractBlock, context: string): Inline {
-    return this.adoc.Inline.create(parent, context);
+  export function createInline(parent: AbstractBlock, context: string): Inline {
+    return doc.Inline.create(parent, context);
+  }
+
+  export function createNode(parent: AbstractBlock, context: string): AbstractBlock | Inline {
+    if (context === 'document' || context === 'embedded' || !context) {
+      return parent;
+    }
+
+    if (context.startsWith('inline_')) {
+      return createInline(parent, context);
+    } else {
+      const child = createBlock(parent, context);
+      if (!adoc.isDocument(child)) {
+        parent.append(child);
+      }
+      return child;
+    }
   }
 }
