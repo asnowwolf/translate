@@ -1,6 +1,6 @@
 ---
-title$$origin: one
 title: 译 one
+title$$origin: one
 
 ---
 
