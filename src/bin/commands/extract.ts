@@ -3,6 +3,7 @@ import { sync as globby } from 'globby';
 import { SqliteDict } from '../../dict/sqlite-dict';
 import { getExtractorFor } from '../../extractor/get-extractor-for';
 import { groupBy, uniqBy } from 'lodash';
+import { generateFingerprint } from '../../dict/generate-fingerprint';
 
 export const command = `extract <outFile> <sourceGlobs...>`;
 
@@ -15,20 +16,14 @@ export const builder: CommandBuilder = {
   outFile: {
     description: '结果输出到的文件，不用带扩展名',
   },
-  filter: {
-    type: 'string',
-    default: '.*',
-    description: '过滤器的正则表达式',
-  },
 };
 
 interface ExtractParams {
   sourceGlobs: string[];
   outFile: string;
-  filter: string;
 }
 
-export const handler = async function ({ sourceGlobs, outFile, filter }: ExtractParams) {
+export const handler = async function ({ sourceGlobs, outFile }: ExtractParams) {
   const filenames = globby(sourceGlobs);
   if (filenames.length === 0) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
@@ -37,12 +32,11 @@ export const handler = async function ({ sourceGlobs, outFile, filter }: Extract
   const dict = new SqliteDict();
   await dict.open(outFile);
   try {
-    const allPairs = filenames
-      .map(filename => getExtractorFor(filename).extract(filename))
-      .flat()
-      .filter(it => new RegExp(filter, 'i').test(it.english) || new RegExp(filter, 'i').test(it.chinese));
-    const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
-    const groups = groupBy(pairs, it => it.path);
+    const allPairs = await Promise.all(filenames.map(filename => getExtractorFor(filename).extract(filename)));
+    const uniqPairs = uniqBy(allPairs.flat(), (it) =>
+      generateFingerprint(it.english, it.format) + generateFingerprint(it.chinese, it.format),
+    );
+    const groups = groupBy(uniqPairs, it => it.path);
     for (const [file, pairs] of Object.entries(groups)) {
       for (const pair of pairs) {
         await dict.createOrUpdate(pair.english, pair.chinese, pair.format, { path: file });
