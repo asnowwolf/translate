@@ -12,6 +12,7 @@ import {
 import { containsChinese } from '../dom/common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
+import { extname } from 'path';
 
 export class Marker {
   constructor(
@@ -21,21 +22,30 @@ export class Marker {
 
   markFile(filename: string, mono = false): void {
     const content = readFileSync(filename, 'utf8');
-    writeFileSync(filename, this.mark(content, mono), 'utf8');
+    const isAngularJson = extname(filename) === '.json';
+    if (isAngularJson) {
+      writeFileSync(filename, this.markAngularJson(content, mono), 'utf8');
+    } else {
+      writeFileSync(filename, this.markMarkdown(content, mono), 'utf8');
+    }
   }
 
-  mark(content: string, mono = false): string {
+  private markMarkdown(content: string, mono: boolean) {
     const doc = parseDoc(content);
-    this.addTranslationMark(doc);
+    this.addIdForHeaders(doc);
+    this.markAndSwapAll(doc);
     if (mono) {
       this.monochromatic(doc);
     }
     return doc.toHtml();
   }
 
-  addTranslationMark(doc: DomParentNode): void {
-    this.addIdForHeaders(doc);
-    this.markAndSwapAll(doc);
+  private markAngularJson(content: string, mono: boolean) {
+    const json = JSON.parse(content);
+    if (json.contents) {
+      json.contents = this.markMarkdown(this.preprocessAngularJson(json.contents), mono);
+      return JSON.stringify(json);
+    }
   }
 
   addIdForHeaders(body: DomParentNode): void {
@@ -56,6 +66,15 @@ export class Marker {
   monochromatic(parent: DomParentNode): void {
     parent.querySelectorAll(it => it.hasAttribute('translation-origin')).forEach(it => it.remove());
     parent.querySelectorAll(it => it.hasAttribute('translation-result')).forEach(it => it.removeAttribute('translation-result'));
+  }
+
+  private preprocessAngularJson(contents: string): string {
+    // 对 cheatsheet页做特殊处理
+    if (contents.includes('<h1 class="no-toc">Cheat Sheet</h1>')) {
+      return contents.replace(/<(td|th)>\s*<p>([\s\S]*?)<\/p>\s*<\/\1>/g, '<$1>$2</$1>');
+    }
+    // 为其它页面中的 section、header 添加翻译标记
+    return contents.replace(/<(section|header)\b/g, '<$1 ng-should-translate');
   }
 }
 
