@@ -42,10 +42,12 @@ export class Marker {
 
   private markAngularJson(content: string, mono: boolean) {
     const json = JSON.parse(content);
-    if (json.contents) {
-      json.contents = this.markHtml(this.preprocessAngularJson(json.contents), mono);
-      return JSON.stringify(json);
+    if (!json.contents) {
+      return content;
     }
+
+    json.contents = this.markHtml(this.preprocessAngularJson(json.contents), mono);
+    return JSON.stringify(json);
   }
 
   addIdForHeaders(body: DomParentNode): void {
