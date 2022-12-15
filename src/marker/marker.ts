@@ -26,11 +26,11 @@ export class Marker {
     if (isAngularJson) {
       writeFileSync(filename, this.markAngularJson(content, mono), 'utf8');
     } else {
-      writeFileSync(filename, this.markMarkdown(content, mono), 'utf8');
+      writeFileSync(filename, this.markHtml(content, mono), 'utf8');
     }
   }
 
-  private markMarkdown(content: string, mono: boolean) {
+  private markHtml(content: string, mono: boolean) {
     const doc = parseDoc(content);
     this.addIdForHeaders(doc);
     this.markAndSwapAll(doc);
@@ -43,7 +43,7 @@ export class Marker {
   private markAngularJson(content: string, mono: boolean) {
     const json = JSON.parse(content);
     if (json.contents) {
-      json.contents = this.markMarkdown(this.preprocessAngularJson(json.contents), mono);
+      json.contents = this.markHtml(this.preprocessAngularJson(json.contents), mono);
       return JSON.stringify(json);
     }
   }
