@@ -3,6 +3,10 @@ import { PromiseMaker } from '../dom/promise-maker';
 import { delay } from '../dom/delay';
 import { SentenceFormat } from '../translator/sentence-format';
 
+function isPlainUrl(url: string): boolean {
+  return /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/.test(url);
+}
+
 export abstract class TranslationEngine {
   batchSize = 50;
   private _totalBytes = 0;
@@ -20,7 +24,7 @@ export abstract class TranslationEngine {
   private tasks: { sentence: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
   translate(sentence: string, format: SentenceFormat): Promise<string> {
-    if (!sentence?.trim()) {
+    if (!sentence?.trim() || isPlainUrl(sentence.trim())) {
       return Promise.resolve(sentence);
     }
     const result$ = new PromiseMaker<string>();
