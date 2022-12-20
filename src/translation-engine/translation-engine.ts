@@ -5,8 +5,13 @@ import { SentenceFormat } from '../translator/sentence-format';
 
 export abstract class TranslationEngine {
   batchSize = 50;
+  private _totalBytes = 0;
+  get totalBytes(): number {
+    return this._totalBytes;
+  }
 
   async init(): Promise<void> {
+    this._totalBytes = 0;
   }
 
   async dispose(): Promise<void> {
@@ -30,7 +35,9 @@ export abstract class TranslationEngine {
     Object.entries(groups).forEach(([format, tasks]) => {
       const chunks = chunk(tasks, this.batchSize);
       chunks.forEach(chunk => {
-        this.batchTranslate(chunk.map(it => it.sentence), format as SentenceFormat).then(translations => {
+        const sentences = chunk.map(it => it.sentence);
+        this._totalBytes += sentences.join('\n').length;
+        this.batchTranslate(sentences, format as SentenceFormat).then(translations => {
           chunk.forEach(({ result$ }, index) => {
             result$.resolve(translations[index]);
           });

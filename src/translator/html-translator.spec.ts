@@ -64,6 +64,7 @@ describe('html-translator', () => {
     </tr>
   </tbody></table>
 </li>`);
+    expect(engine.totalBytes).toEqual(46);
   });
 
   it('only translate one time', async () => {
