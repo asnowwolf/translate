@@ -1,22 +1,38 @@
 import { AbstractExtractor, SentencePair } from './extractor';
+import { Parent } from 'mdast';
 import { markdown } from '../dom/unified/markdown';
-import { Parent } from 'unist';
 
-export class MarkdownExtractor extends AbstractExtractor<Parent> {
-  parse(text: string): Parent {
-    return markdown.parse(text);
+export class MarkdownExtractor extends AbstractExtractor {
+  extractSentencePairsFromContent(content: string): SentencePair[] {
+    const doc = markdown.parse(content) as Parent;
+    return this.extractPairs(doc);
   }
 
-  async extractSentencePairs(node: Parent): Promise<SentencePair[]> {
+  private extractPairs(node: Parent): SentencePair[] {
     const result: SentencePair[] = [];
-    await markdown.visit(node, undefined, async (original, translation) => {
-      result.push({
-        english: original,
-        chinese: translation,
-        format: 'markdown',
-      });
-      return undefined;
-    });
+    for (let i = 0; i < node?.children?.length; i++) {
+      const current = node.children[i];
+      const next = node.children[i + 1];
+      if (next && current.type === next.type &&
+        markdown.isTranslatableUnit(current) && !markdown.nodeContainsChinese(current) && markdown.nodeContainsChinese(next)) {
+        result.push({
+          english: markdown.stringify(current),
+          chinese: markdown.stringify(next),
+          format: 'markdown',
+        });
+      } else if (next && markdown.isTableRow(current) && markdown.isTableRow(next) && current.children.length === next.children.length &&
+        !markdown.nodeContainsChinese(current) && markdown.nodeContainsChinese(next)) {
+        for (let col = 0; col < current.children.length; ++col) {
+          result.push({
+            english: markdown.stringify(current.children[col]),
+            chinese: markdown.stringify(next.children[col]),
+            format: 'markdown',
+          });
+        }
+      } else {
+        result.push(...this.extractPairs(current as Parent));
+      }
+    }
     return result;
   }
 }

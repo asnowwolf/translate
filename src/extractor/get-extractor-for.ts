@@ -1,12 +1,17 @@
 import { Extractor } from './extractor';
+import { HtmlExtractor } from './html-extractor';
 import { extname } from 'path';
 import { MarkdownExtractor } from './markdown-extractor';
+import { AngularJsonExtractor } from './angular-json-extractor';
 
 export function getExtractorFor(filename: string): Extractor {
   const ext = extname(filename);
   switch (ext) {
-    case '.markdown':
+    case '.html':
+      return new HtmlExtractor();
     case '.md':
       return new MarkdownExtractor();
+    case '.json':
+      return new AngularJsonExtractor();
   }
 }

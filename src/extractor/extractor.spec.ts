@@ -1,0 +1,100 @@
+import { groupBy, omit, uniqBy } from 'lodash';
+import { SqliteDict } from '../dict/sqlite-dict';
+import { getExtractorFor } from './get-extractor-for';
+
+describe('extractor', () => {
+  it('extract pairs from html', () => {
+    const filename1 = 'samples/html/extract1.html';
+    const extractor = getExtractorFor(filename1);
+    const entries1 = extractor.extract(filename1);
+    expect(entries1.map(it => omit(it, 'id', 'isRegExp'))).toEqual([
+      {
+        'chinese': '一',
+        'confidence': 'Manual',
+        'english': 'One',
+        'format': 'markdown',
+        'path': 'samples/html/extract1.html',
+      },
+      {
+        'chinese': '二',
+        'confidence': 'Manual',
+        'english': 'Two',
+        'format': 'markdown',
+        'path': 'samples/html/extract1.html',
+      },
+    ]);
+    const filename2 = 'samples/html/extract2.html';
+    const entries2 = extractor.extract(filename2);
+    expect(entries2.map(it => omit(it, 'id', 'isRegExp'))).toEqual([
+      {
+        'chinese': '三',
+        'confidence': 'Manual',
+        'english': 'Three',
+        'format': 'markdown',
+        'path': 'samples/html/extract2.html',
+      },
+      {
+        'chinese': '四',
+        'confidence': 'Manual',
+        'english': 'Four',
+        'format': 'markdown',
+        'path': 'samples/html/extract2.html',
+      },
+    ]);
+  });
+
+  it('extract pairs to dict', async () => {
+    const filename1 = 'samples/html/extract1.html';
+    const filename2 = 'samples/html/extract2.html';
+    const extractor = getExtractorFor(filename1);
+    const dict = new SqliteDict();
+    await dict.open(':memory:');
+    const allPairs = [filename1, filename2].map(file => extractor.extract(file).map(it => ({
+      ...it,
+      path: file,
+    }))).flat()
+      .filter(it => /.*/.test(it.english) || /.*/.test(it.chinese));
+    const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
+    const groups = groupBy(pairs, it => it.path);
+    for (const [file, pairs] of Object.entries(groups)) {
+      for (const pair of pairs) {
+        await dict.createOrUpdate(pair.english, pair.chinese, pair.format, { path: file });
+      }
+    }
+    const result = await dict.query();
+    expect(result.map(it => omit(it, 'id', 'isRegExp', 'createdAt', 'updatedAt'))).toEqual([
+      {
+        'chinese': '一',
+        'confidence': 'Manual',
+        'english': 'One',
+        'fingerprint': 'ponep',
+        'format': 'markdown',
+        'path': 'samples/html/extract1.html',
+      },
+      {
+        'chinese': '二',
+        'confidence': 'Manual',
+        'english': 'Two',
+        'fingerprint': 'ptwop',
+        'format': 'markdown',
+        'path': 'samples/html/extract1.html',
+      },
+      {
+        'chinese': '三',
+        'confidence': 'Manual',
+        'english': 'Three',
+        'fingerprint': 'pthreep',
+        'format': 'markdown',
+        'path': 'samples/html/extract2.html',
+      },
+      {
+        'chinese': '四',
+        'confidence': 'Manual',
+        'english': 'Four',
+        'fingerprint': 'pfourp',
+        'format': 'markdown',
+        'path': 'samples/html/extract2.html',
+      },
+    ]);
+  });
+});
