@@ -24,6 +24,10 @@ export class Class1 {
    */
   foo1() {
   }
+
+  /** three */
+  private foo2() {
+  }
 }
 
 /**
@@ -59,6 +63,10 @@ export class Class1 {
    *
    */
   foo1() {
+  }
+
+  /** three */
+  private foo2() {
   }
 }
 

@@ -1,5 +1,5 @@
 import { AbstractTranslator } from './abstract-translator';
-import { IndentationText, JSDocTag, JSDocTagStructure, Node, OptionalKind, Project, SourceFile } from 'ts-morph';
+import { IndentationText, JSDocTag, JSDocTagStructure, Node, OptionalKind, Project, SourceFile, SyntaxKind } from 'ts-morph';
 import { isDeepStrictEqual } from 'util';
 import { MarkdownTranslator } from './markdown-translator';
 import { TranslationOptions } from './translation-options';
@@ -23,6 +23,11 @@ function getTagsWithAncestors(node: Node): JSDocTag[] {
 function shouldTranslate(node: Node, options: TranslationOptions): boolean {
   if (!Node.isJSDocableNode(node)) {
     return false;
+  }
+  if (Node.isModifierableNode(node)) {
+    if (node.hasModifier(SyntaxKind.PrivateKeyword)) {
+      return false;
+    }
   }
   const tags = getTagsWithAncestors(node).map(it => it.getTagName());
   return (!options.mustIncludesTags || intersection(tags, options.mustIncludesTags).length > 0) &&
