@@ -21,7 +21,9 @@ export class DbTranslator extends AbstractTranslator<any> {
         entry.confidence = 'Engine';
       })
       .then(() => dict.save(entry)));
+
     await this.flush();
+    console.log('total bytes: ', this.engine.totalBytes);
   }
 
   parse(text: string): any {

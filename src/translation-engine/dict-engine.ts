@@ -7,12 +7,14 @@ import { SentenceFormat } from '../translator/sentence-format';
 export class DictTranslationEngine extends TranslationEngine {
   private dict: Dict;
   private isInternalDict = false;
+  private unknownEnglishList: string[] = [];
 
   constructor(private readonly options: TranslationEngineOptions) {
     super();
   }
 
   async init(): Promise<void> {
+    this.unknownEnglishList = [];
     if (typeof this.options.dict === 'string') {
       this.isInternalDict = true;
       this.dict = new SqliteDict();
@@ -34,11 +36,15 @@ export class DictTranslationEngine extends TranslationEngine {
       const english = text.trim();
       const entry = await this.dict.get(english, format);
       if (!entry) {
-        return text;
+        if (!this.unknownEnglishList.includes(english)) {
+          this.unknownEnglishList.push(english);
+          await this.dict.createOrUpdate(english, '', format);
+        }
+        return english;
       }
       const chinese = entry.chinese;
       if (!chinese) {
-        return text;
+        return english;
       }
       switch (entry.confidence) {
         case 'DictFuzzy':
