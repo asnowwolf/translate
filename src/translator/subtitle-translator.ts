@@ -36,7 +36,7 @@ export class SubtitleTranslator extends AbstractTranslator<object> {
 
   translateWholeSentences(wholeSentences: WholeSentence[]): Promise<WholeSentence[]> {
     return Promise.all(wholeSentences.map((wholeSentence) => {
-      return this.translateSentence(wholeSentence.original, 'markdown').then((translation) => {
+      return this.translateSentence(wholeSentence.original.replace(/(\r?\n|\xa0)/g, ' '), 'plain').then((translation) => {
         wholeSentence.translation = translation;
       });
     })).then(() => wholeSentences);
@@ -48,7 +48,7 @@ export function mergeTimelineBySentence(items: SubtitleItem[]): WholeSentence[] 
   const wholeSentences: WholeSentence[] = [];
   // 根据句号等标点合并文本，同时合并时间轴
   let text = '';
-  let startTime = 0;
+  let startTime = items[0].startTime ?? 0;
   let originalItems: SubtitleItem[] = [];
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -70,12 +70,40 @@ function visualLengthOf(text: string): number {
 }
 
 function splitChineseSentence(translation: string, maxVisualLength: number): string[] {
-  const fragments = translation.split(/(?<=[ ，。！？；])/);
+  const fragments = translation.split(/(?<=[，。！？；])/);
   const result: string[] = [];
   let text = '';
+
+  // 给定字符处是否可以断开
+  function canBreakAt(char: string): boolean {
+    return /[\u4e00-\u9fa5]/.test(char);
+  }
+
+  function splitLongSentence(text: string): string[] {
+    const result: string[] = [];
+    let prevPos = 0;
+    let i = 0;
+    while (i <= text.length) {
+      const currentText = text.slice(prevPos, i);
+      if (visualLengthOf(currentText) > maxVisualLength && canBreakAt(text[i]) || i === text.length) {
+        result.push(currentText);
+        prevPos = i;
+      }
+      ++i;
+    }
+    return result;
+  }
+
   for (let i = 0; i < fragments.length; i++) {
     text += fragments[i];
-    if (visualLengthOf(text) > maxVisualLength || i === fragments.length - 1) {
+    const thisFragmentExceeded = visualLengthOf(text) > maxVisualLength;
+    const nextFragmentExceeded = visualLengthOf(text + (fragments[i + 1] ?? '')) > maxVisualLength;
+    const isLastFragment = i === fragments.length - 1;
+    if (thisFragmentExceeded) {
+      const subFragments = splitLongSentence(text);
+      result.push(subFragments.join('\n'));
+      text = '';
+    } else if (nextFragmentExceeded || isLastFragment) {
       result.push(text.trim());
       text = '';
     }
