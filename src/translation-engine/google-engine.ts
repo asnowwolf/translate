@@ -1,13 +1,34 @@
 import { TranslationEngine } from './translation-engine';
-import * as translate from '@vitalets/google-translate-api';
 import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
+import { get } from 'request';
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+function fetch(url: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    get(url, (error, response, body) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(JSON.parse(body));
+      }
+    });
+  });
+}
 
 export class GoogleTranslationEngine extends TranslationEngine {
   protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
-    return Promise.all(texts.map(text => translate(SentenceFormatter.toPlain(text, format), {
-      from: 'en',
-      to: 'zh-CN',
-    }).then(it => it.text)));
+    const result: string[] = [];
+    for (let line of texts) {
+      const text = SentenceFormatter.toPlain(line, format);
+      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=${encodeURIComponent(text)}`);
+      await delay(100);
+      const [[[cn]]] = response;
+      result.push(cn);
+    }
+    return result;
   }
 }
