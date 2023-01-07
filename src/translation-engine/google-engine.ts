@@ -3,10 +3,6 @@ import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
 import { get } from 'request';
 
-function delay(milliseconds: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
-
 function fetch(url: string): Promise<any> {
   return new Promise((resolve, reject) => {
     get(url, (error, response, body) => {
@@ -25,7 +21,6 @@ export class GoogleTranslationEngine extends TranslationEngine {
     for (let line of texts) {
       const text = SentenceFormatter.toPlain(line, format);
       const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=${encodeURIComponent(text)}`);
-      await delay(100);
       const translation = response[0].map(([cn]) => cn).join('');
       result.push(translation);
     }
