@@ -1,775 +1,591 @@
 1
-00:00:00,000 --> 00:00:03,000
-译ExpressionChangedAfterItHasBeenCheckedError.
+00:00:00,000 --> 00:00:01,390
+译MINKO GECHEV: Hello, everyone.
 
 2
-00:00:03,000 --> 00:00:04,775
-译You'll encounter this error if your
+00:00:01,390 --> 00:00:02,670
+译My name is Minko Gechev.
 
 3
-00:00:04,775 --> 00:00:06,838
-code changes a value after change detection
+00:00:02,670 --> 00:00:05,490
+译I'm working on Angular at Google.
 
 4
-00:00:06,838 --> 00:00:08,805
-has been run and the view has been built.
+00:00:05,490 --> 00:00:08,705
+译Over the years, I have profiled hundreds of Angular applications.
 
 5
-00:00:08,805 --> 00:00:10,772
-You'll only see this error in development
+00:00:08,705 --> 00:00:14,902
+译And I have noticed that the majority of performance challenges fit into a couple of different patterns.
 
 6
-00:00:10,772 --> 00:00:12,499
-译because Angular runs an additional
+00:00:14,902 --> 00:00:21,340
+译Today, we're going to look into these patterns, and we're going to learn how to resolve them.
 
 7
-00:00:12,499 --> 00:00:14,322
-change detection check to catch errors
+00:00:21,340 --> 00:00:25,810
+译In this video, first, you'll learn how to use Angular DevTools.
 
 8
-00:00:14,322 --> 00:00:16,097
-like 译this that can cause erratic UI
+00:00:25,810 --> 00:00:31,750
+译After that, we'll identify different performance-regression patterns and learn how to resolve them.
 
 9
-00:00:16,097 --> 00:00:17,872
-behavior. The extra check ensures the
+00:00:31,750 --> 00:00:37,450
+译For this purpose, we'll use a simple prototype of a typical business application.
 
 10
-00:00:17,872 --> 00:00:19,839
-app is stable and that 译all data updates
+00:00:37,450 --> 00:00:41,290
+译At the very top of the UI, we have a bar chart.
 
 11
-00:00:19,839 --> 00:00:21,710
-have been reflected in the views. There
+00:00:41,290 --> 00:00:48,400
+译Under the chart, we have two lists of employees from organizational Sales and R&amp;D departments.
 
 12
-00:00:21,710 --> 00:00:23,581
-are a variety of reasons the view might
+00:00:48,400 --> 00:00:54,670
+译Each employee has a name and a numeric value associated with them that goes through a heavy computation.
 
 13
-00:00:23,581 --> 00:00:25,500
-译be left in an inconsistent state, such
+00:00:54,670 --> 00:00:58,690
+译In each of these lists, we can ask new employees.
 
 14
-00:00:25,500 --> 00:00:27,227
-as code that updates the view during
+00:00:58,690 --> 00:01:03,230
+译As you'll see in the code, there is the foundation for implementing the lead functionality, as well.
 
 15
-00:00:27,227 --> 00:00:29,002
-the AfterViewInit 译lifecycle hook or
+00:01:03,230 --> 00:01:07,660
+译But for simplicity, it is not part of the UI.
 
 16
-00:00:29,002 --> 00:00:30,777
-when change detection triggers itself
+00:01:07,660 --> 00:01:18,550
+译Remember I mentioned that the numeric value for each employee goes through a heavy computation? I have mocked this computation with the Fibonacci function to keep things simple.
 
 17
-00:00:30,777 --> 00:00:32,648
-in an infinite loop, like a method that
+00:01:18,550 --> 00:01:32,310
+译Notice that we've implemented a pretty inefficient version of Fibonacci so that even minor performance problems can have significant visible impacts in the examples we'll explore.
 
 18
-00:00:32,648 --> 00:00:34,471
-译returns a different value each time,
+00:01:32,310 --> 00:01:56,330
+译Implement the entire application with just two components-- EmployeeListComponent, which contains the list of employees for the corresponding department and has a text input for entering new employees, and the AppComponent, which renders two list instances of the EmployeeListComponent and a bar chart at the top.
 
 19
-00:00:34,471 --> 00:00:36,246
-or a child component that changes the
+00:01:56,330 --> 00:02:04,150
+译Before we jump to the patterns, let us look at how we can profile an application by using Angular DevTools.
 
 20
-00:00:36,246 --> 00:00:37,349
-bindings on its parent.
+00:02:04,150 --> 00:02:09,820
+译Angular DevTools is a Chrome DevTools extension that you can install from the Chrome Web Store.
 
 21
-00:00:38,212 --> 00:00:39,994
-译Let's start by looking at a simple
+00:02:09,820 --> 00:02:14,260
+译It allows you to preview the structure of your application in the Components explorer.
 
 22
-00:00:39,994 --> 00:00:41,281
-reproduction and solution.
+00:02:14,260 --> 00:02:17,290
+译For this video, we'll be primarily using the Profiler.
 
 23
-00:00:41,331 --> 00:00:43,350
-译Then, we'll take a more detailed 译look
+00:02:17,290 --> 00:02:20,950
+译To start profiling an application, click on the Record button.
 
 24
-00:00:43,350 --> 00:00:45,467
-at Angular's change detection to understand
+00:02:20,950 --> 00:02:30,790
+译As Angular performs change detection in your app, you'll see bars corresponding to the individual change detection cycles appearing in DevTools's timeline.
 
 25
-00:00:45,467 --> 00:00:47,732
-why this error happens and why it's important.
+00:02:30,790 --> 00:02:37,090
+译When we select the frame from the timeline, we can preview how much time we spend on the individual components.
 
 26
-00:00:47,732 --> 00:00:49,504
-译Here in the app component template
+00:02:37,090 --> 00:02:43,930
+译Here, we spend the majority of the change-detection invocation within the MatFormField and EmployeeListComponent.
 
 27
-00:00:49,504 --> 00:00:51,326
-we're using the ngIf directive with a
+00:02:43,930 --> 00:02:51,640
+译DevTools allows us to preview the Profiler output in different formats-- bar charts, tree maps, and flame graphs.
 
 28
-00:00:51,326 --> 00:00:53,246
-loading boolean. 译In the model, or our
+00:02:51,640 --> 00:02:55,840
+译The flame graph provides a hierarchical view of the component tree.
 
 29
-00:00:53,246 --> 00:00:55,363
-component type script, we give it a default
+00:02:55,840 --> 00:03:00,520
+译When we click on a particular component, we can see how much time Angular spent on it.
 
 30
-00:00:55,363 --> 00:00:57,628
-value of true. Then, using 译the AfterViewInit
+00:03:00,520 --> 00:03:08,820
+译For example, we spent about 0.1 milliseconds on detecting changes within the EmployeeListComponent.
 
 31
-00:00:57,628 --> 00:00:59,647
-lifecycle hook we flip the value to false
+00:03:08,820 --> 00:03:15,990
+译Since our application doesn't have a complicated nested structure, we'll use the default bar chart view.
 
 32
-00:00:59,647 --> 00:01:01,469
-when it's done loading. 译But when we
+00:03:15,990 --> 00:03:18,360
+译Now let us look at individual patterns.
 
 33
-00:01:01,469 --> 00:01:04,669
-run this code we see ExpressionChangedAfterItHasBeenCheckedError:
+00:03:18,360 --> 00:03:21,420
+译We'll describe the cause of the problem.
 
 34
-00:01:04,669 --> 00:01:06,589
-译Previous value: false, Current value:
+00:03:21,420 --> 00:03:26,370
+译You'll learn how to identify it and resolve it.
 
 35
-00:01:06,589 --> 00:01:08,558
-true. Now in a more complex app it might
+00:03:26,370 --> 00:03:30,390
+译The first pattern we're going to look into is zone pollution.
 
 36
-00:01:08,558 --> 00:01:10,626
-not be 译clear where this error originates
+00:03:30,390 --> 00:03:36,340
+译Let us go back to the application and start recording with Angular DevTools's Profiler.
 
 37
-00:01:10,626 --> 00:01:12,398
-from, but you can always assume that
+00:03:36,340 --> 00:03:47,000
+译If we start interacting with the bar chart in the application, we'll see that we trigger multiple change detection cycles, each of which takes a decent amount of time.
 
 38
-00:01:12,398 --> 00:01:14,318
-it has 译something to do with a binding
+00:03:47,000 --> 00:03:56,720
+译If we explore the change detection cycles, we'll see that the source of the change detection is mouseup and mousemove events.
 
 39
-00:01:14,318 --> 00:01:16,386
-in the template. In the stack trace you'll
+00:03:56,720 --> 00:04:04,160
+译Each cycle takes more than 740 milliseconds, which significantly drops the browser's frame rate.
 
 40
-00:01:16,386 --> 00:01:18,306
-find a link to the 译source map for the
+00:04:04,160 --> 00:04:14,830
+译We spent most of the time in the two instances of the EmployeeListComponent, where each check takes more than 360 milliseconds.
 
 41
-00:01:18,306 --> 00:01:20,275
-component template that caused the error
+00:04:14,830 --> 00:04:17,320
+译Now let us resolve this problem.
 
 42
-00:01:20,275 --> 00:01:22,146
-and it takes us directly 译to the line
+00:04:17,320 --> 00:04:22,320
+译The beginning of app.component's template is div container where we render the bar chart.
 
 43
-00:01:22,146 --> 00:01:23,918
-of code that caused the issue, which
+00:04:22,320 --> 00:04:32,430
+译We initialize the chart in the Ng on the [INAUDIBLE] lifecycle hook in the app.component by invoking the new plot method of the Plotly charting library.
 
 44
-00:01:23,918 --> 00:01:26,035
-is our ngIf binding to the loading boolean.
+00:04:32,430 --> 00:04:38,370
+译We pass the ID of the DOM container and the data we want to render.
 
 45
-00:01:26,035 --> 00:01:27,857
-译What the error is trying to tell us
+00:04:38,370 --> 00:04:50,200
+译Given the mouseup and mousemove events that we got in the Profiler, this means that probably the initialization logic of Plotly is adding these EventListeners to the bars.
 
 46
-00:01:27,857 --> 00:01:29,679
-is that the loading value has changed
+00:04:50,200 --> 00:04:54,400
+译Plotly offers a standalone library that doesn't need to interact with Angular.
 
 47
-00:01:29,679 --> 00:01:31,550
-after the change 译detection cycle has
+00:04:54,400 --> 00:05:02,920
+译We can run the initialization logic outside of the Angular zone to prevent the invocation of redundant change detection cycles.
 
 48
-00:01:31,550 --> 00:01:33,322
-completed, but what exactly is wrong
+00:05:02,920 --> 00:05:08,380
+译Let us go to the constructor of app.component and inject the Ng zone.
 
 49
-00:01:33,322 --> 00:01:35,242
-with our code in this case? 译The short
+00:05:08,380 --> 00:05:18,810
+译We can go back to the chart's initialization logic and the rapid inside of a callback that we pass to runOutsideangular.
 
 50
-00:01:35,242 --> 00:01:37,014
-answer is that we're using the wrong
+00:05:18,810 --> 00:05:28,890
+译When we go back to the application and start the Profiler, we'll see that interactions with the bars in the bar chart don't trigger change detections anymore.
 
 51
-00:01:37,014 --> 00:01:38,836
-lifecycle hook. 译If we move our code
+00:05:28,890 --> 00:05:35,750
+译The zone-pollution pattern occurs when the Angular zone wraps callbacks that trigger redundant change detection cycles.
 
 52
-00:01:38,836 --> 00:01:40,707
-from AfterViewInit to OnInit the error
+00:05:35,750 --> 00:05:44,810
+译Polluting the zone happens when we run an initialization logic that uses requestAnimationFrame, setTimeout, or addEventListener.
 
 53
-00:01:40,707 --> 00:01:42,824
-goes 译away and everything works perfectly.
+00:05:44,810 --> 00:05:50,990
+译We can identify the problem by looking for unexpected change detection cycles in the Profiler output.
 
 54
-00:01:42,824 --> 00:01:44,596
-In other words, if you find yourself
+00:05:50,990 --> 00:05:56,090
+译In most cases, I have found that the reason is requestAnimationFrame.
 
 55
-00:01:44,596 --> 00:01:46,664
-updating 译values in AfterViewInit there's
+00:05:56,090 --> 00:05:58,050
+译The solution is usually pretty straightforward.
 
 56
-00:01:46,664 --> 00:01:48,436
-a good chance that a simple refactor
+00:05:58,050 --> 00:06:02,870
+译All you need to do is move the initialization logic outside of the Angular zone.
 
 57
-00:01:48,436 --> 00:01:50,405
-to OnInit or the 译component constructor
+00:06:02,870 --> 00:06:07,855
+译The following pattern we'll look into is the out of bounds change detection.
 
 58
-00:01:50,405 --> 00:01:52,325
-will fix the issue. Okay, at this point
+00:06:07,855 --> 00:06:11,640
+译Let us go back to the application and enter a new employee.
 
 59
-00:01:52,325 --> 00:01:54,147
-we know we used the wrong 译lifecycle
+00:06:11,640 --> 00:06:14,210
+译Notice that the experience is pretty laggy.
 
 60
-00:01:54,147 --> 00:01:56,018
-hook and we can fix it by refactoring,
+00:06:14,210 --> 00:06:21,920
+译When we start profiling, we notice two change detection cycles triggered on each character we enter.
 
 61
-00:01:56,018 --> 00:01:57,840
-but to really understand why let's do
+00:06:21,920 --> 00:06:27,900
+译The first one is on the Input event, and the second one is on keydown.
 
 62
-00:01:57,840 --> 00:01:59,809
-a quick 译review of how change detection
+00:06:27,900 --> 00:06:36,380
+译For both events, we spent more than 380 milliseconds detecting changes in the two instances of the EmployeeListComponent.
 
 63
-00:01:59,809 --> 00:02:01,581
-works in Angular. The goal of change
+00:06:36,380 --> 00:06:44,670
+译Notice that even though we are typing only in the input for the Sales department, we also check the R&amp;D department.
 
 64
-00:02:01,581 --> 00:02:03,452
-detection is to 译keep the model, your
+00:06:44,670 --> 00:06:54,540
+译Since typing in these input changes only the View state within the Sales department, detecting changes in the R&amp;D department is redundant.
 
 65
-00:02:03,452 --> 00:02:05,569
-typescript code, in sync with the template,
+00:06:54,540 --> 00:06:56,130
+译Let us fix this.
 
 66
-00:02:05,569 --> 00:02:07,440
-your html. 译And it does so by looking
+00:06:56,130 --> 00:07:03,270
+译For this purpose, we'll update the change-detection strategy of the EmployeeListComponents to OnPush.
 
 67
-00:02:07,440 --> 00:02:09,311
-for data changes in the component tree
+00:07:03,270 --> 00:07:12,960
+译With OnPush, Angular will trigger change detection within the component when we pass input with a new value based on an [INAUDIBLE] check.
 
 68
-00:02:09,311 --> 00:02:11,133
-from top to bottom. 译First it checks
+00:07:12,960 --> 00:07:21,160
+译We'll use an immutable list from immutable.js to prevent mutation of the array references and also, to ensure efficient structure of sharing of data.
 
 69
-00:02:11,133 --> 00:02:13,102
-the parent, then the first child, second
+00:07:21,160 --> 00:07:26,400
+译Let us first change the Sales and R&amp;D department arrays to immutable lists.
 
 70
-00:02:13,102 --> 00:02:15,317
-child and so on, but if we update a 译binding
+00:07:26,400 --> 00:07:37,710
+译After that, we'll update the signatures of the Add and Remove methods in the app.component so that they can accept immutable lists of employees.
 
 71
-00:02:15,317 --> 00:02:17,237
-on the parent after it has already been
+00:07:37,710 --> 00:07:48,060
+译Next, we need to make sure we assign the results produced by these two methods to update the local references and pass them down the component tree to EmployeeListComponent.
 
 72
-00:02:17,237 --> 00:02:19,059
-checked Angular will throw the error.
+00:07:48,060 --> 00:07:51,890
+译We need the assignment because we are no longer mutating the lists.
 
 73
-00:02:19,059 --> 00:02:20,979
-译Now what we have here is a simplified
+00:07:51,890 --> 00:07:56,590
+译Instead, Immutabe.js creates new ones.
 
 74
-00:02:20,979 --> 00:02:22,801
-breakdown of Angular's life cycle, or
+00:07:56,590 --> 00:08:04,830
+译Since we're now passing immutable lists to the EmployeeListComponent, we need to update the type of its data input.
 
 75
-00:02:22,801 --> 00:02:24,770
-the steps 译it performs when a component
+00:08:04,830 --> 00:08:15,570
+译Immutable lists have size rather than a length property, so we need to update the property access in the template and set the changeDetection strategy to OnPush.
 
 76
-00:02:24,770 --> 00:02:26,641
-is first initialized. First it updates
+00:08:15,570 --> 00:08:18,192
+译Now, let us get back to the application.
 
 77
-00:02:26,641 --> 00:02:28,512
-the bindings like 译the ngIf directive
+00:08:18,192 --> 00:08:25,630
+译Notice that entering a new employee now is a little faster, even though it still looks pretty laggy.
 
 78
-00:02:28,512 --> 00:02:30,481
-in the template. Then it runs the OnInit
+00:08:25,630 --> 00:08:26,860
+译Let us fix this.
 
 79
-00:02:30,481 --> 00:02:32,401
-lifecycle 译hook, updates the DOM, then
+00:08:26,860 --> 00:08:31,450
+译We'll do this as part of the refactoring of out of bounds change detection.
 
 80
-00:02:32,401 --> 00:02:34,666
-runs change detection for the child component.
+00:08:31,450 --> 00:08:36,640
+译When we start typing into the input, Angular performs change detection pretty regularly.
 
 81
-00:02:34,666 --> 00:02:36,881
-译Notice how the final step is AfterViewInit,
+00:08:36,640 --> 00:08:48,460
+译It checks the whole EmployeeListComponent and evaluates each employee's heavy computation twice-- on input and on keydown events, even though none of the values have changed.
 
 82
-00:02:36,881 --> 00:02:38,900
-and more importantly that it 译runs after
+00:08:48,460 --> 00:08:54,835
+译This happens because typing into the input triggers events that bypass the OnPush change-detection strategy.
 
 83
-00:02:38,900 --> 00:02:40,672
-change detection. Basically any code
+00:08:54,835 --> 00:09:04,810
+译And when an event within a component with OnPush change-detection strategy occurs, Angular will detect this component for changes, even if it hasn't received new inputs.
 
 84
-00:02:40,672 --> 00:02:42,543
-that runs here 译should not attempt to
+00:09:04,810 --> 00:09:17,050
+译The problem here is that we're only changing the local state of the input but not updating the individual employees, which means that it is safe to completely skip change direction for them.
 
 85
-00:02:42,543 --> 00:02:44,365
-update the view and that was the root
+00:09:17,050 --> 00:09:20,860
+译To improve the performance here, we'll refactor the component tree.
 
 86
-00:02:44,365 --> 00:02:46,433
-of the problem in this case. 译Refactoring
+00:09:20,860 --> 00:09:26,560
+译Currently, the app component renders two instances of the EmployeeListComponent.
 
 87
-00:02:46,433 --> 00:02:48,452
-to OnInit works great for initial values,
+00:09:26,560 --> 00:09:38,590
+译At the end of this section, the EmployeeListComponent will use the NameInputComponents to get new employees' names and ListComponent to render the list of employees.
 
 88
-00:02:48,452 --> 00:02:50,372
-but if that doesn't fix the issue there
+00:09:38,590 --> 00:09:42,350
+译We'll use OnPush change-detection strategy for the list component.
 
 89
-00:02:50,372 --> 00:02:52,686
-译are a few other ways you may have encountered
+00:09:42,350 --> 00:09:53,120
+译So this way, events happening in the sibling component, the NameInputComponent, will not trigger any redundant revaluations for employees.
 
 90
-00:02:52,686 --> 00:02:54,557
-this error, along with additional ways
+00:09:53,120 --> 00:10:01,790
+译Let us first go to the directory of the EmployeeListComponent and create the name-input.component and the list.component.
 
 91
-00:02:54,557 --> 00:02:56,576
-to fix it. 译In the component here, we're
+00:10:01,790 --> 00:10:10,450
+译As the next step, we can extract the input field from the employee-list.component to the template of the name-input.component.
 
 92
-00:02:56,576 --> 00:02:58,496
-using ViewChild to grab an element from
+00:10:10,450 --> 00:10:18,410
+译We can also move the corresponding styles, the label property, and the handleKey method and copy the out output.
 
 93
-00:02:58,496 --> 00:03:00,268
-the DOM, but this 译element won't be
+00:10:18,410 --> 00:10:21,145
+译Let us also remove the OnInit lifecycle hook.
 
 94
-00:03:00,268 --> 00:03:02,385
-available until the AfterViewInit lifecycle
+00:10:21,145 --> 00:10:45,120
+译We can use the name-input.component within the employee-list.component's template, handling the app's output as the next step.
 
 95
-00:03:02,385 --> 00:03:04,256
-hook is called. 译But what if we can't
+00:10:45,120 --> 00:10:55,470
+译Now let us move the rest of the mat-list part of the template to the ListComponent.
 
 96
-00:03:04,256 --> 00:03:06,176
-update the state of the component until
+00:10:55,470 --> 00:11:05,140
+译We should also carry the calculate method and remove the OnInit lifecycle hook implementation because we're simply not using it.
 
 97
-00:03:06,176 --> 00:03:08,047
-after we 译have the ViewChild element?
+00:11:05,140 --> 00:11:10,565
+译Next, let us move the Fibonacci function.
 
 98
-00:03:08,047 --> 00:03:09,918
-If we can't refactor to ngOnInit, 译we
+00:11:10,565 --> 00:11:18,480
+译We can now move the data input.
 
 99
-00:03:09,918 --> 00:03:12,035
-have a couple of other options. An approach
+00:11:18,480 --> 00:11:20,970
+译Finally, we can copy the remove output.
 
 100
-00:03:12,035 --> 00:03:14,152
-you'll often see on StackOverflow 译answers
+00:11:20,970 --> 00:11:50,420
+译To ensure the UI looks crisp, we can move the styles associated with the list visualization to the styles of the list component.
 
 101
-00:03:14,152 --> 00:03:16,121
-is to make the update asynchronous. When
+00:11:50,420 --> 00:12:07,310
+译Finally, we can set the change-detection strategy of the list.components to OnPush.
 
 102
-00:03:16,121 --> 00:03:18,238
-we make the update async, it'll be 译picked
+00:12:07,310 --> 00:12:14,855
+译Let us use the list.component in the employee-list.components template, passing the corresponding input and handling the remove output.
 
 103
-00:03:18,238 --> 00:03:20,060
-up on the next change detection check
+00:12:14,855 --> 00:12:29,130
+译When you go back to the application, notice that the typing experience is without any noticeable lag.
 
 104
-00:03:20,060 --> 00:03:21,882
-and prevent the error from occurring.
+00:12:29,130 --> 00:12:40,500
+译To recap, this performance problem occurs when an action that only impacts the local state of a particular component triggers change detection in unrelated parts of the componentry.
 
 105
-00:03:21,882 --> 00:03:23,901
-译We can make it asynchronous by wrapping
+00:12:40,500 --> 00:12:50,340
+译We can identify the problem by inspecting the Profiler's output and finding the components that are not supposed to be affected by a particular interaction.
 
 106
-00:03:23,901 --> 00:03:25,920
-it in a set timeout with a delay of zero.
+00:12:50,340 --> 00:13:02,260
+译To resolve the issue, we can isolate the component which triggers frequent local state changes and sets the components with expensive change detection checks to use OnPush.
 
 107
-00:03:25,920 --> 00:03:27,692
-That'll put 译the update in the next
+00:13:02,260 --> 00:13:09,880
+译The third pattern we're going to look at is the recalculation of referentially transparent expressions.
 
 108
-00:03:27,692 --> 00:03:29,661
-macro task queue of the Javascript event
+00:13:09,880 --> 00:13:19,610
+译If we have an expression in a template that could be replaced with its value when its parameters don't change, we call it referentially transparent.
 
 109
-00:03:29,661 --> 00:03:31,729
-loop. Alternatively we can use 译a promise
+00:13:19,610 --> 00:13:27,310
+译This means that we don't have to recalculate the expressions between change-detection cycles unless their input change.
 
 110
-00:03:31,729 --> 00:03:33,649
-that resolves immediately, then run the
+00:13:27,310 --> 00:13:30,370
+译Let us go back to the application and add an employee.
 
 111
-00:03:33,649 --> 00:03:35,520
-update in its callback. This code will
+00:13:30,370 --> 00:13:35,860
+译Notice that we got a pretty expensive change-station cycle triggered by the keydown event.
 
 112
-00:03:35,520 --> 00:03:37,588
-achieve the 译same result, the only subtle
+00:13:35,860 --> 00:13:44,370
+译We dropped the browser's frame rate and Angular spent most of its change detection cycles within the list component.
 
 113
-00:03:37,588 --> 00:03:39,508
-difference is that it runs on the micro
+00:13:44,370 --> 00:13:53,130
+译When we add a new employee to the Sales list, we invoke the add methods of the app component, which creates an immutable list.
 
 114
-00:03:39,508 --> 00:03:41,576
-task queue before the end of 译the current
+00:13:53,130 --> 00:14:00,550
+译The immutable list passes the new immutable list to the ListComponent, triggering its change detection.
 
 115
-00:03:41,576 --> 00:03:43,447
-iteration in the browser's event loop.
+00:14:00,550 --> 00:14:08,540
+译Angular goes through the individual employees and recalculates their numeric values, even though they didn't change.
 
 116
-00:03:43,447 --> 00:03:45,515
-Making the update asynchronous can 译work,
+00:14:08,540 --> 00:14:14,310
+译Ideally, you would want to calculate the value only for a new employee.
 
 117
-00:03:45,515 --> 00:03:47,337
-however it's very implicit and should
+00:14:14,310 --> 00:14:19,290
+译We can improve the application's performance here with a little bit of refactoring.
 
 118
-00:03:47,337 --> 00:03:49,159
-really only be used as a last resort.
+00:14:19,290 --> 00:14:22,420
+译We can create a new pipe called calculate.
 
 119
-00:03:49,159 --> 00:03:51,030
-译It's not clear why we make this code
+00:14:22,420 --> 00:14:34,580
+译Let us import the pipe decorator and sets the pipe name to "calculate." Here, we explicitly said the pipe to be pure for readability, even though that's the property's default value.
 
 120
-00:03:51,030 --> 00:03:52,901
-asynchronous unless you understand the
+00:14:34,580 --> 00:14:42,350
+译As a next step, we can implement the CalculatePipe class, adding a transform method and implementing the PipeTransform interface.
 
 121
-00:03:52,901 --> 00:03:54,723
-nuances of Angular 译change detection
+00:14:42,350 --> 00:14:54,840
+译Now let us move the Fibonacci implementation and remove the redundant calculate method from the ListComponent.
 
 122
-00:03:54,723 --> 00:03:56,545
-and the browser's event loop. Luckily
+00:14:54,840 --> 00:15:07,595
+译Let us add the CalculatePipe to the declarations in the employee-list.module.
 
 123
-00:03:56,545 --> 00:03:58,416
-Angular provides us with a more direct
+00:15:07,595 --> 00:15:25,270
+译Finally, we need to update the template of the ListComponent to use the pipe rather than a method call.
 
 124
-00:03:58,416 --> 00:04:00,188
-译and explicit way to trigger change
+00:15:25,270 --> 00:15:28,870
+译Notice that now we can add an employee without any visible delays.
 
 125
-00:04:00,188 --> 00:04:02,010
-detection. We can manually trigger it
+00:15:28,870 --> 00:15:45,740
+译To recap, this problem occurs when Angular recalculates the same template expression repeatedly, even though they depend only on parameters that value does not change.
 
 126
-00:04:02,010 --> 00:04:03,881
-by injecting the change 译detector ref
+00:15:45,740 --> 00:15:55,510
+译We can identify the problem with Angular DevTools by noticing change detection cycles that don't take time proportional to the changes we made in the UI.
 
 127
-00:04:03,881 --> 00:04:05,653
-in the constructor of the component.
+00:15:55,510 --> 00:16:03,600
+译The solution usually involves either moving a calculation to a pure pipe or caching it via memorization.
 
 128
-00:04:05,653 --> 00:04:07,672
-We can then use it to manually run change
+00:16:03,600 --> 00:16:08,700
+译The final pattern we're going to look at is large component trees.
 
 129
-00:04:07,672 --> 00:04:09,691
-译detection by calling the detect changes
+00:16:08,700 --> 00:16:18,780
+译Even if we have optimized each component and don't perform redundant calculations, we can still observe frame drops if we have thousands of component instances.
 
 130
-00:04:09,691 --> 00:04:11,611
-method. This will tell Angular to check
+00:16:18,780 --> 00:16:24,990
+译To show how we can improve the performance in this scenario, I added a few hundred of employees to each list.
 
 131
-00:04:11,611 --> 00:04:13,433
-the view and 译its children, in which
+00:16:24,990 --> 00:16:34,740
+译When we add a new employee, we notice that detecting the ListComponent for changes takes over 25 milliseconds, which causes frame drops.
 
 132
-00:04:13,433 --> 00:04:15,205
-case it will notice that our loading
+00:16:34,740 --> 00:16:40,350
+译Improving the performance in large component trees involves making the component tree smaller.
 
 133
-00:04:15,205 --> 00:04:17,273
-state has changed, giving 译us yet another
+00:16:40,350 --> 00:16:46,020
+译Standard techniques are on-demand rendering, such as virtualization or pagination.
 
 134
-00:04:17,273 --> 00:04:19,292
-way to address the error. Now an entirely
+00:16:46,020 --> 00:16:52,140
+译For our purposes, we're going to use the Angular cdk's virtual scrolling component.
 
 135
-00:04:19,292 --> 00:04:21,261
-different way you might encounter 译this
+00:16:52,140 --> 00:17:00,630
+译In the template of the ListComponent, we will use the cdk_virtual_scroll_viewport with item size equal to 50.
 
 136
-00:04:21,261 --> 00:04:23,230
-error is when you have a method, usually
+00:17:00,630 --> 00:17:06,780
+译And we're also going to add the CSS class "viewport" so that we can style this component.
 
 137
-00:04:23,230 --> 00:04:25,347
-a getter, that doesn't return a predictable
+00:17:06,780 --> 00:17:12,599
+译Instead of using ngFor in the mat-list item, we'll use the cdkVirtualFor.
 
 138
-00:04:25,347 --> 00:04:27,119
-value, 译which can cause an infinite
+00:17:12,599 --> 00:17:18,079
+译We'll also set the height of the container to 800 pixels.
 
 139
-00:04:27,119 --> 00:04:29,039
-change detection loop. Take for example
+00:17:18,079 --> 00:17:21,240
+译And that's all.
 
 140
-00:04:29,039 --> 00:04:31,156
-this getter in our 译component that returns
+00:17:21,240 --> 00:17:28,155
+译Now when we add a new item, the change section in the ListComponent takes 1/5 of the time it used to take before.
 
 141
-00:04:31,156 --> 00:04:33,027
-a random number. If we try to use this
+00:17:28,155 --> 00:17:43,220
+译Keep in mind that even if you have highly optimized components and render thousands of them, their templates combined could still be very expensive during change detection.
 
 142
-00:04:33,027 --> 00:04:34,849
-value in the 译template, Angular will
+00:17:43,220 --> 00:17:57,590
+译You can identify this problem in your DevTools if you find many components that just take a fraction of the overall change detection cycle or when there is one component with a really large view that takes a lot of time to be checked.
 
 143
-00:04:34,849 --> 00:04:36,621
-get a different value each time it's
+00:17:57,590 --> 00:18:03,020
+译The solution involves on-demand rendering of components to trim the component tree.
 
 144
-00:04:36,621 --> 00:04:38,393
-checked. 译The solution in this case
+00:18:03,020 --> 00:18:05,300
+译That's pretty much everything I had for you today.
 
 145
-00:04:38,393 --> 00:04:40,412
-is to make the method return a consistent
+00:18:05,300 --> 00:18:11,330
+译We first went through the fundamentals of using Angular DevTools, focusing on the profiler.
 
 146
-00:04:40,412 --> 00:04:42,578
-译value based on the state of the component.
+00:18:11,330 --> 00:18:27,410
+译After that, we explored four patterns that can help you identify and resolve common performance issues-- zone pollution, out of bounds, change detection, recalculation of referentially transparent expressions, and large component trees.
 
 147
-00:04:42,578 --> 00:04:44,547
-In other words getters should be derived
+00:18:27,410 --> 00:18:29,460
+译Thank you very much for watching this video.
 
 148
-00:04:44,547 --> 00:04:46,467
-译directly from the component state and
-
-149
-00:04:46,467 --> 00:04:48,436
-not values that change constantly 译like
-
-150
-00:04:48,436 --> 00:04:50,356
-timestamps or random numbers. Now let's
-
-151
-00:04:50,356 --> 00:04:52,227
-take a look at one more example, where
-
-152
-00:04:52,227 --> 00:04:54,344
-译we have both a parent and child component
-
-153
-00:04:54,344 --> 00:04:56,166
-at play. The app component the parent
-
-154
-00:04:56,166 --> 00:04:58,037
-contains the 译loading state just like
-
-155
-00:04:58,037 --> 00:04:59,859
-our previous examples, but instead of
-
-156
-00:04:59,859 --> 00:05:01,631
-running the update from the 译parent
-
-157
-00:05:01,631 --> 00:05:03,403
-component, we'll make it happen from
-
-158
-00:05:03,403 --> 00:05:05,274
-a child component with a custom event.
-
-159
-00:05:05,274 --> 00:05:07,293
-译In the item component, the child, we're
-
-160
-00:05:07,293 --> 00:05:09,115
-using the @Output decorator to create
-
-161
-00:05:09,115 --> 00:05:10,887
-译a custom event along with an event
-
-162
-00:05:10,887 --> 00:05:12,758
-emitter. Then during ngOnInit we'll go
-
-163
-00:05:12,758 --> 00:05:14,678
-ahead and 译emit the event with a value
-
-164
-00:05:14,678 --> 00:05:16,598
-of true. Then back in the app component
-
-165
-00:05:16,598 --> 00:05:18,420
-template we'll 译go ahead and declare
-
-166
-00:05:18,420 --> 00:05:20,389
-the item component. When it fires, we'll
-
-167
-00:05:20,389 --> 00:05:22,211
-set 译the loading value to false. The
-
-168
-00:05:22,211 --> 00:05:24,131
-end result is a situation where we have
-
-169
-00:05:24,131 --> 00:05:26,051
-a 译child component updating the parent
-
-170
-00:05:26,051 --> 00:05:27,922
-after change detection has already run
-
-171
-00:05:27,922 --> 00:05:29,694
-on the parent, 译and once again that
-
-172
-00:05:29,694 --> 00:05:31,663
-produces the error. A potential solution
-
-173
-00:05:31,663 --> 00:05:33,780
-in this case would be to 译move the loading
-
-174
-00:05:33,780 --> 00:05:35,602
-state into the child component and if
-
-175
-00:05:35,602 --> 00:05:37,473
-that's not possible you might consider
-
-176
-00:05:37,473 --> 00:05:39,393
-译moving this state to a shared service
-
-177
-00:05:39,393 --> 00:05:41,165
-where it can be injected in multiple
-
-178
-00:05:41,165 --> 00:05:41,707
-components.
-
-179
-00:05:49,332 --> 00:05:51,519
-译Let's finish up by doing a quick recap.
-
-180
-00:05:51,519 --> 00:05:54,026
-The ExpressionChangedAfterItHasBeenCheckedError
-
-181
-00:05:54,026 --> 00:05:56,159
-译occurs because a value in the template
-
-182
-00:05:56,159 --> 00:05:58,239
-has been updated after change detection
-
-183
-00:05:58,239 --> 00:06:00,426
-has finished. 译Debug it by first finding
-
-184
-00:06:00,426 --> 00:06:02,506
-the template in the stack trace. 译From
-
-185
-00:06:02,506 --> 00:06:04,853
-there you can analyze your code to determine
-
-186
-00:06:04,853 --> 00:06:06,773
-where the value is being updated and
-
-187
-00:06:06,773 --> 00:06:08,906
-use one of 译the methods covered in this
-
-188
-00:06:08,906 --> 00:06:11,039
-video to address it, such as refactoring
-
-189
-00:06:11,039 --> 00:06:13,012
-to the OnInit lifecycle 译hook, using
-
-190
-00:06:13,012 --> 00:06:14,932
-change detector ref manually, making
-
-191
-00:06:14,932 --> 00:06:16,905
-getters item potent, or making 译your
-
-192
-00:06:16,905 --> 00:06:18,878
-updates async as a last resort. Refer
-
-193
-00:06:18,878 --> 00:06:21,278
-to the Angular documentation 译for additional
-
-194
-00:06:21,278 --> 00:06:22,398
-details and examples.
+00:18:29,460 --> 00:18:32,350
+译See you next, time and happy coding.

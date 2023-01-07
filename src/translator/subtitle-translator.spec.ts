@@ -114,9 +114,15 @@ Angular at Google.`);
     expect(items).toEqual([
       {
         'cue': '',
-        'endTime': 2670,
+        'endTime': 1438,
         'startTime': 0,
-        'text': 'MINKO GECHEV: 大家好！我是 Minko Gechev。',
+        'text': 'MINKO GECHEV: 大家好！',
+      },
+      {
+        'cue': '',
+        'endTime': 2670,
+        'startTime': 1438,
+        'text': '我是 Minko Gechev。',
       },
       {
         'cue': '',
@@ -167,33 +173,21 @@ Angular at Google.`);
     expect(items).toEqual([
       {
         'cue': '',
-        'endTime': 890,
+        'endTime': 1506,
         'startTime': 0,
-        'text': 'MINKO GECHEV:',
+        'text': 'MINKO GECHEV: \n大家好！',
       },
       {
         'cue': '',
-        'endTime': 1643,
-        'startTime': 890,
-        'text': '大家好！我是',
+        'endTime': 2738,
+        'startTime': 1506,
+        'text': '我是 Minko Gechev。',
       },
       {
         'cue': '',
-        'endTime': 2533,
-        'startTime': 1643,
-        'text': 'Minko Gechev。',
-      },
-      {
-        'cue': '',
-        'endTime': 4019,
+        'endTime': 5613,
         'startTime': 2670,
-        'text': '我在 Google',
-      },
-      {
-        'cue': '',
-        'endTime': 5368,
-        'startTime': 4019,
-        'text': '做 Angular。',
+        'text': '我在 Google \n做 Angular。',
       },
     ]);
   });
