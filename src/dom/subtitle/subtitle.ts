@@ -92,7 +92,7 @@ ${escapeSubtitle(item.text, format)}`.trim();
   }
 
   function partition(text: string, format: SubtitleFormat): { meta: MetaInfo, items: string[] } {
-    const segments = text.split(/\r?\n\r?\n/);
+    const segments = text.split(/\r?\n\r?\n/).filter(it => !!it);
     if (format === SubtitleFormat.SRT) {
       return {
         meta: {
