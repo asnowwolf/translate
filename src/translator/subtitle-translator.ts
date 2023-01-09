@@ -13,6 +13,14 @@ interface WholeSentence {
   items: SubtitleItem[];
 }
 
+function mergeWholeSentence(wholeSentence: WholeSentence) {
+  if (wholeSentence.original.trim() === wholeSentence.translation.trim()) {
+    return wholeSentence.original;
+  } else {
+    return `${wholeSentence.original.replace(/\r?\n/g, ' ')}\n${wholeSentence.translation}`;
+  }
+}
+
 export class SubtitleTranslator extends AbstractTranslator<object> {
   parse(text: string): Subtitle {
     return subtitle.parse(text);
@@ -28,7 +36,14 @@ export class SubtitleTranslator extends AbstractTranslator<object> {
     // 翻译文本
     this.translateWholeSentences(wholeSentences).then((wholeSentences) => {
       // 将翻译结果映射回时间轴，并根据标点进行适当的拆分
-      doc.items = splitTimelineBySentence(wholeSentences);
+      doc.items = wholeSentences.map((wholeSentence) => {
+        return {
+          cue: '',
+          startTime: wholeSentence.startTime,
+          endTime: wholeSentence.endTime,
+          text: mergeWholeSentence(wholeSentence),
+        };
+      });
       doc.meta.language = 'zh-Hans';
     });
     return doc;
