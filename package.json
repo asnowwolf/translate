@@ -6,7 +6,7 @@
   "bin": {
     "nt": "./bin/index.js"
   },
-  "version": "1.4.3",
+  "version": "1.5.0",
   "author": "Zhicheng Wang<asnowwolf@gmail.com>",
   "homepage": "https://blog.ralph.wang",
   "repository": {
