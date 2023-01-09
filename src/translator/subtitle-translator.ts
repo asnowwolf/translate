@@ -5,22 +5,6 @@ import { containsChinese } from '../dom/common';
 import Subtitle = subtitle.Subtitle;
 import SubtitleItem = subtitle.SubtitleItem;
 
-interface WholeSentence {
-  original: string;
-  translation: string;
-  startTime: number;
-  endTime: number;
-  items: SubtitleItem[];
-}
-
-function mergeWholeSentence(wholeSentence: WholeSentence) {
-  if (wholeSentence.original.trim() === wholeSentence.translation.trim()) {
-    return wholeSentence.original;
-  } else {
-    return `${wholeSentence.original.replace(/\r?\n/g, ' ')}\n${wholeSentence.translation}`;
-  }
-}
-
 export class SubtitleTranslator extends AbstractTranslator<object> {
   parse(text: string): Subtitle {
     return subtitle.parse(text);
@@ -57,6 +41,22 @@ export class SubtitleTranslator extends AbstractTranslator<object> {
     })).then(() => wholeSentences);
   }
 
+}
+
+interface WholeSentence {
+  original: string;
+  translation: string;
+  startTime: number;
+  endTime: number;
+  items: SubtitleItem[];
+}
+
+function mergeWholeSentence(wholeSentence: WholeSentence) {
+  if (wholeSentence.original.trim() === wholeSentence.translation.trim()) {
+    return wholeSentence.original;
+  } else {
+    return `${wholeSentence.original.replace(/\r?\n/g, ' ')}\n${wholeSentence.translation}`;
+  }
 }
 
 export function mergeTimelineBySentence(items: SubtitleItem[]): WholeSentence[] {
@@ -149,4 +149,21 @@ const MAX_VISUAL_LENGTH = 36;
 
 export function splitTimelineBySentence(wholeSentences: WholeSentence[], maxVisualLength = MAX_VISUAL_LENGTH): SubtitleItem[] {
   return wholeSentences.flatMap((wholeSentence) => splitTimeline(wholeSentence, maxVisualLength));
+}
+
+export function splitSubtitles(content: string, maxVisualLength = MAX_VISUAL_LENGTH): string {
+  const dom = subtitle.parse(content);
+  const wholeSentences: WholeSentence[] = dom.items.map(it => {
+    const [original, translation] = it.text.split(/\r?\n/);
+    return ({
+      startTime: it.startTime,
+      endTime: it.endTime,
+      cue: it.cue,
+      original,
+      translation,
+      items: [],
+    });
+  });
+  const items = wholeSentences.flatMap((wholeSentence) => splitTimeline(wholeSentence, maxVisualLength));
+  return subtitle.stringify({ meta: dom.meta, items });
 }

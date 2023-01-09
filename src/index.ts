@@ -2,7 +2,7 @@ export * from './dom/common';
 export * from './dom/unified/markdown';
 export * from './extractor/extractor';
 export * from './injector/injector';
-export * from './marker/marker';
+export * from './marker/html-marker';
 export * from './dom/parse5/dom-models';
 export * from './dom/parse5/dom-tree-adapter';
 export * from './translation-engine/translation-engine';

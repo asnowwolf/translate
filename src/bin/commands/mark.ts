@@ -1,6 +1,6 @@
 import { CommandBuilder } from 'yargs';
 import { sync as globby } from 'globby';
-import { Marker } from '../../marker/marker';
+import { getMarkerFor } from '../../marker/get-marker-for';
 
 export const command = `mark <sourceGlobs...>`;
 
@@ -29,7 +29,7 @@ export const handler = function ({ sourceGlobs, mono }: Params) {
   }
   for (const filename of filenames) {
     console.log('marking: ', filename);
-    const marker = new Marker();
+    const marker = getMarkerFor(filename);
     marker.markFile(filename, mono);
   }
 };
