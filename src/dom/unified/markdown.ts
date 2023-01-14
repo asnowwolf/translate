@@ -169,7 +169,7 @@ export namespace markdown {
     listItemIndent: 1,
     incrementListMarker: false,
     stringLength: stringWidth,
-    paddedTable: false,
+    paddedTable: true,
     fences: true,
     entities: false,
   };
