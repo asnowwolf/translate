@@ -20,6 +20,9 @@ export class GoogleTranslationEngine extends TranslationEngine {
     const result: string[] = [];
     for (let line of texts) {
       const text = SentenceFormatter.toPlain(line, format);
+      if (!text.trim()) {
+        continue;
+      }
       const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=${encodeURIComponent(text)}`);
       const translation = response[0].map(([cn]) => cn).join('');
       result.push(translation);
