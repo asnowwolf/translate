@@ -24,9 +24,9 @@ describe('translation engine', () => {
 
   it('should translate by google', async () => {
     const engine = new GoogleTranslationEngine();
-    engine.translate('test', 'plain').then(result => {
-      expect(result).toBe('测试');
-      expect(engine.totalBytes).toBe(4);
+    engine.translate('test<code>test</code>', 'html').then(result => {
+      expect(result).toBe('测试<code>test</code>');
+      expect(engine.totalBytes).toBe(21);
     });
     await engine.flush();
   });
