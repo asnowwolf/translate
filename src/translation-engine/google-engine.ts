@@ -26,9 +26,15 @@ export class GoogleTranslationEngine extends TranslationEngine {
       const response = await fetch(`https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&sl=auto&tl=zh-CN&tc=6&sr=1&mode=1`, {
         q: text,
       });
-      const translation = response?.[0]?.[0];
+      const translation = (response?.[0]?.[0] as string).replace(/^<p>([\s\S]*)<\/p>$/, '$1');
       if (translation) {
-        result.push(SentenceFormatter.fromHtml(translation, format));
+        const multiSentencesPattern = /<i>(.*?)<\/i>\s*<b>(.*?)<\/b>/g;
+        const matches = Array.from(translation.matchAll(multiSentencesPattern));
+        if (!translation.startsWith('<i>') || !matches.length) {
+          result.push(SentenceFormatter.fromHtml(translation, format));
+        } else {
+          result.push(matches.map(match => SentenceFormatter.fromHtml(match[2], format)).join(''));
+        }
       }
     }
     return result;
