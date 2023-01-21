@@ -28,7 +28,7 @@ export class GoogleTranslationEngine extends TranslationEngine {
       });
       const translation = response?.[0]?.[0];
       if (translation) {
-        result.push(translation);
+        result.push(SentenceFormatter.fromHtml(translation, format));
       }
     }
     return result;
