@@ -25,7 +25,7 @@ export class MarkdownTranslator extends AbstractTranslator<Node> {
 
 function prettify(md: string): string {
   return md
-    .replace(/([\w`])([\u4e00-\u9fa5])/g, '$1 $2')
-    .replace(/([\u4e00-\u9fa5])([\w`])/g, '$1 $2')
+    .replace(/([\w`])(\p{Script=Han})/gu, '$1 $2')
+    .replace(/(\p{Script=Han})([\w`])/gu, '$1 $2')
     .replace(/\n\n+/g, '\n\n');
 }

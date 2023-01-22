@@ -7,7 +7,7 @@ export function containsChinese(text?: string): boolean {
   if (!text) {
     return false;
   }
-  return text.search(/[\u4e00-\u9fa5]/gm) !== -1;
+  return /\p{Script=Han}/gu.test(text);
 }
 
 export function basenameWithoutExt(filename = ''): string {

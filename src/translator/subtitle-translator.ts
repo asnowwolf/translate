@@ -91,7 +91,7 @@ function splitChineseSentence(translation: string, maxVisualLength: number): str
 
   // 给定字符处是否可以断开
   function canBreakAt(char: string): boolean {
-    return /[\u4e00-\u9fa5]/.test(char);
+    return containsChinese(char);
   }
 
   function splitLongSentence(text: string): string[] {
