@@ -5,7 +5,7 @@ import { getExtractorFor } from '../../extractor/get-extractor-for';
 import { groupBy, uniqBy } from 'lodash';
 import { generateFingerprint } from '../../dict/generate-fingerprint';
 
-export const command = `extract <outFile> <sourceGlobs...>`;
+export const command = `extract <sourceGlobs...>`;
 
 export const describe = '提取翻译对';
 
@@ -13,24 +13,25 @@ export const builder: CommandBuilder = {
   sourceGlobs: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
-  outFile: {
-    description: '结果输出到的文件，不用带扩展名',
+  dict: {
+    required: true,
+    description: '结果要输出到的文件，不用带扩展名',
   },
 };
 
 interface ExtractParams {
   sourceGlobs: string[];
-  outFile: string;
+  dict: string;
 }
 
-export const handler = async function ({ sourceGlobs, outFile }: ExtractParams) {
-  const filenames = globby(sourceGlobs);
+export const handler = async function (params: ExtractParams) {
+  const filenames = globby(params.sourceGlobs);
   if (filenames.length === 0) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
   }
   const dict = new SqliteDict();
-  await dict.open(outFile);
+  await dict.open(params.dict);
   try {
     const allPairs = await Promise.all(filenames.map(filename => getExtractorFor(filename).extract(filename)));
     const uniqPairs = uniqBy(allPairs.flat(), (it) =>
