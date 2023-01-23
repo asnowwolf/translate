@@ -4,7 +4,7 @@ import { delay } from '../dom/delay';
 import { SentenceFormat } from '../translator/sentence-format';
 
 function isPlainUrl(url: string): boolean {
-  return /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/.test(url);
+  return /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url);
 }
 
 export abstract class TranslationEngine {

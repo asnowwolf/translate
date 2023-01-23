@@ -20,4 +20,12 @@ describe('translation engine', () => {
     });
     await engine.flush();
   });
+  it('should translate text that contains url', async () => {
+    const engine = new FakeTranslationEngine();
+    engine.translate('Hello, this is http://www.google.com', 'plain').then(result => {
+      expect(result).toBe('译Hello, this is http://www.google.com');
+      expect(engine.totalBytes).toBe(36);
+    });
+    await engine.flush();
+  });
 });
