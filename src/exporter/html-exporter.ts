@@ -11,20 +11,24 @@ import {
 import { containsChinese } from '../dom/common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
-import { Marker } from './marker';
+import { Exporter } from './exporter';
 
-export class HtmlMarker extends Marker {
+export interface HtmlExporterOptions {
+  mono: boolean;
+}
+
+export class HtmlExporter extends Exporter {
   constructor(
     private readonly selectors: ((node: DomElement) => boolean)[] = defaultSelectors,
   ) {
     super();
   }
 
-  markContent(content: string, mono: boolean) {
+  exportContent(content: string, options: HtmlExporterOptions): string {
     const doc = parseDoc(content);
     this.addIdForHeaders(doc);
     this.markAndSwapAll(doc);
-    if (mono) {
+    if (options.mono) {
       this.monochromatic(doc);
     }
     return doc.toHtml();

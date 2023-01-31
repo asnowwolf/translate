@@ -1,22 +1,22 @@
-import { Marker } from './marker';
-import { HtmlMarker } from './html-marker';
+import { Exporter } from './exporter';
+import { HtmlExporter, HtmlExporterOptions } from './html-exporter';
 import { defaultSelectors, DomElement } from '../dom/parse5/dom-models';
 
-export class AngularJsonMarker extends Marker {
-  private htmlMarker: HtmlMarker;
+export class AngularJsonExporter extends Exporter {
+  private htmlExporter: HtmlExporter;
 
   constructor(selectors: ((node: DomElement) => boolean)[] = defaultSelectors) {
     super();
-    this.htmlMarker = new HtmlMarker(selectors);
+    this.htmlExporter = new HtmlExporter(selectors);
   }
 
-  markContent(content: string, mono: boolean) {
+  exportContent(content: string, options: HtmlExporterOptions) {
     const json = JSON.parse(content);
     if (!json.contents) {
       return content;
     }
 
-    json.contents = this.htmlMarker.markContent(this.preprocessAngularJson(json.contents), mono);
+    json.contents = this.htmlExporter.exportContent(this.preprocessAngularJson(json.contents), options);
     return JSON.stringify(json);
   }
 

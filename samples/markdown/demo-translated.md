@@ -76,16 +76,16 @@ no-translate
 > >
 > > 译 Four 11
 
-| One 11 | One 12 |
-| ------ | ------ |
-| 译 One 11 | 译 One 12 |
-| Two 11 | Two 12 |
-| 译 Two 11 | 译 Two 12 |
-| no-translate | Two 12 |
-| no-translate | 译 Two 12 |
+| One 11       | One 12       |
+| ------------ | ------------ |
+| 译 One 11     | 译 One 12     |
+| Two 11       | Two 12       |
+| 译 Two 11     | 译 Two 12     |
+| no-translate | Two 12       |
+| no-translate | 译 Two 12     |
 | no-translate | no-translate |
-| Three 11 | Three 12 |
-| 译 Three 11 | 译 Three 12 |
+| Three 11     | Three 12     |
+| 译 Three 11   | 译 Three 12   |
 
 <code-example src="/abc"></code-example>
 

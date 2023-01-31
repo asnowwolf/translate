@@ -7,7 +7,7 @@ import { generateFingerprint } from '../../dict/generate-fingerprint';
 
 export const command = `extract <sourceGlobs...>`;
 
-export const describe = '提取翻译对';
+export const describe = '从对照翻译文件中提取出词典';
 
 export const builder: CommandBuilder = {
   sourceGlobs: {

@@ -174,8 +174,8 @@ http-server -p 8080
     });
 
     it('code-example in table', () => {
-      const md = `| AngularJS | Angular |
-| :-------- | :------ |
+      const md = `| AngularJS                                                                                                                                                                                                                                                                                                                                                           | Angular                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | <header>Filters</header> <code-example hideCopy format="html" language="html"> &lt;td&gt; &NewLine; &nbsp; {{movie.title &verbar; uppercase}} &NewLine; &lt;/td&gt; </code-example> To filter output in AngularJS templates, use the pipe (<code>&verbar;</code>) character and one or more filters. <br /> This example filters the \`title\` property to uppercase. | <header>Pipes</header> <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="uppercase"></code-example> In Angular you use similar syntax with the pipe (<code>&verbar;</code>) character to filter output, but now you call them **pipes**. Many (but not all) of the built-in filters from AngularJS are built-in pipes in Angular. <br /> For more information, see [Filters/pipes][AioGuideAjsQuickReferenceFiltersPipes]. |`;
       const ast = markdown.parse(md) as Parent;
       // 重建 markdown
@@ -441,10 +441,10 @@ three
 
 译three
 
-| four | five |
-| ---- | ---- |
-| 四 | 五 |
-| six | seven |
+| four  | five    |
+| ----- | ------- |
+| 四    | 五      |
+| six   | seven   |
 | 译six | 译seven |
 
 1. eight

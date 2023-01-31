@@ -1,591 +1,739 @@
 1
 00:00:00,000 --> 00:00:01,390
+MINKO GECHEV: Hello, everyone.
 译MINKO GECHEV: Hello, everyone.
 
 2
 00:00:01,390 --> 00:00:02,670
+My name is Minko Gechev.
 译My name is Minko Gechev.
 
 3
 00:00:02,670 --> 00:00:05,490
+I'm working on Angular at Google.
 译I'm working on Angular at Google.
 
 4
 00:00:05,490 --> 00:00:08,705
+Over the years, I have profiled hundreds of Angular applications.
 译Over the years, I have profiled hundreds of Angular applications.
 
 5
 00:00:08,705 --> 00:00:14,902
+And I have noticed that the majority of performance challenges fit into a couple of different patterns.
 译And I have noticed that the majority of performance challenges fit into a couple of different patterns.
 
 6
 00:00:14,902 --> 00:00:21,340
+Today, we're going to look into these patterns, and we're going to learn how to resolve them.
 译Today, we're going to look into these patterns, and we're going to learn how to resolve them.
 
 7
 00:00:21,340 --> 00:00:25,810
+In this video, first, you'll learn how to use Angular DevTools.
 译In this video, first, you'll learn how to use Angular DevTools.
 
 8
 00:00:25,810 --> 00:00:31,750
+After that, we'll identify different performance-regression patterns and learn how to resolve them.
 译After that, we'll identify different performance-regression patterns and learn how to resolve them.
 
 9
 00:00:31,750 --> 00:00:37,450
+For this purpose, we'll use a simple prototype of a typical business application.
 译For this purpose, we'll use a simple prototype of a typical business application.
 
 10
 00:00:37,450 --> 00:00:41,290
+At the very top of the UI, we have a bar chart.
 译At the very top of the UI, we have a bar chart.
 
 11
 00:00:41,290 --> 00:00:48,400
+Under the chart, we have two lists of employees from organizational Sales and R&amp;D departments.
 译Under the chart, we have two lists of employees from organizational Sales and R&amp;D departments.
 
 12
 00:00:48,400 --> 00:00:54,670
+Each employee has a name and a numeric value associated with them that goes through a heavy computation.
 译Each employee has a name and a numeric value associated with them that goes through a heavy computation.
 
 13
 00:00:54,670 --> 00:00:58,690
+In each of these lists, we can ask new employees.
 译In each of these lists, we can ask new employees.
 
 14
 00:00:58,690 --> 00:01:03,230
+As you'll see in the code, there is the foundation for implementing the lead functionality, as well.
 译As you'll see in the code, there is the foundation for implementing the lead functionality, as well.
 
 15
 00:01:03,230 --> 00:01:07,660
+But for simplicity, it is not part of the UI.
 译But for simplicity, it is not part of the UI.
 
 16
 00:01:07,660 --> 00:01:18,550
+Remember I mentioned that the numeric value for each employee goes through a heavy computation? I have mocked this computation with the Fibonacci function to keep things simple.
 译Remember I mentioned that the numeric value for each employee goes through a heavy computation? I have mocked this computation with the Fibonacci function to keep things simple.
 
 17
 00:01:18,550 --> 00:01:32,310
+Notice that we've implemented a pretty inefficient version of Fibonacci so that even minor performance problems can have significant visible impacts in the examples we'll explore.
 译Notice that we've implemented a pretty inefficient version of Fibonacci so that even minor performance problems can have significant visible impacts in the examples we'll explore.
 
 18
 00:01:32,310 --> 00:01:56,330
+Implement the entire application with just two components-- EmployeeListComponent, which contains the list of employees for the corresponding department and has a text input for entering new employees, and the AppComponent, which renders two list instances of the EmployeeListComponent and a bar chart at the top.
 译Implement the entire application with just two components-- EmployeeListComponent, which contains the list of employees for the corresponding department and has a text input for entering new employees, and the AppComponent, which renders two list instances of the EmployeeListComponent and a bar chart at the top.
 
 19
 00:01:56,330 --> 00:02:04,150
+Before we jump to the patterns, let us look at how we can profile an application by using Angular DevTools.
 译Before we jump to the patterns, let us look at how we can profile an application by using Angular DevTools.
 
 20
 00:02:04,150 --> 00:02:09,820
+Angular DevTools is a Chrome DevTools extension that you can install from the Chrome Web Store.
 译Angular DevTools is a Chrome DevTools extension that you can install from the Chrome Web Store.
 
 21
 00:02:09,820 --> 00:02:14,260
+It allows you to preview the structure of your application in the Components explorer.
 译It allows you to preview the structure of your application in the Components explorer.
 
 22
 00:02:14,260 --> 00:02:17,290
+For this video, we'll be primarily using the Profiler.
 译For this video, we'll be primarily using the Profiler.
 
 23
 00:02:17,290 --> 00:02:20,950
+To start profiling an application, click on the Record button.
 译To start profiling an application, click on the Record button.
 
 24
 00:02:20,950 --> 00:02:30,790
+As Angular performs change detection in your app, you'll see bars corresponding to the individual change detection cycles appearing in DevTools's timeline.
 译As Angular performs change detection in your app, you'll see bars corresponding to the individual change detection cycles appearing in DevTools's timeline.
 
 25
 00:02:30,790 --> 00:02:37,090
+When we select the frame from the timeline, we can preview how much time we spend on the individual components.
 译When we select the frame from the timeline, we can preview how much time we spend on the individual components.
 
 26
 00:02:37,090 --> 00:02:43,930
+Here, we spend the majority of the change-detection invocation within the MatFormField and EmployeeListComponent.
 译Here, we spend the majority of the change-detection invocation within the MatFormField and EmployeeListComponent.
 
 27
 00:02:43,930 --> 00:02:51,640
+DevTools allows us to preview the Profiler output in different formats-- bar charts, tree maps, and flame graphs.
 译DevTools allows us to preview the Profiler output in different formats-- bar charts, tree maps, and flame graphs.
 
 28
 00:02:51,640 --> 00:02:55,840
+The flame graph provides a hierarchical view of the component tree.
 译The flame graph provides a hierarchical view of the component tree.
 
 29
 00:02:55,840 --> 00:03:00,520
+When we click on a particular component, we can see how much time Angular spent on it.
 译When we click on a particular component, we can see how much time Angular spent on it.
 
 30
 00:03:00,520 --> 00:03:08,820
+For example, we spent about 0.1 milliseconds on detecting changes within the EmployeeListComponent.
 译For example, we spent about 0.1 milliseconds on detecting changes within the EmployeeListComponent.
 
 31
 00:03:08,820 --> 00:03:15,990
+Since our application doesn't have a complicated nested structure, we'll use the default bar chart view.
 译Since our application doesn't have a complicated nested structure, we'll use the default bar chart view.
 
 32
 00:03:15,990 --> 00:03:18,360
+Now let us look at individual patterns.
 译Now let us look at individual patterns.
 
 33
 00:03:18,360 --> 00:03:21,420
+We'll describe the cause of the problem.
 译We'll describe the cause of the problem.
 
 34
 00:03:21,420 --> 00:03:26,370
+You'll learn how to identify it and resolve it.
 译You'll learn how to identify it and resolve it.
 
 35
 00:03:26,370 --> 00:03:30,390
+The first pattern we're going to look into is zone pollution.
 译The first pattern we're going to look into is zone pollution.
 
 36
 00:03:30,390 --> 00:03:36,340
+Let us go back to the application and start recording with Angular DevTools's Profiler.
 译Let us go back to the application and start recording with Angular DevTools's Profiler.
 
 37
 00:03:36,340 --> 00:03:47,000
+If we start interacting with the bar chart in the application, we'll see that we trigger multiple change detection cycles, each of which takes a decent amount of time.
 译If we start interacting with the bar chart in the application, we'll see that we trigger multiple change detection cycles, each of which takes a decent amount of time.
 
 38
 00:03:47,000 --> 00:03:56,720
+If we explore the change detection cycles, we'll see that the source of the change detection is mouseup and mousemove events.
 译If we explore the change detection cycles, we'll see that the source of the change detection is mouseup and mousemove events.
 
 39
 00:03:56,720 --> 00:04:04,160
+Each cycle takes more than 740 milliseconds, which significantly drops the browser's frame rate.
 译Each cycle takes more than 740 milliseconds, which significantly drops the browser's frame rate.
 
 40
 00:04:04,160 --> 00:04:14,830
+We spent most of the time in the two instances of the EmployeeListComponent, where each check takes more than 360 milliseconds.
 译We spent most of the time in the two instances of the EmployeeListComponent, where each check takes more than 360 milliseconds.
 
 41
 00:04:14,830 --> 00:04:17,320
+Now let us resolve this problem.
 译Now let us resolve this problem.
 
 42
 00:04:17,320 --> 00:04:22,320
+The beginning of app.component's template is div container where we render the bar chart.
 译The beginning of app.component's template is div container where we render the bar chart.
 
 43
 00:04:22,320 --> 00:04:32,430
+We initialize the chart in the Ng on the [INAUDIBLE] lifecycle hook in the app.component by invoking the new plot method of the Plotly charting library.
 译We initialize the chart in the Ng on the [INAUDIBLE] lifecycle hook in the app.component by invoking the new plot method of the Plotly charting library.
 
 44
 00:04:32,430 --> 00:04:38,370
+We pass the ID of the DOM container and the data we want to render.
 译We pass the ID of the DOM container and the data we want to render.
 
 45
 00:04:38,370 --> 00:04:50,200
+Given the mouseup and mousemove events that we got in the Profiler, this means that probably the initialization logic of Plotly is adding these EventListeners to the bars.
 译Given the mouseup and mousemove events that we got in the Profiler, this means that probably the initialization logic of Plotly is adding these EventListeners to the bars.
 
 46
 00:04:50,200 --> 00:04:54,400
+Plotly offers a standalone library that doesn't need to interact with Angular.
 译Plotly offers a standalone library that doesn't need to interact with Angular.
 
 47
 00:04:54,400 --> 00:05:02,920
+We can run the initialization logic outside of the Angular zone to prevent the invocation of redundant change detection cycles.
 译We can run the initialization logic outside of the Angular zone to prevent the invocation of redundant change detection cycles.
 
 48
 00:05:02,920 --> 00:05:08,380
+Let us go to the constructor of app.component and inject the Ng zone.
 译Let us go to the constructor of app.component and inject the Ng zone.
 
 49
 00:05:08,380 --> 00:05:18,810
+We can go back to the chart's initialization logic and the rapid inside of a callback that we pass to runOutsideangular.
 译We can go back to the chart's initialization logic and the rapid inside of a callback that we pass to runOutsideangular.
 
 50
 00:05:18,810 --> 00:05:28,890
+When we go back to the application and start the Profiler, we'll see that interactions with the bars in the bar chart don't trigger change detections anymore.
 译When we go back to the application and start the Profiler, we'll see that interactions with the bars in the bar chart don't trigger change detections anymore.
 
 51
 00:05:28,890 --> 00:05:35,750
+The zone-pollution pattern occurs when the Angular zone wraps callbacks that trigger redundant change detection cycles.
 译The zone-pollution pattern occurs when the Angular zone wraps callbacks that trigger redundant change detection cycles.
 
 52
 00:05:35,750 --> 00:05:44,810
+Polluting the zone happens when we run an initialization logic that uses requestAnimationFrame, setTimeout, or addEventListener.
 译Polluting the zone happens when we run an initialization logic that uses requestAnimationFrame, setTimeout, or addEventListener.
 
 53
 00:05:44,810 --> 00:05:50,990
+We can identify the problem by looking for unexpected change detection cycles in the Profiler output.
 译We can identify the problem by looking for unexpected change detection cycles in the Profiler output.
 
 54
 00:05:50,990 --> 00:05:56,090
+In most cases, I have found that the reason is requestAnimationFrame.
 译In most cases, I have found that the reason is requestAnimationFrame.
 
 55
 00:05:56,090 --> 00:05:58,050
+The solution is usually pretty straightforward.
 译The solution is usually pretty straightforward.
 
 56
 00:05:58,050 --> 00:06:02,870
+All you need to do is move the initialization logic outside of the Angular zone.
 译All you need to do is move the initialization logic outside of the Angular zone.
 
 57
 00:06:02,870 --> 00:06:07,855
+The following pattern we'll look into is the out of bounds change detection.
 译The following pattern we'll look into is the out of bounds change detection.
 
 58
 00:06:07,855 --> 00:06:11,640
+Let us go back to the application and enter a new employee.
 译Let us go back to the application and enter a new employee.
 
 59
 00:06:11,640 --> 00:06:14,210
+Notice that the experience is pretty laggy.
 译Notice that the experience is pretty laggy.
 
 60
 00:06:14,210 --> 00:06:21,920
+When we start profiling, we notice two change detection cycles triggered on each character we enter.
 译When we start profiling, we notice two change detection cycles triggered on each character we enter.
 
 61
 00:06:21,920 --> 00:06:27,900
+The first one is on the Input event, and the second one is on keydown.
 译The first one is on the Input event, and the second one is on keydown.
 
 62
 00:06:27,900 --> 00:06:36,380
+For both events, we spent more than 380 milliseconds detecting changes in the two instances of the EmployeeListComponent.
 译For both events, we spent more than 380 milliseconds detecting changes in the two instances of the EmployeeListComponent.
 
 63
 00:06:36,380 --> 00:06:44,670
+Notice that even though we are typing only in the input for the Sales department, we also check the R&amp;D department.
 译Notice that even though we are typing only in the input for the Sales department, we also check the R&amp;D department.
 
 64
 00:06:44,670 --> 00:06:54,540
+Since typing in these input changes only the View state within the Sales department, detecting changes in the R&amp;D department is redundant.
 译Since typing in these input changes only the View state within the Sales department, detecting changes in the R&amp;D department is redundant.
 
 65
 00:06:54,540 --> 00:06:56,130
+Let us fix this.
 译Let us fix this.
 
 66
 00:06:56,130 --> 00:07:03,270
+For this purpose, we'll update the change-detection strategy of the EmployeeListComponents to OnPush.
 译For this purpose, we'll update the change-detection strategy of the EmployeeListComponents to OnPush.
 
 67
 00:07:03,270 --> 00:07:12,960
+With OnPush, Angular will trigger change detection within the component when we pass input with a new value based on an [INAUDIBLE] check.
 译With OnPush, Angular will trigger change detection within the component when we pass input with a new value based on an [INAUDIBLE] check.
 
 68
 00:07:12,960 --> 00:07:21,160
+We'll use an immutable list from immutable.js to prevent mutation of the array references and also, to ensure efficient structure of sharing of data.
 译We'll use an immutable list from immutable.js to prevent mutation of the array references and also, to ensure efficient structure of sharing of data.
 
 69
 00:07:21,160 --> 00:07:26,400
+Let us first change the Sales and R&amp;D department arrays to immutable lists.
 译Let us first change the Sales and R&amp;D department arrays to immutable lists.
 
 70
 00:07:26,400 --> 00:07:37,710
+After that, we'll update the signatures of the Add and Remove methods in the app.component so that they can accept immutable lists of employees.
 译After that, we'll update the signatures of the Add and Remove methods in the app.component so that they can accept immutable lists of employees.
 
 71
 00:07:37,710 --> 00:07:48,060
+Next, we need to make sure we assign the results produced by these two methods to update the local references and pass them down the component tree to EmployeeListComponent.
 译Next, we need to make sure we assign the results produced by these two methods to update the local references and pass them down the component tree to EmployeeListComponent.
 
 72
 00:07:48,060 --> 00:07:51,890
+We need the assignment because we are no longer mutating the lists.
 译We need the assignment because we are no longer mutating the lists.
 
 73
 00:07:51,890 --> 00:07:56,590
+Instead, Immutabe.js creates new ones.
 译Instead, Immutabe.js creates new ones.
 
 74
 00:07:56,590 --> 00:08:04,830
+Since we're now passing immutable lists to the EmployeeListComponent, we need to update the type of its data input.
 译Since we're now passing immutable lists to the EmployeeListComponent, we need to update the type of its data input.
 
 75
 00:08:04,830 --> 00:08:15,570
+Immutable lists have size rather than a length property, so we need to update the property access in the template and set the changeDetection strategy to OnPush.
 译Immutable lists have size rather than a length property, so we need to update the property access in the template and set the changeDetection strategy to OnPush.
 
 76
 00:08:15,570 --> 00:08:18,192
+Now, let us get back to the application.
 译Now, let us get back to the application.
 
 77
 00:08:18,192 --> 00:08:25,630
+Notice that entering a new employee now is a little faster, even though it still looks pretty laggy.
 译Notice that entering a new employee now is a little faster, even though it still looks pretty laggy.
 
 78
 00:08:25,630 --> 00:08:26,860
+Let us fix this.
 译Let us fix this.
 
 79
 00:08:26,860 --> 00:08:31,450
+We'll do this as part of the refactoring of out of bounds change detection.
 译We'll do this as part of the refactoring of out of bounds change detection.
 
 80
 00:08:31,450 --> 00:08:36,640
+When we start typing into the input, Angular performs change detection pretty regularly.
 译When we start typing into the input, Angular performs change detection pretty regularly.
 
 81
 00:08:36,640 --> 00:08:48,460
+It checks the whole EmployeeListComponent and evaluates each employee's heavy computation twice-- on input and on keydown events, even though none of the values have changed.
 译It checks the whole EmployeeListComponent and evaluates each employee's heavy computation twice-- on input and on keydown events, even though none of the values have changed.
 
 82
 00:08:48,460 --> 00:08:54,835
+This happens because typing into the input triggers events that bypass the OnPush change-detection strategy.
 译This happens because typing into the input triggers events that bypass the OnPush change-detection strategy.
 
 83
 00:08:54,835 --> 00:09:04,810
+And when an event within a component with OnPush change-detection strategy occurs, Angular will detect this component for changes, even if it hasn't received new inputs.
 译And when an event within a component with OnPush change-detection strategy occurs, Angular will detect this component for changes, even if it hasn't received new inputs.
 
 84
 00:09:04,810 --> 00:09:17,050
+The problem here is that we're only changing the local state of the input but not updating the individual employees, which means that it is safe to completely skip change direction for them.
 译The problem here is that we're only changing the local state of the input but not updating the individual employees, which means that it is safe to completely skip change direction for them.
 
 85
 00:09:17,050 --> 00:09:20,860
+To improve the performance here, we'll refactor the component tree.
 译To improve the performance here, we'll refactor the component tree.
 
 86
 00:09:20,860 --> 00:09:26,560
+Currently, the app component renders two instances of the EmployeeListComponent.
 译Currently, the app component renders two instances of the EmployeeListComponent.
 
 87
 00:09:26,560 --> 00:09:38,590
+At the end of this section, the EmployeeListComponent will use the NameInputComponents to get new employees' names and ListComponent to render the list of employees.
 译At the end of this section, the EmployeeListComponent will use the NameInputComponents to get new employees' names and ListComponent to render the list of employees.
 
 88
 00:09:38,590 --> 00:09:42,350
+We'll use OnPush change-detection strategy for the list component.
 译We'll use OnPush change-detection strategy for the list component.
 
 89
 00:09:42,350 --> 00:09:53,120
+So this way, events happening in the sibling component, the NameInputComponent, will not trigger any redundant revaluations for employees.
 译So this way, events happening in the sibling component, the NameInputComponent, will not trigger any redundant revaluations for employees.
 
 90
 00:09:53,120 --> 00:10:01,790
+Let us first go to the directory of the EmployeeListComponent and create the name-input.component and the list.component.
 译Let us first go to the directory of the EmployeeListComponent and create the name-input.component and the list.component.
 
 91
 00:10:01,790 --> 00:10:10,450
+As the next step, we can extract the input field from the employee-list.component to the template of the name-input.component.
 译As the next step, we can extract the input field from the employee-list.component to the template of the name-input.component.
 
 92
 00:10:10,450 --> 00:10:18,410
+We can also move the corresponding styles, the label property, and the handleKey method and copy the out output.
 译We can also move the corresponding styles, the label property, and the handleKey method and copy the out output.
 
 93
 00:10:18,410 --> 00:10:21,145
+Let us also remove the OnInit lifecycle hook.
 译Let us also remove the OnInit lifecycle hook.
 
 94
 00:10:21,145 --> 00:10:45,120
+We can use the name-input.component within the employee-list.component's template, handling the app's output as the next step.
 译We can use the name-input.component within the employee-list.component's template, handling the app's output as the next step.
 
 95
 00:10:45,120 --> 00:10:55,470
+Now let us move the rest of the mat-list part of the template to the ListComponent.
 译Now let us move the rest of the mat-list part of the template to the ListComponent.
 
 96
 00:10:55,470 --> 00:11:05,140
+We should also carry the calculate method and remove the OnInit lifecycle hook implementation because we're simply not using it.
 译We should also carry the calculate method and remove the OnInit lifecycle hook implementation because we're simply not using it.
 
 97
 00:11:05,140 --> 00:11:10,565
+Next, let us move the Fibonacci function.
 译Next, let us move the Fibonacci function.
 
 98
 00:11:10,565 --> 00:11:18,480
+We can now move the data input.
 译We can now move the data input.
 
 99
 00:11:18,480 --> 00:11:20,970
+Finally, we can copy the remove output.
 译Finally, we can copy the remove output.
 
 100
 00:11:20,970 --> 00:11:50,420
+To ensure the UI looks crisp, we can move the styles associated with the list visualization to the styles of the list component.
 译To ensure the UI looks crisp, we can move the styles associated with the list visualization to the styles of the list component.
 
 101
 00:11:50,420 --> 00:12:07,310
+Finally, we can set the change-detection strategy of the list.components to OnPush.
 译Finally, we can set the change-detection strategy of the list.components to OnPush.
 
 102
 00:12:07,310 --> 00:12:14,855
+Let us use the list.component in the employee-list.components template, passing the corresponding input and handling the remove output.
 译Let us use the list.component in the employee-list.components template, passing the corresponding input and handling the remove output.
 
 103
 00:12:14,855 --> 00:12:29,130
+When you go back to the application, notice that the typing experience is without any noticeable lag.
 译When you go back to the application, notice that the typing experience is without any noticeable lag.
 
 104
 00:12:29,130 --> 00:12:40,500
+To recap, this performance problem occurs when an action that only impacts the local state of a particular component triggers change detection in unrelated parts of the componentry.
 译To recap, this performance problem occurs when an action that only impacts the local state of a particular component triggers change detection in unrelated parts of the componentry.
 
 105
 00:12:40,500 --> 00:12:50,340
+We can identify the problem by inspecting the Profiler's output and finding the components that are not supposed to be affected by a particular interaction.
 译We can identify the problem by inspecting the Profiler's output and finding the components that are not supposed to be affected by a particular interaction.
 
 106
 00:12:50,340 --> 00:13:02,260
+To resolve the issue, we can isolate the component which triggers frequent local state changes and sets the components with expensive change detection checks to use OnPush.
 译To resolve the issue, we can isolate the component which triggers frequent local state changes and sets the components with expensive change detection checks to use OnPush.
 
 107
 00:13:02,260 --> 00:13:09,880
+The third pattern we're going to look at is the recalculation of referentially transparent expressions.
 译The third pattern we're going to look at is the recalculation of referentially transparent expressions.
 
 108
 00:13:09,880 --> 00:13:19,610
+If we have an expression in a template that could be replaced with its value when its parameters don't change, we call it referentially transparent.
 译If we have an expression in a template that could be replaced with its value when its parameters don't change, we call it referentially transparent.
 
 109
 00:13:19,610 --> 00:13:27,310
+This means that we don't have to recalculate the expressions between change-detection cycles unless their input change.
 译This means that we don't have to recalculate the expressions between change-detection cycles unless their input change.
 
 110
 00:13:27,310 --> 00:13:30,370
+Let us go back to the application and add an employee.
 译Let us go back to the application and add an employee.
 
 111
 00:13:30,370 --> 00:13:35,860
+Notice that we got a pretty expensive change-station cycle triggered by the keydown event.
 译Notice that we got a pretty expensive change-station cycle triggered by the keydown event.
 
 112
 00:13:35,860 --> 00:13:44,370
+We dropped the browser's frame rate and Angular spent most of its change detection cycles within the list component.
 译We dropped the browser's frame rate and Angular spent most of its change detection cycles within the list component.
 
 113
 00:13:44,370 --> 00:13:53,130
+When we add a new employee to the Sales list, we invoke the add methods of the app component, which creates an immutable list.
 译When we add a new employee to the Sales list, we invoke the add methods of the app component, which creates an immutable list.
 
 114
 00:13:53,130 --> 00:14:00,550
+The immutable list passes the new immutable list to the ListComponent, triggering its change detection.
 译The immutable list passes the new immutable list to the ListComponent, triggering its change detection.
 
 115
 00:14:00,550 --> 00:14:08,540
+Angular goes through the individual employees and recalculates their numeric values, even though they didn't change.
 译Angular goes through the individual employees and recalculates their numeric values, even though they didn't change.
 
 116
 00:14:08,540 --> 00:14:14,310
+Ideally, you would want to calculate the value only for a new employee.
 译Ideally, you would want to calculate the value only for a new employee.
 
 117
 00:14:14,310 --> 00:14:19,290
+We can improve the application's performance here with a little bit of refactoring.
 译We can improve the application's performance here with a little bit of refactoring.
 
 118
 00:14:19,290 --> 00:14:22,420
+We can create a new pipe called calculate.
 译We can create a new pipe called calculate.
 
 119
 00:14:22,420 --> 00:14:34,580
+Let us import the pipe decorator and sets the pipe name to "calculate." Here, we explicitly said the pipe to be pure for readability, even though that's the property's default value.
 译Let us import the pipe decorator and sets the pipe name to "calculate." Here, we explicitly said the pipe to be pure for readability, even though that's the property's default value.
 
 120
 00:14:34,580 --> 00:14:42,350
+As a next step, we can implement the CalculatePipe class, adding a transform method and implementing the PipeTransform interface.
 译As a next step, we can implement the CalculatePipe class, adding a transform method and implementing the PipeTransform interface.
 
 121
 00:14:42,350 --> 00:14:54,840
+Now let us move the Fibonacci implementation and remove the redundant calculate method from the ListComponent.
 译Now let us move the Fibonacci implementation and remove the redundant calculate method from the ListComponent.
 
 122
 00:14:54,840 --> 00:15:07,595
+Let us add the CalculatePipe to the declarations in the employee-list.module.
 译Let us add the CalculatePipe to the declarations in the employee-list.module.
 
 123
 00:15:07,595 --> 00:15:25,270
+Finally, we need to update the template of the ListComponent to use the pipe rather than a method call.
 译Finally, we need to update the template of the ListComponent to use the pipe rather than a method call.
 
 124
 00:15:25,270 --> 00:15:28,870
+Notice that now we can add an employee without any visible delays.
 译Notice that now we can add an employee without any visible delays.
 
 125
 00:15:28,870 --> 00:15:45,740
+To recap, this problem occurs when Angular recalculates the same template expression repeatedly, even though they depend only on parameters that value does not change.
 译To recap, this problem occurs when Angular recalculates the same template expression repeatedly, even though they depend only on parameters that value does not change.
 
 126
 00:15:45,740 --> 00:15:55,510
+We can identify the problem with Angular DevTools by noticing change detection cycles that don't take time proportional to the changes we made in the UI.
 译We can identify the problem with Angular DevTools by noticing change detection cycles that don't take time proportional to the changes we made in the UI.
 
 127
 00:15:55,510 --> 00:16:03,600
+The solution usually involves either moving a calculation to a pure pipe or caching it via memorization.
 译The solution usually involves either moving a calculation to a pure pipe or caching it via memorization.
 
 128
 00:16:03,600 --> 00:16:08,700
+The final pattern we're going to look at is large component trees.
 译The final pattern we're going to look at is large component trees.
 
 129
 00:16:08,700 --> 00:16:18,780
+Even if we have optimized each component and don't perform redundant calculations, we can still observe frame drops if we have thousands of component instances.
 译Even if we have optimized each component and don't perform redundant calculations, we can still observe frame drops if we have thousands of component instances.
 
 130
 00:16:18,780 --> 00:16:24,990
+To show how we can improve the performance in this scenario, I added a few hundred of employees to each list.
 译To show how we can improve the performance in this scenario, I added a few hundred of employees to each list.
 
 131
 00:16:24,990 --> 00:16:34,740
+When we add a new employee, we notice that detecting the ListComponent for changes takes over 25 milliseconds, which causes frame drops.
 译When we add a new employee, we notice that detecting the ListComponent for changes takes over 25 milliseconds, which causes frame drops.
 
 132
 00:16:34,740 --> 00:16:40,350
+Improving the performance in large component trees involves making the component tree smaller.
 译Improving the performance in large component trees involves making the component tree smaller.
 
 133
 00:16:40,350 --> 00:16:46,020
+Standard techniques are on-demand rendering, such as virtualization or pagination.
 译Standard techniques are on-demand rendering, such as virtualization or pagination.
 
 134
 00:16:46,020 --> 00:16:52,140
+For our purposes, we're going to use the Angular cdk's virtual scrolling component.
 译For our purposes, we're going to use the Angular cdk's virtual scrolling component.
 
 135
 00:16:52,140 --> 00:17:00,630
+In the template of the ListComponent, we will use the cdk_virtual_scroll_viewport with item size equal to 50.
 译In the template of the ListComponent, we will use the cdk_virtual_scroll_viewport with item size equal to 50.
 
 136
 00:17:00,630 --> 00:17:06,780
+And we're also going to add the CSS class "viewport" so that we can style this component.
 译And we're also going to add the CSS class "viewport" so that we can style this component.
 
 137
 00:17:06,780 --> 00:17:12,599
+Instead of using ngFor in the mat-list item, we'll use the cdkVirtualFor.
 译Instead of using ngFor in the mat-list item, we'll use the cdkVirtualFor.
 
 138
 00:17:12,599 --> 00:17:18,079
+We'll also set the height of the container to 800 pixels.
 译We'll also set the height of the container to 800 pixels.
 
 139
 00:17:18,079 --> 00:17:21,240
+And that's all.
 译And that's all.
 
 140
 00:17:21,240 --> 00:17:28,155
+Now when we add a new item, the change section in the ListComponent takes 1/5 of the time it used to take before.
 译Now when we add a new item, the change section in the ListComponent takes 1/5 of the time it used to take before.
 
 141
 00:17:28,155 --> 00:17:43,220
+Keep in mind that even if you have highly optimized components and render thousands of them, their templates combined could still be very expensive during change detection.
 译Keep in mind that even if you have highly optimized components and render thousands of them, their templates combined could still be very expensive during change detection.
 
 142
 00:17:43,220 --> 00:17:57,590
+You can identify this problem in your DevTools if you find many components that just take a fraction of the overall change detection cycle or when there is one component with a really large view that takes a lot of time to be checked.
 译You can identify this problem in your DevTools if you find many components that just take a fraction of the overall change detection cycle or when there is one component with a really large view that takes a lot of time to be checked.
 
 143
 00:17:57,590 --> 00:18:03,020
+The solution involves on-demand rendering of components to trim the component tree.
 译The solution involves on-demand rendering of components to trim the component tree.
 
 144
 00:18:03,020 --> 00:18:05,300
+That's pretty much everything I had for you today.
 译That's pretty much everything I had for you today.
 
 145
 00:18:05,300 --> 00:18:11,330
+We first went through the fundamentals of using Angular DevTools, focusing on the profiler.
 译We first went through the fundamentals of using Angular DevTools, focusing on the profiler.
 
 146
 00:18:11,330 --> 00:18:27,410
+After that, we explored four patterns that can help you identify and resolve common performance issues-- zone pollution, out of bounds, change detection, recalculation of referentially transparent expressions, and large component trees.
 译After that, we explored four patterns that can help you identify and resolve common performance issues-- zone pollution, out of bounds, change detection, recalculation of referentially transparent expressions, and large component trees.
 
 147
 00:18:27,410 --> 00:18:29,460
+Thank you very much for watching this video.
 译Thank you very much for watching this video.
 
 148
 00:18:29,460 --> 00:18:32,350
+See you next, time and happy coding.
 译See you next, time and happy coding.

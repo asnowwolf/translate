@@ -24,10 +24,10 @@ describe('markdown-translator', () => {
     const result = await translator.translateContent(`| header1 | header2 |
 | :-------- | :------ |
 | <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`);
-    expect(result).toEqual(`| header1 | header2 |
-| :------ | :------ |
-| 译 header1 | 译 header2 |
-| <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |
+    expect(result).toEqual(`| header1                     | header2                                                             |
+| :-------------------------- | :------------------------------------------------------------------ |
+| 译 header1                   | 译 header2                                                           |
+| <header>one</header>two     | <code-example>three</code-example><code-example>four</code-example> |
 | <header>译 one</header>译 two | <code-example>three</code-example><code-example>four</code-example> |`);
   });
 
@@ -37,8 +37,8 @@ describe('markdown-translator', () => {
     const result = await translator.translateContent(`| header1 | header2 |
 | :-------- | :------ |
 | <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`);
-    expect(result).toEqual(`| header1 | header2 |
-| :------ | :------ |
+    expect(result).toEqual(`| header1                 | header2                                                             |
+| :---------------------- | :------------------------------------------------------------------ |
 | <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`);
   });
   it('translate table 2', async () => {
@@ -48,10 +48,10 @@ describe('markdown-translator', () => {
 | :-------- | :------ |
 | <header>three</header> <code-example hideCopy format="html" language="html">four</code-example>five<br />six | [seven](eight)<div>ten</div> |
 `);
-    expect(result).toEqual(`| one | two |
-| :-- | :-- |
-| 译 one | 译 two |
-| <header>three</header> <code-example hideCopy format="html" language="html">four</code-example>five<br />six | [seven](eight)<div>ten</div> |
+    expect(result).toEqual(`| one                                                                                                               | two                              |
+| :---------------------------------------------------------------------------------------------------------------- | :------------------------------- |
+| 译 one                                                                                                             | 译 two                            |
+| <header>three</header> <code-example hideCopy format="html" language="html">four</code-example>five<br />six      | [seven](eight)<div>ten</div>     |
 | <header>译 three</header><code-example hideCopy format="html" language="html">four</code-example>译 five<br />译 six | [译 seven](eight)<div>译 ten</div> |`);
   });
 });
