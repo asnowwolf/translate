@@ -1,14 +1,59 @@
 import { Exporter } from './exporter';
-import { Text } from 'mdast';
+import { Blockquote, Parent, Text } from 'mdast';
 import * as unistVisit from 'unist-util-visit';
 import { markdown } from '../dom/unified/markdown';
+import { Node } from 'unist';
+import { containsChinese } from '../dom/common';
+
+interface MarkdownExporterOptions {
+  mono: boolean;
+}
 
 export class MarkdownExporter extends Exporter {
-  exportContent(content: string) {
+  exportContent(content: string, options: MarkdownExporterOptions = { mono: false }): string {
     const dom = markdown.parse(content);
     unistVisit(dom, 'text', (node: Text) => {
       node.value = node.value.replace(/\n/g, ' ');
     });
+    if (options.mono) {
+      this.removeOriginals(dom as Parent);
+    }
     return markdown.stringify(dom);
+  }
+
+  private removeOriginals(dom: Parent): Parent {
+    // 从翻译对中移除原文
+    dom.children = dom.children.filter((node: Node, index: number) => {
+      const next = dom.children[index + 1];
+      // 如果是段落、标题、表行，要判断是否包含
+      switch (node.type) {
+        case 'paragraph':
+        case 'heading':
+        case 'tableRow':
+          // 如果是最后一个，一定包含
+          if (!next) {
+            return true;
+          }
+          // 翻译对一定是成对出现的，如果类型不一样，就一定不是翻译对
+          if (node.type !== next.type) {
+            return true;
+          }
+          // 如果本段是中文或下段不是中文，则保留本段
+          const text = markdown.stringify({ ...node, type: 'root' });
+          const nextText = markdown.stringify({ ...next, type: 'root' });
+          return containsChinese(text) || !containsChinese(nextText);
+        case 'blockquote':
+        case 'table':
+        case 'list':
+        case 'listItem':
+          // 这几个类型递归处理
+          this.removeOriginals(node as Blockquote);
+          return true;
+        default:
+          // 否则，一定包含
+          return true;
+      }
+    });
+    return dom;
   }
 }
