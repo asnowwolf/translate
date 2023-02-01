@@ -145,7 +145,7 @@ function splitTimeline(wholeSentence: WholeSentence, maxVisualLength: number): S
   return result;
 }
 
-const MAX_VISUAL_LENGTH = 36;
+export const MAX_VISUAL_LENGTH = 36;
 
 export function splitTimelineBySentence(wholeSentences: WholeSentence[], maxVisualLength = MAX_VISUAL_LENGTH): SubtitleItem[] {
   return wholeSentences.flatMap((wholeSentence) => splitTimeline(wholeSentence, maxVisualLength));
