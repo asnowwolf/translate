@@ -404,7 +404,7 @@ three
 | four | five |
 | ---- | ---- |
 | 四 | 五 |
-| six | seven |
+| s\\\|ix | se&verbar;ven |
 
 1. eight
 
@@ -441,11 +441,11 @@ three
 
 译three
 
-| four  | five    |
-| ----- | ------- |
-| 四    | 五      |
-| six   | seven   |
-| 译six | 译seven |
+| four          | five            |
+| ------------- | --------------- |
+| 四            | 五              |
+| s&verbar;ix   | se&verbar;ven   |
+| 译s&verbar;ix | 译se&verbar;ven |
 
 1. eight
 
