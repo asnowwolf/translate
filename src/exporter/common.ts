@@ -4,4 +4,5 @@ export enum ExportFormat {
 }
 
 export interface ExportOptions {
+  outputDir: string;
 }

@@ -12,8 +12,9 @@ import { containsChinese } from '../dom/common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
 import { Exporter } from './exporter';
+import { ExportOptions } from './common';
 
-export interface HtmlExporterOptions {
+export interface HtmlExporterOptions extends ExportOptions {
   mono: boolean;
 }
 

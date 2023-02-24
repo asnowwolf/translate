@@ -11,7 +11,7 @@ ghi
   a1
   a2
 - b
-`);
+`, { outputDir: '.', mono: false });
     expect(result).toEqual(`abc def ghi
 
 - a a1 a2
@@ -41,7 +41,7 @@ two-2
 | 四 |  五  |
 | six |  seven  |
 | 六 |  七  |
-`, { mono: true });
+`, { outputDir: '.', mono: true });
     expect(result).toEqual(`# 一
 
 二

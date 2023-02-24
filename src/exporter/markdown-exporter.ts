@@ -4,13 +4,14 @@ import * as unistVisit from 'unist-util-visit';
 import { markdown } from '../dom/unified/markdown';
 import { Node } from 'unist';
 import { containsChinese } from '../dom/common';
+import { ExportOptions } from './common';
 
-interface MarkdownExporterOptions {
+interface MarkdownExporterOptions extends ExportOptions {
   mono: boolean;
 }
 
 export class MarkdownExporter extends Exporter {
-  exportContent(content: string, options: MarkdownExporterOptions = { mono: false }): string {
+  exportContent(content: string, options: MarkdownExporterOptions): string {
     const dom = markdown.parse(content);
     unistVisit(dom, 'text', (node: Text) => {
       node.value = node.value.replace(/\n/g, ' ');

@@ -4,7 +4,10 @@ import { defaultSelectors, DomDocumentFragment } from '../dom/parse5/dom-models'
 describe('html exporter', () => {
   it('should add translation mark', () => {
     const exporter = new HtmlExporter();
-    const result = exporter.exportContent('<!DOCTYPE html><html><head><title>abc</title></head><body class="abc"><h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p></body></html>', { mono: false });
+    const result = exporter.exportContent('<!DOCTYPE html><html><head><title>abc</title></head><body class="abc"><h1>english</h1><h1>中文</h1><p>one</p><p>一</p><p>two</p><p>three</p></body></html>', {
+      outputDir: '.',
+      mono: false,
+    });
     expect(result).toEqual('<!DOCTYPE html><html><head><title>abc</title></head><body class="abc"><h1 id="english" translation-result="on">中文</h1><h1 translation-origin="off">english</h1><p translation-result="on">一</p><p translation-origin="off">one</p><p>two</p><p>three</p></body></html>');
   });
   it('should mark and restructure table', () => {
@@ -86,7 +89,7 @@ describe('html exporter', () => {
     const result = exporter.exportContent(`<p id="a">a</p>
 <p id="one">one</p>
 <p id="一">一</p>
-<script>const a = 1;</script>`, { mono: true });
+<script>const a = 1;</script>`, { outputDir: '.', mono: true });
     expect(result).toEqual(`<p id="a">a</p>
 <p id="one">一</p>
 
