@@ -1,5 +1,5 @@
 import { Exporter } from './exporter';
-import { Blockquote, Parent, Text } from 'mdast';
+import { Blockquote, Code, Parent, Text } from 'mdast';
 import * as unistVisit from 'unist-util-visit';
 import { markdown } from '../dom/unified/markdown';
 import { Node } from 'unist';
@@ -49,6 +49,10 @@ export class MarkdownExporter extends Exporter {
         case 'listItem':
           // 这几个类型递归处理
           this.removeOriginals(node as Blockquote);
+          return true;
+        case 'code':
+          const code = node as Code;
+          code.value = code.value.replace(/^(.*)\/\/.*\n(\1\/\/(?=.*\p{sc=Han}).*)$/gum, '$2');
           return true;
         default:
           // 否则，一定包含

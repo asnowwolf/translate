@@ -41,6 +41,11 @@ two-2
 | 四 |  五  |
 | six |  seven  |
 | 六 |  七  |
+
+\`\`\`
+const a = 1; // one
+const a = 1; // 一
+\`\`\`
 `, { outputDir: '.', mono: true });
     expect(result).toEqual(`# 一
 
@@ -54,6 +59,10 @@ two-2
 
 | 四  | 五  |
 | --- | --- |
-| 六  | 七  |`);
+| 六  | 七  |
+
+\`\`\`
+const a = 1; // 一
+\`\`\``);
   });
 });
