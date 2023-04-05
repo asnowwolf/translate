@@ -196,6 +196,7 @@ class A {}
 /**
  * Some Text
  *
+ * @usageNotes
  * {@example path/to/file region='name'}
  */
 class A {}
@@ -205,6 +206,8 @@ class A {}
  * Some Text
  *
  * 译 Some Text
+ *
+ * @usageNotes
  *
  * {@example path/to/file region='name'}
  *

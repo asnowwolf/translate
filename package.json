@@ -67,7 +67,7 @@
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "string-width": "^3.1.0",
-    "ts-morph": "^9.1.0",
+    "ts-morph": "^18.0.0",
     "typeorm": "^0.2.29",
     "unified": "^7.1.0",
     "unist-util-flatmap": "^1.0.0",

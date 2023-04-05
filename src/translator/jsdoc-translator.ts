@@ -11,7 +11,7 @@ function getTagsWithAncestors(node: Node): JSDocTag[] {
     return [];
   }
   // 如果不是，就跳过这一层，直接返回父级的结果
-  if (!Node.isJSDocableNode(node)) {
+  if (!Node.isJSDocable(node)) {
     return getTagsWithAncestors(node.getParent());
   }
   // 取当前节点的所有标记
@@ -21,10 +21,10 @@ function getTagsWithAncestors(node: Node): JSDocTag[] {
 }
 
 function shouldTranslate(node: Node, options: TranslationOptions): boolean {
-  if (!Node.isJSDocableNode(node)) {
+  if (!Node.isJSDocable(node)) {
     return false;
   }
-  if (Node.isModifierableNode(node)) {
+  if (Node.isModifierable(node)) {
     if (node.hasModifier(SyntaxKind.PrivateKeyword)) {
       return false;
     }
@@ -75,7 +75,7 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
   }
 
   async translateNode(node: Node, options: TranslationOptions): Promise<Node> {
-    if (Node.isJSDocableNode(node) && shouldTranslate(node, options)) {
+    if (Node.isJSDocable(node) && shouldTranslate(node, options)) {
       const docs = node.getJsDocs();
       for (const doc of docs) {
         const structure = doc.getStructure();
