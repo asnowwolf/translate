@@ -66,7 +66,7 @@ export class Demo {
    *
    * 译 bar
    *
-   * @see <http://github.com|Nine>
+   * @see http://github.com|Nine
    *
    * [译 http://github.com|Nine](http://github.com%7CNine)
    *

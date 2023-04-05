@@ -18,6 +18,13 @@ function createTableCellVisitor(tableCell: Visitor): Visitor {
   };
 }
 
+function createLinkVisitor(link: Visitor) {
+  return function (this: UnifiedParser, node: Node, parent?: Parent, position?: Position, bullet?: string): string {
+    const text = link.call(this, node, parent, position, bullet);
+    return text.replace(/^<(.*)>$/, '$1');
+  };
+}
+
 /**
  * Teach remark that some HTML blocks never include markdown
  */
@@ -26,6 +33,7 @@ export function customCompiler(this: Processor) {
   const Compiler = processor.Compiler;
   const visitors = Compiler.prototype.visitors as Visitors;
 
+  visitors.link = createLinkVisitor(visitors.link);
   visitors.listItem = listItemVisitor;
   visitors.strong = strongVisitor;
   visitors.emphasis = emphasisVisitor;
