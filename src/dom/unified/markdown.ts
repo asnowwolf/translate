@@ -151,9 +151,9 @@ export namespace markdown {
     if (isLiteral(node)) {
       return containsChinese(node.value);
     } else if (isLink(node)) {
-      return containsChinese(node.title);
+      return containsChinese(node.title) || node.children.some(it => nodeContainsChinese(it));
     } else if (isLinkReference(node)) {
-      return containsChinese(node.label);
+      return containsChinese(node.label) || node.children.some(it => nodeContainsChinese(it));
     } else if (['htmlRaw', 'anchor'].includes(node.type)) {
       return false;
     } else if (isParent(node)) {

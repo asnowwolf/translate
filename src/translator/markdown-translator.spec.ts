@@ -18,6 +18,25 @@ describe('markdown-translator', () => {
     expect(result).toEqual(`# no-translate`);
   });
 
+  it('should not translate text that has translated', async () => {
+    const engine = new FakeTranslationEngine();
+    const translator = new MarkdownTranslator(engine);
+    const result = await translator.translateContent(`one
+
+一
+
+[one](one)
+
+[一](one)`);
+    expect(result).toEqual(`one
+
+一
+
+[one](one)
+
+[一](one)`);
+  });
+
   it('translate table', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
