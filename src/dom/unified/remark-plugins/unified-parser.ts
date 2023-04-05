@@ -1,4 +1,4 @@
-import { Node, Point, Position } from 'unist';
+import { Node, Parent, Point, Position } from 'unist';
 import { Root } from 'mdast';
 
 export interface UnifiedParser {
@@ -64,7 +64,7 @@ export interface InlineTokenizers {
 }
 
 export interface Visitor {
-  (this: UnifiedParser, node: Node, parent?: Node, position?: Position, bullet?: string): string;
+  (this: UnifiedParser, node: Node, parent?: Parent, position?: Position, bullet?: string): string;
 }
 
 export interface Visitors {
