@@ -2,7 +2,7 @@ import { Extractor } from './extractor';
 import { HtmlExtractor } from './html-extractor';
 import { extname } from 'path';
 import { MarkdownExtractor } from './markdown-extractor';
-import { AngularJsonExtractor } from './angular-json-extractor';
+import { JsonExtractor } from './json-extractor';
 import { JsDocExtractor } from './js-doc-extractor';
 
 export function getExtractorFor(filename: string): Extractor {
@@ -13,7 +13,7 @@ export function getExtractorFor(filename: string): Extractor {
     case '.md':
       return new MarkdownExtractor();
     case '.json':
-      return new AngularJsonExtractor();
+      return new JsonExtractor();
     case '.ts':
       return new JsDocExtractor();
   }

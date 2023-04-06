@@ -1,7 +1,7 @@
 import { AbstractExtractor, SentencePair } from './extractor';
 import { HtmlExtractor } from './html-extractor';
 
-export class AngularJsonExtractor extends AbstractExtractor {
+export class JsonExtractor extends AbstractExtractor {
   private htmlExtractor = new HtmlExtractor();
 
   extractSentencePairsFromContent(content: string): SentencePair[] {
@@ -14,8 +14,11 @@ export class AngularJsonExtractor extends AbstractExtractor {
 
   extractProperties(json: object): SentencePair[] {
     return Object.entries(json).map(([key, value]) => {
-      if (['title', 'desc', 'tooltip'].includes(key)) {
-        return { english: value, chinese: json[`${key}Cn`], format: 'plain' } as SentencePair;
+      if (key.endsWith('Cn')) {
+        const englishValue = json[key.replace(/^(.*)Cn$/, '$1')];
+        if (typeof englishValue === 'string') {
+          return { english: englishValue, chinese: value, format: 'plain' } as SentencePair;
+        }
       }
       if (typeof value === 'object') {
         return this.extractProperties(value);
