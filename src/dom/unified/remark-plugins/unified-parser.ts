@@ -70,6 +70,7 @@ export interface Visitor {
 export interface Visitors {
   ngDocDirective: Visitor;
   link: Visitor;
+  text: Visitor;
   htmlRaw: Visitor;
   tableCell: Visitor;
   listItem: Visitor;

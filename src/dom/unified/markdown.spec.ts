@@ -30,6 +30,13 @@ def
       // 重建 markdown
       expect(markdown.stringify(ast)).toEqual(md);
     });
+
+    it('should escape ()[]', () => {
+      const md = `abc\\(\\)\\[\\] [link](url)def`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
+    });
     it('normalize list items', () => {
       const ast = markdown.parse(`
 1. a

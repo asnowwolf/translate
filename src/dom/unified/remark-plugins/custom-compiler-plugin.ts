@@ -25,6 +25,15 @@ function createLinkVisitor(link: Visitor) {
   };
 }
 
+function createTextVisitor(text: Visitor) {
+  return function (this: UnifiedParser, node: Node, parent?: Parent, position?: Position, bullet?: string): string {
+    return text.call(this, node, parent, position, bullet)
+      .replace(/@/g, '&commat;')
+      // `[` 默认已经被转义过了，不需要这里补充转义
+      .replace(/([()\]])/g, '\\$1');
+  };
+}
+
 /**
  * Teach remark that some HTML blocks never include markdown
  */
@@ -34,6 +43,7 @@ export function customCompiler(this: Processor) {
   const visitors = Compiler.prototype.visitors as Visitors;
 
   visitors.link = createLinkVisitor(visitors.link);
+  visitors.text = createTextVisitor(visitors.text);
   visitors.listItem = listItemVisitor;
   visitors.strong = strongVisitor;
   visitors.emphasis = emphasisVisitor;
