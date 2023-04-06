@@ -33,8 +33,8 @@ export const handler = async function (params: ExtractParams) {
   const dict = new SqliteDict();
   await dict.open(params.dict);
   try {
-    const allPairs = await Promise.all(filenames.map(filename => getExtractorFor(filename).extract(filename)));
-    const uniqPairs = uniqBy(allPairs.flat(), (it) =>
+    const allPairs = filenames.flatMap(filename => getExtractorFor(filename).extract(filename));
+    const uniqPairs = uniqBy(allPairs, (it) =>
       generateFingerprint(it.english, it.format) + generateFingerprint(it.chinese, it.format),
     );
     const groups = groupBy(uniqPairs, it => it.path);

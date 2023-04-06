@@ -15,6 +15,7 @@ export interface Extractor {
 
 export abstract class AbstractExtractor implements Extractor {
   extract(filename: string): DictEntry[] {
+    console.log('Extracting from ', filename);
     return this.extractSentencePairsFromFile(filename)
       .filter(it => it.english && it.chinese && it.english !== it.chinese)
       .map(it => ({
