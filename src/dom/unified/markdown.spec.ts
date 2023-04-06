@@ -16,6 +16,20 @@ describe('markdown', () => {
       expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
+    it('do not parse code indented', () => {
+      const md = `abc
+
+      code
+
+\`\`\`
+fence
+\`\`\`
+def
+`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
+    });
     it('normalize list items', () => {
       const ast = markdown.parse(`
 1. a
