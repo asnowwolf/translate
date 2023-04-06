@@ -36,7 +36,7 @@ describe('html-translator', () => {
       <td>Six</td>
     </tr>
   </table>
-</li>`, { htmlFragment: true });
+</li>`);
 
     expect(result).toEqual(`<li>
   <p translation-result="on">译a<a href="/1">译One</a>译b</p>

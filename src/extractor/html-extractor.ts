@@ -10,10 +10,10 @@ export class HtmlExtractor extends AbstractExtractor {
     }
     const doc = DomDocument.parse(html);
     clearAiraHidden(doc);
-    const resultElements = doc.querySelectorAll(it => it.previousElementSibling?.hasAttribute('translation-result') && it.hasAttribute('translation-origin'));
+    const resultElements = doc.querySelectorAll(it => it.nextElementSibling?.hasAttribute('translation-result') && it.hasAttribute('translation-origin'));
     const results: SentencePair[] = [];
     resultElements.forEach(origin => {
-      const result = origin.previousElementSibling!;
+      const result = origin.nextElementSibling!;
       if (!containsChinese(origin.textContent!)) {
         origin.removeAttribute('translation-origin');
         result.removeAttribute('translation-result');

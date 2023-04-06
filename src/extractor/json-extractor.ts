@@ -1,15 +1,9 @@
 import { AbstractExtractor, SentencePair } from './extractor';
-import { HtmlExtractor } from './html-extractor';
 
 export class JsonExtractor extends AbstractExtractor {
-  private htmlExtractor = new HtmlExtractor();
-
   extractSentencePairsFromContent(content: string): SentencePair[] {
     const json = JSON.parse(content);
-    return [
-      ...this.htmlExtractor.extractSentencePairsFromContent(json.contents),
-      ...this.extractProperties(json),
-    ].filter(it => !!it);
+    return this.extractProperties(json).filter(it => !!it);
   }
 
   extractProperties(json: object): SentencePair[] {

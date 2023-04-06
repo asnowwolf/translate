@@ -7,7 +7,8 @@ import { TranslationOptions } from './translation-options';
 export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | DomDocument> {
   private selectors = defaultSelectors;
 
-  parse(text: string, options: TranslationOptions = { htmlFragment: true }): DomDocumentFragment | DomDocument {
+  parse(text: string, options: TranslationOptions = {}): DomDocumentFragment | DomDocument {
+    options.htmlFragment = options.htmlFragment ?? !text.match(/^(<!DOCTYPE html>|<html\b)/si);
     if (options.htmlFragment) {
       return DomDocumentFragment.parse(text);
     } else {
