@@ -20,6 +20,23 @@ describe('translation engine', () => {
     });
     await engine.flush();
   });
+
+  it('should not translate angular/number/string', async () => {
+    const engine = new FakeTranslationEngine();
+    engine.translate('angular', 'plain').then(result => {
+      expect(result).toBe('angular');
+      expect(engine.totalBytes).toBe(0);
+    });
+    engine.translate('number', 'plain').then(result => {
+      expect(result).toBe('number');
+      expect(engine.totalBytes).toBe(0);
+    });
+    engine.translate('string', 'plain').then(result => {
+      expect(result).toBe('string');
+      expect(engine.totalBytes).toBe(0);
+    });
+    await engine.flush();
+  });
   it('should translate text that contains url', async () => {
     const engine = new FakeTranslationEngine();
     engine.translate('Hello, this is http://www.google.com', 'plain').then(result => {

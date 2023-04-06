@@ -7,6 +7,10 @@ function isPlainUrl(url: string): boolean {
   return /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url);
 }
 
+function shouldNotTranslate(text: string): boolean {
+  return ['angular', 'number', 'string', 'object'].includes(text.toLowerCase());
+}
+
 export abstract class TranslationEngine {
   batchSize = 50;
   private _totalBytes = 0;
@@ -24,7 +28,7 @@ export abstract class TranslationEngine {
   private tasks: { sentence: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
   translate(sentence: string, format: SentenceFormat): Promise<string> {
-    if (!sentence?.trim() || isPlainUrl(sentence.trim())) {
+    if (!sentence?.trim() || isPlainUrl(sentence.trim()) || shouldNotTranslate(sentence.trim())) {
       return Promise.resolve(sentence);
     }
     const result$ = new PromiseMaker<string>();
