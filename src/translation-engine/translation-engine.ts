@@ -2,13 +2,22 @@ import { chunk, groupBy } from 'lodash';
 import { PromiseMaker } from '../dom/promise-maker';
 import { delay } from '../dom/delay';
 import { SentenceFormat } from '../translator/sentence-format';
+import { SentenceFormatter } from './sentence-formatter';
 
 function isPlainUrl(url: string): boolean {
   return /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url);
 }
 
-function shouldNotTranslate(text: string): boolean {
+function inBlackList(text: string): boolean {
   return ['angular', 'number', 'string', 'object'].includes(text.toLowerCase());
+}
+
+function isCode(html: string): boolean {
+  return html.startsWith('<code') && html.endsWith('</code>');
+}
+
+function isCamelCaseName(text: string): boolean {
+  return /^[_a-zA-Z]+([A-Z]\w+)+$/.test(text);
 }
 
 export abstract class TranslationEngine {
@@ -28,9 +37,15 @@ export abstract class TranslationEngine {
   private tasks: { sentence: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
   translate(sentence: string, format: SentenceFormat): Promise<string> {
-    if (!sentence?.trim() || isPlainUrl(sentence.trim()) || shouldNotTranslate(sentence.trim())) {
+    const text = SentenceFormatter.toPlain(sentence, format).trim();
+    if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text)) {
       return Promise.resolve(sentence);
     }
+    const html = SentenceFormatter.toHtml(sentence, format).trim();
+    if (isCode(html)) {
+      return Promise.resolve(sentence);
+    }
+
     const result$ = new PromiseMaker<string>();
     this.tasks.push({ sentence, format, result$ });
     return result$.promise;
