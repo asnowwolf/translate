@@ -51,9 +51,31 @@ export class MarkdownExporter extends Exporter {
           this.removeOriginals(node as Blockquote);
           return true;
         case 'code':
+          // 所有连续的两行代码，如果在注释前的内容都完全一样，并且第一行注释不包含中文，而第二行注释包含中文，则保留第二行
           const code = node as Code;
-          code.value = code.value.replace(/^(.*)\/\/.*\n(\1\/\/(?=.*\p{sc=Han}).*)$/gum, '$2');
-          return true;
+          switch (code.lang) {
+            case 'console':
+            case 'text':
+              return true;
+            case 'html':
+            case 'xml':
+            case 'svg':
+              code.value = code.value.replace(/^(.*)<!--(?!.*\p{sc=Han}).*-->\n(\1<!--(?=.*\p{sc=Han}).*-->)$/gum, '$2');
+              return true;
+            case 'toml':
+            case 'shell':
+            case 'sh':
+            case 'bash':
+            case 'python':
+            case 'ruby':
+            case 'perl':
+            case 'php':
+              code.value = code.value.replace(/^(.*)#(?!.*\p{sc=Han}).*\n(\1#(?=.*\p{sc=Han}).*)$/gum, '$2');
+              return true;
+            default:
+              code.value = code.value.replace(/^(.*)\/\/(?!.*\p{sc=Han}).*\n(\1\/\/(?=.*\p{sc=Han}).*)$/gum, '$2');
+              return true;
+          }
         default:
           // 否则，一定包含
           return true;
