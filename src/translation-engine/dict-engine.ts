@@ -1,8 +1,8 @@
 import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { Dict } from '../dict/dict';
-import { SqliteDict } from '../dict/sqlite-dict';
 import { SentenceFormat } from '../translator/sentence-format';
+import { getDict } from '../dict/get-dict';
 
 export class DictTranslationEngine extends TranslationEngine {
   private dict: Dict;
@@ -17,7 +17,7 @@ export class DictTranslationEngine extends TranslationEngine {
     this.unknownEnglishList = [];
     if (typeof this.options.dict === 'string') {
       this.isInternalDict = true;
-      this.dict = new SqliteDict();
+      this.dict = getDict();
       await this.dict.open(this.options.dict);
     } else {
       this.isInternalDict = false;

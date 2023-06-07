@@ -1,5 +1,5 @@
 import { DictTranslationEngine } from './dict-engine';
-import { SqliteDict } from '../dict/sqlite-dict';
+import { getDict } from '../dict/get-dict';
 
 describe('translation engine', () => {
   it('translate by dict without convert', async () => {
@@ -16,8 +16,8 @@ describe('translation engine', () => {
   });
 
   it('translate by dict with convert', async () => {
-    const dict = new SqliteDict();
-    await dict.open();
+    const dict = getDict();
+    await dict.open(':memory:');
     const engine = new DictTranslationEngine({ dict });
     await engine.init();
     await dict.createOrUpdate('One, Two!', '一二', 'markdown');

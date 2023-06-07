@@ -1,9 +1,9 @@
 import { CommandBuilder } from 'yargs';
 import { sync as globby } from 'globby';
-import { SqliteDict } from '../../dict/sqlite-dict';
 import { getExtractorFor } from '../../extractor/get-extractor-for';
 import { groupBy, uniqBy } from 'lodash';
 import { generateFingerprint } from '../../dict/generate-fingerprint';
+import { getDict } from '../../dict/get-dict';
 
 export const command = `extract <sourceGlobs...>`;
 
@@ -30,7 +30,7 @@ export const handler = async function (params: ExtractParams) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
   }
-  const dict = new SqliteDict();
+  const dict = getDict();
   await dict.open(params.dict);
   try {
     const allPairs = filenames.flatMap(filename => getExtractorFor(filename).extract(filename));

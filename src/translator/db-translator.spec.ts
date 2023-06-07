@@ -1,11 +1,11 @@
-import { SqliteDict } from '../dict/sqlite-dict';
 import { DbTranslator } from './db-translator';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 import { pick } from 'lodash';
+import { getDict } from '../dict/get-dict';
 
 describe('db-translator', () => {
   it('translate it', async () => {
-    const dict = new SqliteDict();
+    const dict = getDict();
     await dict.open(':memory:');
     try {
       await dict.createOrUpdate('one', '', 'plain');

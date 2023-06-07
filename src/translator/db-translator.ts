@@ -1,9 +1,10 @@
 import { AbstractTranslator } from './abstract-translator';
-import { SqliteDict } from '../dict/sqlite-dict';
+import { Dict } from '../dict/dict';
+import { getDict } from '../dict/get-dict';
 
 export class DbTranslator extends AbstractTranslator<any> {
   async translateFile(filename: string): Promise<void> {
-    const dict = new SqliteDict();
+    const dict = getDict();
     await dict.open(filename);
     try {
       await this.translateDict(dict);
@@ -12,7 +13,7 @@ export class DbTranslator extends AbstractTranslator<any> {
     }
   }
 
-  async translateDict(dict: SqliteDict): Promise<void> {
+  async translateDict(dict: Dict): Promise<void> {
     const allEntries = await dict.query();
     const newEntries = allEntries.filter(it => !it.isRegExp && !it.chinese);
     newEntries.map(entry => this.translateSentence(entry.english, entry.format)

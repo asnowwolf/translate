@@ -1,6 +1,6 @@
 import { groupBy, omit, uniqBy } from 'lodash';
-import { SqliteDict } from '../dict/sqlite-dict';
 import { getExtractorFor } from './get-extractor-for';
+import { getDict } from '../dict/get-dict';
 
 describe('extractor', () => {
   it('extract pairs from html', () => {
@@ -47,7 +47,7 @@ describe('extractor', () => {
     const filename1 = 'samples/html/extract1.html';
     const filename2 = 'samples/html/extract2.html';
     const extractor = getExtractorFor(filename1);
-    const dict = new SqliteDict();
+    const dict = getDict();
     await dict.open(':memory:');
     const allPairs = [filename1, filename2].map(file => extractor.extract(file).map(it => ({
       ...it,
