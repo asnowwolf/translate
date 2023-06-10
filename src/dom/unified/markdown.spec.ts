@@ -24,6 +24,7 @@ describe('markdown', () => {
 \`\`\`
 fence
 \`\`\`
+
 def
 `;
       const ast = markdown.parse(md);
