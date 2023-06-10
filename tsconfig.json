@@ -12,7 +12,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "noUnusedLocals": true,
-    "target": "es5",
+    "target": "ES2022",
     "strictNullChecks": false,
     "typeRoots": [
       "node_modules/@types"

@@ -16,6 +16,7 @@ export abstract class AbstractTranslator<T> {
 
   async translateFile(filename: string, options: TranslationOptions = {}): Promise<void> {
     const content = readFileSync(filename, 'utf8');
+    this.engine.currentFile = filename;
     const result = await this.translateContent(content, { ...options, filename });
     console.log('Total bytes: ', this.engine.totalBytes);
     writeFileSync(filename, result.trim() + '\n', 'utf8');

@@ -36,7 +36,7 @@ export const builder: CommandBuilder = {
   },
   dict: {
     type: 'string',
-    description: '当使用 dict 引擎时，指定要使用的字典文件，目前只支持 sqlite 格式。',
+    description: '当使用 dict 引擎时，指定要使用的字典目录，字典目录是由一组 markdown 文件构成的与原文同构的目录。',
   },
   domain: {
     type: 'string',
@@ -105,6 +105,7 @@ export const handler = async function (params: Params) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
   }
+
   switch (params.domain) {
     case TranslationDomainType.angular:
     case TranslationDomainType.ng:

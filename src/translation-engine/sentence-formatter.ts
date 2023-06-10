@@ -20,6 +20,19 @@ export class SentenceFormatter {
     }
   }
 
+  static toMarkdown(sentence: string, format: SentenceFormat): string {
+    switch (format) {
+      case 'html':
+        return markdown.mdFromHtml(sentence);
+      case 'plain':
+        return markdown.mdFromHtml(SentenceFormatter.toHtml(sentence, format));
+      case 'markdown':
+        return sentence;
+      case 'asciidoctor':
+        return markdown.mdFromHtml(adocToTinyHtml(sentence));
+    }
+  }
+
   static fromHtml(sentence: string, format: SentenceFormat): string {
     switch (format) {
       case 'html':
@@ -31,6 +44,19 @@ export class SentenceFormatter {
         return markdown.mdFromHtml(sentence);
       case 'asciidoctor':
         return tinyHtmlToAdoc(sentence);
+    }
+  }
+
+  static fromMarkdown(sentence: string, format: SentenceFormat): string {
+    switch (format) {
+      case 'html':
+        return markdown.toHtml(sentence);
+      case 'plain':
+        return SentenceFormatter.toPlain(sentence, format);
+      case 'markdown':
+        return sentence;
+      case 'asciidoctor':
+        return tinyHtmlToAdoc(markdown.mdFromHtml(sentence));
     }
   }
 

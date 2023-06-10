@@ -29,7 +29,7 @@
     "@types/lodash": "^4.14.165",
     "@types/mdast": "^3.0.3",
     "@types/mkdirp": "^1.0.1",
-    "@types/node": "^9.6.57",
+    "@types/node": "^20.2.1",
     "@types/parse5": "^6.0.0",
     "@types/request": "^2.48.5",
     "@types/request-promise-native": "^1.0.17",
@@ -40,7 +40,7 @@
     "ts-jest": "^26.4.4",
     "ts-node": "^5.0.1",
     "tslint": "^5.20.1",
-    "typescript": "^4.5.5"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "@asciidoctor/core": "^2.2.6",
@@ -75,8 +75,5 @@
     "unist-util-visit": "^1.4.1",
     "uuid": "^3.4.0",
     "yargs": "^12.0.5"
-  },
-  "peerDependencies": {
-    "better-sqlite3": "^7.1.2"
   }
 }

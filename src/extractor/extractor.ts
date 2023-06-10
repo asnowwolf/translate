@@ -1,5 +1,4 @@
-import { DictEntry } from '../dict/dict';
-import { v4 } from 'uuid';
+import { DictEntry, DictEntryConfidence } from '../dict/dict';
 import { SentenceFormat } from '../translator/sentence-format';
 import { readFileSync } from 'fs';
 
@@ -19,13 +18,9 @@ export abstract class AbstractExtractor implements Extractor {
     return this.extractSentencePairsFromFile(filename)
       .filter(it => it.english && it.chinese && it.english !== it.chinese)
       .map(it => ({
-        id: v4(),
         english: it.english,
         chinese: it.chinese,
-        path: filename,
-        format: it.format,
-        isRegExp: false,
-        confidence: 'Manual',
+        confidence: DictEntryConfidence.Manual,
       }));
   }
 

@@ -23,9 +23,12 @@ function isCamelCaseName(text: string): boolean {
 export abstract class TranslationEngine {
   batchSize = 50;
   private _totalBytes = 0;
+
   get totalBytes(): number {
     return this._totalBytes;
   }
+
+  currentFile: string;
 
   async init(): Promise<void> {
     this._totalBytes = 0;

@@ -3,57 +3,40 @@ import { TranslationEngineOptions } from './translation-engine-options';
 import { Dict } from '../dict/dict';
 import { SentenceFormat } from '../translator/sentence-format';
 import { getDict } from '../dict/get-dict';
+import { SentenceFormatter } from './sentence-formatter';
 
 export class DictTranslationEngine extends TranslationEngine {
   private dict: Dict;
-  private isInternalDict = false;
-  private unknownEnglishList: string[] = [];
 
   constructor(private readonly options: TranslationEngineOptions) {
     super();
   }
 
   async init(): Promise<void> {
-    this.unknownEnglishList = [];
-    if (typeof this.options.dict === 'string') {
-      this.isInternalDict = true;
-      this.dict = getDict();
-      await this.dict.open(this.options.dict);
-    } else {
-      this.isInternalDict = false;
-      this.dict = this.options.dict;
-    }
+    this.dict = getDict();
+    this.dict.open(this.options.dict);
   }
 
   async dispose(): Promise<void> {
-    if (this.isInternalDict) {
-      await this.dict.close();
-    }
+    this.dict.close();
   }
 
   protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
     return Promise.all(texts.map(async (text) => {
-      const english = text.trim();
-      const entry = await this.dict.get(english, format);
+      const english = SentenceFormatter.toMarkdown(text, format);
+      const entry = this.dict.get(english);
       if (!entry) {
-        if (!this.unknownEnglishList.includes(english)) {
-          this.unknownEnglishList.push(english);
-          await this.dict.createOrUpdate(english, '', format);
-        }
-        return english;
+        return text;
       }
       const chinese = entry.chinese;
       if (!chinese) {
-        return english;
+        return text;
       }
       switch (entry.confidence) {
-        case 'DictFuzzy':
-          return `${chinese}【模糊翻译】`;
         case 'Engine':
-          return `${chinese}【引擎翻译】`;
-        case 'DictAccurate':
+          return `${SentenceFormatter.fromMarkdown(chinese, format)}【引擎翻译】`;
         case 'Manual':
-          return chinese;
+          return SentenceFormatter.fromMarkdown(chinese, format);
       }
     }));
   }

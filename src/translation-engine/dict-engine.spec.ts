@@ -1,29 +1,25 @@
 import { DictTranslationEngine } from './dict-engine';
-import { getDict } from '../dict/get-dict';
 
 describe('translation engine', () => {
   it('translate by dict without convert', async () => {
-    const engine = new DictTranslationEngine({ dict: ':memory:' });
+    const engine = new DictTranslationEngine({ dict: 'src/dict/examples/angular' });
     await engine.init();
-    const dict = engine['dict'];
-    await dict.createOrUpdate('One, Two!', '一二', 'plain');
     for (let i = 0; i < 100; ++i) {
-      engine.translate('One, Two!', 'plain').then(result => {
-        expect(result.trim()).toBe('一二');
+      engine.translate('# One', 'markdown').then(result => {
+        expect(result.trim()).toBe('# 一');
       });
     }
     await engine.flush();
   });
 
   it('translate by dict with convert', async () => {
-    const dict = getDict();
-    await dict.open(':memory:');
-    const engine = new DictTranslationEngine({ dict });
+    const engine = new DictTranslationEngine({ dict: 'src/dict/examples/angular' });
     await engine.init();
-    await dict.createOrUpdate('One, Two!', '一二', 'markdown');
-    engine.translate('<p>One, Two!</p>', 'html').then(result => {
-      expect(result.trim()).toBe(`<p>一二</p>`);
-    });
+    for (let i = 0; i < 100; ++i) {
+      engine.translate('<h1>One</h1>', 'html').then(result => {
+        expect(result.trim()).toBe('<h1>一</h1>');
+      });
+    }
     await engine.flush();
   });
 });
