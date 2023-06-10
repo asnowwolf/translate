@@ -10,16 +10,16 @@ export class HtmlExtractor extends AbstractExtractor {
     }
     const doc = DomDocument.parse(html);
     clearAiraHidden(doc);
-    const resultElements = doc.querySelectorAll(it => it.nextElementSibling?.hasAttribute('translation-result') && it.hasAttribute('translation-origin'));
+    const resultElements = doc.querySelectorAll(it => it.hasAttribute('translation-origin') && it.previousElementSibling?.hasAttribute('translation-result'));
     const results: SentencePair[] = [];
     resultElements.forEach(origin => {
-      const result = origin.nextElementSibling!;
+      const translation = origin.previousElementSibling!;
       if (!containsChinese(origin.textContent!)) {
         origin.removeAttribute('translation-origin');
-        result.removeAttribute('translation-result');
+        translation.removeAttribute('translation-result');
         results.push({
           english: markdown.mdFromHtml(origin.innerHTML),
-          chinese: markdown.mdFromHtml(result.innerHTML),
+          chinese: markdown.mdFromHtml(translation.innerHTML),
           format: 'markdown',
         });
       }

@@ -48,51 +48,45 @@ describe('extractor', () => {
     const filename2 = 'samples/html/extract2.html';
     const extractor = getExtractorFor(filename1);
     const dict = getDict();
-    await dict.open(':memory:');
-    const allPairs = [filename1, filename2].map(file => extractor.extract(file).map(it => ({
-      ...it,
-      path: file,
-    }))).flat()
+    await dict.open('src/dict/examples/test');
+    const allPairs = [filename1, filename2].map(file => extractor.extract(file).map(it => {
+      return {
+        ...it,
+        path: file,
+      };
+    })).flat()
       .filter(it => /.*/.test(it.english) || /.*/.test(it.chinese));
     const pairs = uniqBy(allPairs, (it) => it.english + it.chinese);
     const groups = groupBy(pairs, it => it.path);
     for (const [file, pairs] of Object.entries(groups)) {
       for (const pair of pairs) {
-        await dict.createOrUpdate(pair.english, pair.chinese, pair.format, { path: file });
+        await dict.save(file, pair);
       }
     }
-    const result = await dict.query();
+    const result = dict.query();
     expect(result.map(it => omit(it, 'id', 'isRegExp', 'createdAt', 'updatedAt'))).toEqual([
       {
         'chinese': '一',
         'confidence': 'Manual',
         'english': 'One',
-        'fingerprint': 'ponep',
-        'format': 'markdown',
         'path': 'samples/html/extract1.html',
       },
       {
         'chinese': '二',
         'confidence': 'Manual',
         'english': 'Two',
-        'fingerprint': 'ptwop',
-        'format': 'markdown',
         'path': 'samples/html/extract1.html',
       },
       {
         'chinese': '三',
         'confidence': 'Manual',
         'english': 'Three',
-        'fingerprint': 'pthreep',
-        'format': 'markdown',
         'path': 'samples/html/extract2.html',
       },
       {
         'chinese': '四',
         'confidence': 'Manual',
         'english': 'Four',
-        'fingerprint': 'pfourp',
-        'format': 'markdown',
         'path': 'samples/html/extract2.html',
       },
     ]);

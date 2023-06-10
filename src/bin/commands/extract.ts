@@ -1,9 +1,12 @@
 import { CommandBuilder } from 'yargs';
 import { sync as globby } from 'globby';
+import { getExtractorFor } from '../../extractor/get-extractor-for';
+import { getDict } from '../../dict/get-dict';
+import { relative } from 'path';
 
 export const command = `extract <sourceGlobs...>`;
 
-export const describe = '从对照翻译文件中提取出词典';
+export const describe = '从发布版本的对照翻译文件中提取出词典';
 
 export const builder: CommandBuilder = {
   sourceGlobs: {
@@ -11,12 +14,13 @@ export const builder: CommandBuilder = {
   },
   dict: {
     required: true,
-    description: '结果要输出到的文件，不用带扩展名',
+    description: '结果要输出到的字典，会输出为 markdown 格式',
   },
 };
 
 interface ExtractParams {
   sourceGlobs: string[];
+  cwd?: string;
   dict: string;
 }
 
@@ -26,5 +30,18 @@ export const handler = async function (params: ExtractParams) {
     console.error('没有找到任何文件，请检查 sourceGlobs 是否正确！');
     return;
   }
-  // TODO: 把核心文本内容提取到独立的 markdown 格式的词典里
+  const dict = getDict();
+  try {
+    for (let filename of filenames) {
+      await dict.open(params.dict);
+      const entries = getExtractorFor(filename).extract(filename);
+      for (let entry of entries) {
+        const tableName = relative(params.cwd, filename);
+        await dict.save(tableName, entry);
+      }
+      dict.close();
+    }
+  } finally {
+    await dict.close();
+  }
 };

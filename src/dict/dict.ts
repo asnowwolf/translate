@@ -33,6 +33,7 @@ export class Dict {
   }
 
   private load(folder: string): void {
+    this.tables = new Map();
     mkdirSync(folder, { recursive: true });
     const files = Array.from(traverse(folder))
       .filter((file) => extname(file) === '.md' && !file.endsWith('.new.md'))
