@@ -11,26 +11,42 @@ export class JsonTranslator extends AbstractTranslator<object> {
     return JSON.stringify(doc, null, 2);
   }
 
-  translateDoc(doc: Object, options: TranslationOptions): Object {
+  translateDoc(doc: Readonly<Object>, options: TranslationOptions): Object {
+    const result = createTranslationWithOrderedProperties(doc);
     for (let key in doc) {
       if (doc.hasOwnProperty(key)) {
-        const value = doc[key];
-        if (options.jsonProperties?.includes(key) && typeof value === 'string' &&
-          !containsChinese(value) && !containsChinese(doc[`${key}Cn`])) {
-          this.translateSentence(value, 'markdown')
-            .then((it) => it.trim())
-            .then((translation) => {
-              if (value !== translation && containsChinese(translation)) {
-                doc[`${key}Cn`] = translation;
-              }
-            });
-        }
-        if (value instanceof Object) {
-          this.translateDoc(value, options);
+        const original = doc[key];
+        const translation = doc[`${key}Cn`];
+        if (original instanceof Object) {
+          result[key] = this.translateDoc(original, options);
+        } else {
+          result[key] = original;
+          if (options.jsonProperties?.includes(key) && typeof original === 'string' && !containsChinese(original)) {
+            this.translateSentence(original, translation, 'markdown')
+              .then((it) => it.trim())
+              .then((translation) => {
+                if (original !== translation && containsChinese(translation)) {
+                  result[`${key}Cn`] = translation;
+                }
+              });
+          }
         }
       }
     }
-    return doc;
+    return result;
   }
 }
 
+function createTranslationWithOrderedProperties(original: Readonly<Object>): Object {
+  const translation = {};
+  const descriptors = Object.getOwnPropertyDescriptors(original);
+  const resultDescriptors = {};
+  Object.entries(descriptors).forEach(([key, descriptor]) => {
+    if (typeof original[key] === 'string') {
+      resultDescriptors[`${key}Cn`] = descriptor;
+    }
+    resultDescriptors[key] = descriptor;
+  });
+  Object.defineProperties(translation, resultDescriptors);
+  return translation;
+}

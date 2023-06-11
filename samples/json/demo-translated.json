@@ -1,13 +1,13 @@
 {
   "a": 1,
+  "bCn": "译one",
   "b": "one",
   "c": {
+    "bCn": "译two",
     "b": "two",
     "c": {
-      "b": "three",
-      "bCn": "译three"
-    },
-    "bCn": "译two"
-  },
-  "bCn": "译one"
+      "bCn": "译three",
+      "b": "three"
+    }
+  }
 }

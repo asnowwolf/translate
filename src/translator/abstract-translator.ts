@@ -24,9 +24,9 @@ export abstract class AbstractTranslator<T> {
 
   async translateContent(content: string, options: TranslationOptions = {}): Promise<string> {
     const doc = this.parse(content, options);
-    this.translateDoc(doc, options);
+    const result = this.translateDoc(doc, options);
     await this.flush();
-    return this.serialize(doc, options);
+    return this.serialize(result, options);
   }
 
   // 前面所有的工作都是在安排异步任务，调 flush 才真正开始执行
