@@ -20,6 +20,14 @@ describe('subtitle-translator', () => {
     expect(translation).toEqual(readFileSync('samples/subtitle/demo-translated.srt', 'utf8').trim());
   });
 
+  it('translate translated srt file', async () => {
+    const engine = new FakeTranslationEngine();
+    const translator = new SubtitleTranslator(engine);
+    const original = readFileSync('samples/subtitle/demo-translated.srt', 'utf8');
+    const translation = await translator.translateContent(original);
+    expect(translation).toEqual(readFileSync('samples/subtitle/demo-translated.srt', 'utf8').trim());
+  });
+
   it('should merge timeline by sentence', function () {
     const vtt = subtitle.parse(`WEBVTT
 Kind: captions
@@ -66,7 +74,7 @@ Angular at Google.`);
             'text': 'I\'m working on\nAngular at Google.',
           },
         ],
-        'original': 'I\'m working on\nAngular at Google.',
+        'original': 'I\'m working on Angular at Google.',
         'startTime': 2670,
         'translation': '',
       },

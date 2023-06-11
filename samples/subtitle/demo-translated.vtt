@@ -62,9 +62,13 @@ As you'll see in the code, there is the foundation for implementing the lead fun
 But for simplicity, it is not part of the UI.
 译But for simplicity, it is not part of the UI.
 
-00:01:07.660 --> 00:01:18.550
-Remember I mentioned that the numeric value for each employee goes through a heavy computation? I have mocked this computation with the Fibonacci function to keep things simple.
-译Remember I mentioned that the numeric value for each employee goes through a heavy computation? I have mocked this computation with the Fibonacci function to keep things simple.
+00:01:07.660 --> 00:01:13.090
+Remember I mentioned that the numeric value for each employee goes through a heavy computation?
+译Remember I mentioned that the numeric value for each employee goes through a heavy computation?
+
+00:01:13.090 --> 00:01:18.550
+I have mocked this computation with the Fibonacci function to keep things simple.
+译I have mocked this computation with the Fibonacci function to keep things simple.
 
 00:01:18.550 --> 00:01:32.310
 Notice that we've implemented a pretty inefficient version of Fibonacci so that even minor performance problems can have significant visible impacts in the examples we'll explore.

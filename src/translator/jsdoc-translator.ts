@@ -44,10 +44,6 @@ function postprocess(text: string): string {
   return text.replace(/&commat;/g, '@');
 }
 
-function joinChineseLines(text: string): string {
-  return text;
-}
-
 export class JsdocTranslator extends AbstractTranslator<SourceFile> {
   private markdownTranslator = new MarkdownTranslator(this.engine);
 
@@ -65,7 +61,7 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     return super.flush();
   }
 
-  protected translateSentence(sentence: string): Promise<string> {
+  translateMarkdown(sentence: string): Promise<string> {
     return this.markdownTranslator.translateContent(sentence).then((result) => result);
   }
 
@@ -80,8 +76,8 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
       for (const doc of docs) {
         const structure = doc.getStructure();
         const tagTasks = structure.tags.map(tag => this.translateTag(tag));
-        const origin = joinChineseLines((structure.description as string).trim());
-        const descriptionTask = this.translateSentence(origin).then(translation => {
+        const origin = (structure.description as string).trim();
+        const descriptionTask = this.translateMarkdown(origin).then(translation => {
           if (translation.trim() !== origin.trim()) {
             structure.description = removeExtraBlankLines(translation);
           }
@@ -106,7 +102,7 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     if (isBinaryTag(tag)) {
       const [, name, description] = (text ?? '').match(/^((?:{.*?}\s*)?(?:[\w.\[\]]+|\[.*?])\s+)([\s\S]*)$/) ?? [];
       if (description?.trim()) {
-        return this.translateSentence(description).then(translation => {
+        return this.translateMarkdown(description).then(translation => {
           if (translation.trim() !== description.trim()) {
             tag.text = (name ?? '') + removeExtraBlankLines(translation);
           }
@@ -115,7 +111,7 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     } else if (isUnaryTag(tag)) {
       const [, prefix, description] = (text ?? '').match(/^({.*?}\s*)?([\s\S]*)$/);
       if (description?.trim()) {
-        return this.translateSentence(description).then(translation => {
+        return this.translateMarkdown(description).then(translation => {
           if (translation.trim() !== description.trim()) {
             const leadingLines = ['publicApi', 'returns', 'codeGenApi', 'ngModule'].includes(tag.tagName) ? '\n\n' : '';
             const tailingLines = ['usageNotes', 'description', 'deprecated'].includes(tag.tagName) ? '\n\n' : '';

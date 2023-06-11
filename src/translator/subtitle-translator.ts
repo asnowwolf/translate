@@ -35,7 +35,7 @@ export class SubtitleTranslator extends AbstractTranslator<object> {
 
   translateWholeSentences(wholeSentences: WholeSentence[]): Promise<WholeSentence[]> {
     return Promise.all(wholeSentences.map((wholeSentence) => {
-      return this.translateSentence(wholeSentence.original.replace(/(\r?\n|\xa0)/g, ' '), 'plain').then((translation) => {
+      return this.translateSentence(wholeSentence.original, wholeSentence.translation, 'plain').then((translation) => {
         wholeSentence.translation = translation;
       });
     })).then(() => wholeSentences);
@@ -55,7 +55,19 @@ function mergeWholeSentence(wholeSentence: WholeSentence) {
   if (wholeSentence.original.trim() === wholeSentence.translation.trim()) {
     return wholeSentence.original;
   } else {
-    return `${wholeSentence.original.replace(/\r?\n/g, ' ')}\n${wholeSentence.translation}`;
+    return `${wholeSentence.original}\n${wholeSentence.translation}`;
+  }
+}
+
+function splitTranslation(text: string) {
+  const lines = text.split('\n');
+  const firstChineseLineIndex = lines.findIndex((line) => containsChinese(line));
+  if (firstChineseLineIndex === -1) {
+    return { original: text.replace(/\n/g, ' '), translation: '' };
+  } else {
+    const original = lines.slice(0, firstChineseLineIndex).join(' ');
+    const translation = lines.slice(firstChineseLineIndex).join(' ');
+    return { original, translation };
   }
 }
 
@@ -69,11 +81,12 @@ export function mergeTimelineBySentence(items: SubtitleItem[]): WholeSentence[] 
     const item = items[i];
     originalItems.push(item);
     text += item.text + ' ';
-    if (/[.!]$/.test(item.text) || i === items.length - 1) {
-      wholeSentences.push({ original: text.trim(), translation: '', startTime, endTime: item.endTime, items: originalItems });
-      text = '';
+    if (/[.!?]$/.test(item.text) || i === items.length - 1) {
+      const { original, translation } = splitTranslation(text.trim());
+      wholeSentences.push({ original, translation, startTime, endTime: item.endTime, items: originalItems });
       startTime = item.endTime;
       originalItems = [];
+      text = '';
     }
   }
   return wholeSentences;
