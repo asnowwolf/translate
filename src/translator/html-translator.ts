@@ -37,7 +37,7 @@ export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | Dom
         });
       }
     }
-    this.addWrapperForLi(doc);
+    this.addWrapperForTextInSpecialBlocks(doc);
 
     const elements = this.selectors
       .map(selector => Array.from(doc.querySelectorAll(selector)))
@@ -106,9 +106,9 @@ export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | Dom
     translationNode.innerHTML = translation;
   }
 
-  private addWrapperForLi(body: DomDocumentFragment | DomDocument) {
-    const li = body.querySelectorAll((it) => it.isTagOf('li', 'td', 'th'));
-    li.forEach(it => {
+  private addWrapperForTextInSpecialBlocks(body: DomDocumentFragment | DomDocument) {
+    const blocks = body.querySelectorAll((it) => it.isTagOf('li', 'td', 'th'));
+    blocks.forEach(it => {
       it.childNodes = wrapChildren(it);
       it.childNodes.forEach(child => {
         child.parentNode = it;
