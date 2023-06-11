@@ -17,7 +17,7 @@ describe('html-translator', () => {
     const translator = new HtmlTranslator(engine);
     const result = await translator.translateContent('<p translation-origin="off">One</p>', { htmlFragment: true });
 
-    expect(result).toEqual('<p translation-result="on">译One</p><p translation-origin="off">One</p>');
+    expect(result).toEqual('<p translation-origin="off">One</p><p translation-result="on">译One</p>');
   });
 
   it('translate complex html fragment file with fake engine', async () => {
@@ -39,27 +39,27 @@ describe('html-translator', () => {
 </li>`);
 
     expect(result).toEqual(`<li>
-  <p translation-result="on">译a<a href="/1">译One</a>译b</p>
   <p translation-origin="off">a<a href="/1">One</a>b</p>
-  <p translation-result="on">译Two</p>
+  <p translation-result="on">译a<a href="/1">译One</a>译b</p>
   <p translation-origin="off">Two</p>
-  <p translation-result="on">译Three</p>
+  <p translation-result="on">译Two</p>
   <p translation-origin="off">Three</p>
+  <p translation-result="on">译Three</p>
   <ul>
     <li>
-      <p translation-result="on">译Four</p>
       <p translation-origin="off">Four</p>
+      <p translation-result="on">译Four</p>
     </li>
   </ul>
   <table>
     <tbody><tr>
       <td>
-        <p translation-result="on">译Five</p>
         <p translation-origin="off">Five</p>
+        <p translation-result="on">译Five</p>
       </td>
       <td>
-        <p translation-result="on">译Six</p>
         <p translation-origin="off">Six</p>
+        <p translation-result="on">译Six</p>
       </td>
     </tr>
   </tbody></table>
@@ -71,13 +71,13 @@ describe('html-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new HtmlTranslator(engine);
     const result = await translator.translateContent(`<li>
-<p translation-result="on">One译</p>
 <p translation-origin="off">One</p>
+<p translation-result="on">One译</p>
 </li>`, { htmlFragment: true });
 
     expect(result).toEqual(`<li>
-<p translation-result="on">One译</p>
 <p translation-origin="off">One</p>
+<p translation-result="on">One译</p>
 </li>`);
   });
 

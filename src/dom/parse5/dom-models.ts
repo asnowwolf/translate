@@ -230,11 +230,11 @@ export class DomDocument extends DomParentNode {
   }
 
   toHtml(): string {
-    // 如果是文档片段，则只序列化 body，否则序列化整个对象
     return serialize(this, { treeAdapter: DomNode.treeAdapter });
   }
 
   toFragment(): string {
+    // 如果是文档片段，则只序列化 body
     return serialize(this.body, { treeAdapter: DomNode.treeAdapter });
   }
 

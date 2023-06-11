@@ -40,7 +40,7 @@ export abstract class TranslationEngine {
   private tasks: { sentence: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
   translate(sentence: string, format: SentenceFormat): Promise<string> {
-    const text = SentenceFormatter.toPlain(sentence, format).trim();
+    const text = sentence.trim();
     if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text)) {
       return Promise.resolve(sentence);
     }

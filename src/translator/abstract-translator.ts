@@ -36,7 +36,10 @@ export abstract class AbstractTranslator<T> {
 
   abstract parse(text: string, options: TranslationOptions): T;
 
-  protected async translateSentence(sentence: string, format: SentenceFormat): Promise<string> {
+  protected async translateSentence(sentence: string, translation: string, format: SentenceFormat): Promise<string> {
+    if (containsChinese(translation)) {
+      return sentence;
+    }
     return this.engine.translate(sentence, format)
       // 翻译结果不包含中文时，说明没有进行实质性翻译，返回原文，以便调用者忽略它
       .then((translation) => containsChinese(translation) ? translation : sentence);

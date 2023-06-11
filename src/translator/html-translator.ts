@@ -1,8 +1,8 @@
 import { AbstractTranslator } from './abstract-translator';
 import { defaultSelectors, DomChildNode, DomDocument, DomDocumentFragment, DomElement, DomNode, DomText } from '../dom/parse5/dom-models';
-import { containsChinese } from '../dom/common';
-import { sameExceptWhitespace } from './same-except-whitespace';
 import { TranslationOptions } from './translation-options';
+import { buildTranslationPair, TranslationPair } from './translation-pair';
+import { containsChinese } from '../dom/common';
 
 export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | DomDocument> {
   private selectors = defaultSelectors;
@@ -22,47 +22,88 @@ export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | Dom
 
   translateDoc(doc: DomDocumentFragment | DomDocument): DomDocumentFragment | DomDocument {
     if (doc instanceof DomDocument) {
-      this.translateSentence(doc.title, 'html').then(translation => doc.title = translation);
+      this.formatHtml(doc);
+      const titleElement = doc.head.querySelector(it => it.tagName === 'title');
+      if (titleElement) {
+        const [original, translation] = buildTranslationPair(
+          titleElement.getAttribute('original-title'),
+          titleElement.textContent,
+        );
+        this.translateSentence(original, translation, 'plain').then(translation => {
+          if (translation && translation !== original) {
+            titleElement.setAttribute('original-title', original);
+            titleElement.textContent = translation;
+          }
+        });
+      }
     }
     this.addWrapperForLi(doc);
 
     const elements = this.selectors
       .map(selector => Array.from(doc.querySelectorAll(selector)))
-      .flat().filter(node => !node.previousElementSibling?.hasAttribute('translation-result'));
+      .flat()
+      .filter(it => this.shouldTranslate(it));
 
-    const originals = elements.map(it => it.innerHTML);
-    originals.map((original, index) =>
-      this.translateSentence(original, 'html').then(translation => {
-        this.applyTranslation(elements[index], translation);
-      }));
+    for (let element of elements) {
+      const [original, translation] = this.buildTranslationPair(element);
+      this.translateSentence(original, translation, 'html').then(translation => {
+        if (translation && translation !== original) {
+          this.applyTranslation(element, translation);
+        }
+      });
+    }
     return doc;
   }
 
-  applyTranslation(origin: DomElement, translation: string): void {
-    if (shouldIgnore(origin)) {
+  private shouldTranslate<T>(node: DomNode): boolean {
+    if (!(node instanceof DomElement)) {
+      return false;
+    }
+    if (node.hasAttribute('translation-result')) {
+      return false;
+    }
+    if (node.getAttribute('translate') === 'no') {
+      return false;
+    }
+    if (containsChinese(node.textContent)) {
+      return false;
+    }
+    return true;
+  }
+
+  private formatHtml(doc: DomDocument) {
+    const htmlNode = doc.childNodes.find(it => it.nodeName === 'html');
+    doc.insertBefore(new DomText('\n'), htmlNode);
+    htmlNode.insertBefore(new DomText('\n'), htmlNode.firstChild);
+    htmlNode.insertAfter(new DomText('\n'), htmlNode.lastChild);
+  }
+
+  private buildTranslationPair(element: DomElement): TranslationPair {
+    const next = element.nextElementSibling;
+    if (element.hasAttribute('translation-origin')) {
+      return [element.innerHTML, next?.innerHTML ?? ''];
+    } else {
+      return [element.innerHTML, ''];
+    }
+  }
+
+  applyTranslation(original: DomElement, translation: string): void {
+    const existingTranslationNode = original.nextElementSibling;
+    if (existingTranslationNode?.hasAttribute('translation-result')) {
+      existingTranslationNode.innerHTML = translation;
       return;
     }
-    // 如果译文和原文相同，则摘除原有的 translation-origin 属性，以免被错误的隐藏
-    if (sameExceptWhitespace(origin.innerHTML, translation)) {
-      origin.removeAttribute('translation-origin');
-      return;
-    }
-    const spaces = origin.previousSibling()?.textContent || '';
-    const resultNode = new DomElement(origin.tagName);
-    resultNode.innerHTML = translation;
-    origin.parentNode?.insertBefore(resultNode, origin);
+    const translationNode = new DomElement(original.tagName);
+    translationNode.setAttribute('translation-result', 'on');
+    original.setAttribute('translation-origin', 'off');
+    const spaces = original.previousSibling()?.textContent || '';
+    const node = new DomText(spaces);
+    original.parentNode?.insertAfter(translationNode, original);
+    // 如果是空格，则在结果元素前复制一份，以便对齐
     if (!spaces.trim()) {
-      const node = new DomText(spaces);
-      origin.parentNode?.insertBefore(node, origin);
+      original.parentNode?.insertAfter(node, original);
     }
-    // 交换 id
-    const id = origin.getAttribute('id');
-    if (id) {
-      resultNode.setAttribute('id', id);
-      origin.removeAttribute('id');
-    }
-    resultNode.setAttribute('translation-result', 'on');
-    origin.setAttribute('translation-origin', 'off');
+    translationNode.innerHTML = translation;
   }
 
   private addWrapperForLi(body: DomDocumentFragment | DomDocument) {
@@ -118,10 +159,6 @@ function wrapChildren(node: DomElement): DomChildNode[] {
   });
   addToResult(wrapper, result, leadingSpaces);
   return result;
-}
-
-function shouldIgnore(element: DomElement): boolean {
-  return !!element.querySelector(it => it.hasAttribute('translation-result')) || containsChinese(element.textContent!);
 }
 
 function isInlineNode(value: DomChildNode): boolean {
