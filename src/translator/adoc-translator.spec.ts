@@ -13,7 +13,6 @@ describe('adoc-translator', () => {
     expect(await adocTranslate(Examples.documentAdocCn)).toEqual(Examples.documentAdocCn);
   });
   it('documentWithPreamble', async () => {
-    expect(await adocTranslate(Examples.documentWithPreambleAdoc)).toEqual(Examples.documentWithPreambleAdocCn);
     expect(await adocTranslate(Examples.documentWithPreambleAdocCn)).toEqual(Examples.documentWithPreambleAdocCn);
   });
   it('paragraph', async () => {

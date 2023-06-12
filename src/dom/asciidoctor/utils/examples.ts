@@ -395,8 +395,8 @@ def
 * Ubuntu$$$译Ubuntu
 * Slackware$$$译Slackware
 . BSD
-* FreeBSD$$$译FreeBSD
-* NetBSD$$$译NetBSD`;
+* FreeBSD
+* NetBSD`;
   static readonly mixedListHtml = `<div class="olist arabic">
 <ol class="arabic">
 <li>

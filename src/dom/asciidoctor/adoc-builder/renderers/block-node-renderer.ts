@@ -2,6 +2,7 @@ import { BaseNodeRenderer } from './base-node-renderer';
 import { addQuotes } from './utils/add-quotes';
 import { splitAttributeValue } from './utils/split-attribute-value';
 import { Asciidoctor } from '@asciidoctor/core';
+import { adoc } from '../../utils/adoc';
 import AbstractBlock = Asciidoctor.AbstractBlock;
 import AttributeEntry = Asciidoctor.Document.AttributeEntry;
 import AbstractNode = Asciidoctor.AbstractNode;
@@ -17,7 +18,7 @@ export class BlockNodeRenderer<T extends AbstractBlock> extends BaseNodeRenderer
     const attributes = this.renderAttributes(this.getBlockAttributes(node) as AttributeEntry[]);
     return [
       attributes ? `[${attributes}]` : '',
-      this.buildBlockTitle(this.getBlockTitle(node)?.toString()),
+      this.buildBlockTitle(node),
     ].filter(it => !!it).join('\n');
   }
 
@@ -29,9 +30,18 @@ export class BlockNodeRenderer<T extends AbstractBlock> extends BaseNodeRenderer
     return `${this.renderChildren(node)}\n`;
   }
 
-  protected buildBlockTitle(title: string): string {
+  protected buildBlockTitle(node: T): string {
+    const title = this.getBlockTitle(node)?.toString();
     const blockTitle = title?.trim();
-    return blockTitle && `.${blockTitle}`;
+    if (!blockTitle) {
+      return '';
+    }
+
+    if ((adoc.isSection(node) || adoc.isFloatingTitle(node)) && blockTitle === node.getTitle()) {
+      return '';
+    }
+
+    return `.${blockTitle}`;
   }
 
   protected renderChildren(node: T): string {

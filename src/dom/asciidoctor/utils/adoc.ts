@@ -15,12 +15,16 @@ export namespace adoc {
   type SubstitutionMode = Asciidoctor['Substitutors']['$$const'];
   const doc = asciidoctor();
 
-  export function isParagraph(node: AbstractNode): node is Block {
+  export function isParagraph(node: AbstractNode): boolean {
     return node?.getNodeName() === 'paragraph';
   }
 
   export function isSection(node: AbstractNode): node is Section {
     return node?.getNodeName() === 'section';
+  }
+
+  export function isFloatingTitle(node: AbstractNode): node is Section {
+    return node?.getNodeName() === 'floating_title';
   }
 
   export function isDocument(node: AbstractNode): node is Document {
@@ -170,5 +174,10 @@ export namespace adoc {
       }
       return child;
     }
+  }
+
+  export function removeNode(node: Asciidoctor.Block): void {
+    const siblings = (node.getParent() as AbstractBlock).getBlocks();
+    siblings.splice(siblings.indexOf(node), 1);
   }
 }

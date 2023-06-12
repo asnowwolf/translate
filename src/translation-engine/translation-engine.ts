@@ -13,7 +13,7 @@ function inBlackList(text: string): boolean {
 }
 
 function isCode(html: string): boolean {
-  return html.startsWith('<code') && html.endsWith('</code>');
+  return html.startsWith('<code') && html.endsWith('</code>') && html.indexOf('</code>') === html.lastIndexOf('</code>');
 }
 
 function isCamelCaseName(text: string): boolean {

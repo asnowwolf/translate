@@ -5,10 +5,8 @@ import { adocToTinyHtml } from '../dom/asciidoctor/html-adoc/adoc-to-tiny-html';
 import { AdocBuilder } from '../dom/asciidoctor/adoc-builder/adoc-builder';
 import { AbstractTranslator } from './abstract-translator';
 import { containsChinese } from '../dom/common';
-import { sameExceptWhitespace } from './same-except-whitespace';
+import { buildTranslationPair, TranslationPair } from './translation-pair';
 import AbstractNode = Asciidoctor.AbstractNode;
-import Block = Asciidoctor.Block;
-import AbstractBlock = Asciidoctor.AbstractBlock;
 import Table = Asciidoctor.Table;
 import Cell = Asciidoctor.Table.Cell;
 import Document = Asciidoctor.Document;
@@ -17,87 +15,118 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
   private builder = new AdocBuilder();
   readonly inlinePairSeparator = '$$$';
 
-  translateDoc(doc: AbstractNode): AbstractNode {
-    if (adoc.isAbstractBlock(doc)) {
-      if (!adoc.isDocument(doc)) {
-        const title = doc.getTitle();
-        if (title && !doc.hasAttribute(`original_title`) && !containsChinese(title)) {
-          this.translateAdoc(title).then(translation => {
-            if (translation && !sameExceptWhitespace(translation, title)) {
-              doc.setAttribute(`original_title`, title);
-              doc.setTitle(translation);
+  translateDoc(node: AbstractNode): AbstractNode {
+    if (adoc.isAbstractBlock(node)) {
+      if (!adoc.isDocument(node)) {
+        const [original, translation] = buildTranslationPair(node.getAttribute(`original_title`, ''), node.getTitle());
+        this.translateAdoc(original, translation).then(translation => {
+          if (translation && translation !== original) {
+            node.setTitle(translation);
+            node.setAttribute(`original_title`, original);
+          }
+        });
+      }
+      this.translateAttribute(node, 'title');
+      if (adoc.isList(node)) {
+        node.getItems().forEach((it) => this.translateDoc(it));
+      } else if (adoc.isDescriptionList(node)) {
+        node.getItems().flat(9).forEach((it) => this.translateDoc(it));
+      } else {
+        node.getBlocks().filter(it => it !== node).forEach((it) => this.translateDoc(it));
+      }
+    }
+
+    if (adoc.hasLines(node) && !['source', 'asciimath', 'literal'].includes(node.getStyle())) {
+      const text = node.lines.join('\n').trim();
+      if (text && !containsChinese(text)) {
+        if (adoc.isListItem(node.getParent())) {
+          const [original, translation] = text.split(this.inlinePairSeparator) as TranslationPair;
+          this.translateAdoc(original, translation).then(translation => {
+            if (translation && translation !== original) {
+              node.lines = [original, translation].join(this.inlinePairSeparator).split('\n');
             }
+          });
+        } else if (adoc.isParagraph(node)) {
+          const [originalNode, translationNode] = this.buildTranslationPair(node);
+          const originalText = originalNode.lines.join('\n');
+          const translationText = translationNode.lines.join('\n');
+          this.translateAdoc(originalText, translationText).then(translation => {
+            if (translation && translation !== originalText) {
+              translationNode.lines = translation.split('\n');
+            } else {
+              adoc.removeNode(translationNode);
+            }
+          });
+        } else {
+          const lines = text.split(/\n\n+/);
+          const pairs: TranslationPair[] = [];
+          for (let i = 0; i < lines.length; ++i) {
+            const thisLine = lines[i];
+            const nextLine = lines[i + 1] ?? '';
+            if (!containsChinese(thisLine)) {
+              if (containsChinese(nextLine)) {
+                pairs.push([thisLine, nextLine]);
+              } else {
+                pairs.push([thisLine, '']);
+              }
+            }
+          }
+
+          const tasks = pairs.map((pair) => {
+            return this.translateAdoc(pair[0], pair[1]).then(translation => {
+              if (translation && translation !== pair[0]) {
+                pair[1] = translation;
+              }
+            });
+          });
+
+          Promise.all(tasks).then(() => {
+            node.lines = pairs.map(([original, translation]) => [original, translation].join('\n\n')).join('\n\n').split('\n');
           });
         }
       }
-      this.translateAttribute(doc, 'title');
-      if (adoc.isList(doc)) {
-        doc.getItems().forEach((it) => this.translateDoc(it));
-      } else if (adoc.isDescriptionList(doc)) {
-        doc.getItems().flat(9).forEach((it) => this.translateDoc(it));
-      } else {
-        doc.getBlocks().filter(it => it !== doc).forEach((it) => this.translateDoc(it));
-      }
-    }
-    if (adoc.hasLines(doc) && !['source', 'asciimath', 'literal'].includes(doc.getStyle()) && !this.hasTranslated(doc)) {
-      const text = doc.lines.join('\n');
-      this.translateAdoc(text).then(translation => {
-        if (sameExceptWhitespace(text, translation)) {
-          return;
-        }
-        if (adoc.isListItem(doc.getParent())) {
-          doc.lines = [[text, translation].join(this.inlinePairSeparator)];
-        } else {
-          const englishLines = doc.lines.join('\n').split('\n\n');
-          const chineseLines = translation.trim().split('\n\n');
-          doc.lines = this.mergeLines(englishLines, chineseLines);
-        }
-      });
     }
 
-    if (adoc.isDocument(doc)) {
-      this.translateAttribute(doc, 'doctitle');
-      this.translateAttribute(doc, 'description');
+    if (adoc.isDocument(node)) {
+      this.translateAttribute(node, 'doctitle');
+      this.translateAttribute(node, 'description');
     }
 
-    if (adoc.isQuote(doc)) {
-      this.translateAttribute(doc, 'title');
-      this.translateAttribute(doc, 'citetitle');
-      this.translateAttribute(doc, 'attribution');
+    if (adoc.isQuote(node)) {
+      this.translateAttribute(node, 'title');
+      this.translateAttribute(node, 'citetitle');
+      this.translateAttribute(node, 'attribution');
     }
 
-    if (adoc.isListItem(doc)) {
-      const text = doc.getText().toString().trim();
-      const pairs = text.split(this.inlinePairSeparator);
-      if (pairs.length === 2) {
-        return;
-      }
-      this.translateAdoc(text).then(translation => {
-        if (!sameExceptWhitespace(text, translation)) {
-          doc.setText([text, translation].join(this.inlinePairSeparator));
-        }
-      });
+    if (adoc.isBlockImage(node)) {
+      this.translateAttribute(node, 'alt');
     }
 
-    if (adoc.isBlockImage(doc)) {
-      this.translateAttribute(doc, 'alt');
+    if (adoc.isBlockResource(node)) {
+      this.translateAttribute(node, 'poster');
     }
 
-    if (adoc.isBlockResource(doc)) {
-      this.translateAttribute(doc, 'poster');
-    }
-
-    if (adoc.isTable(doc)) {
-      const rows = doc.getRows();
+    if (adoc.isTable(node)) {
+      const rows = node.getRows();
       this.translateHeadRows(rows.head);
       this.translateRows(rows.body);
       this.translateRows(rows.foot);
     }
-    if (adoc.isVerse(doc)) {
-      this.translateAttribute(doc, 'attribution');
-      this.translateAttribute(doc, 'citetitle');
+    if (adoc.isVerse(node)) {
+      this.translateAttribute(node, 'attribution');
+      this.translateAttribute(node, 'citetitle');
     }
-    return doc;
+
+    if (adoc.isListItem(node)) {
+      const text = node.getText().toString();
+      const [original, translation] = text.split(this.inlinePairSeparator) as TranslationPair;
+      this.translateAdoc(original, translation).then(translation => {
+        if (translation && translation !== original) {
+          node.setText([original, translation].join(this.inlinePairSeparator));
+        }
+      });
+    }
+    return node;
   }
 
   parse(text: string): Asciidoctor.AbstractNode {
@@ -108,80 +137,41 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
     return this.builder.build(doc as Document);
   }
 
-  async translateAdoc(text: string): Promise<string> {
-    if (containsChinese(text)) {
-      return text;
-    }
-    text = text.toString();
-    if (!text) {
+  async translateAdoc(original: string, translation: string): Promise<string> {
+    original = original?.toString();
+    if (!original) {
       return '';
     }
-    const html = unwrap(adocToTinyHtml(text));
-    return await this.translateSentence(html, 'html').then(translation => tinyHtmlToAdoc(wrap(translation)));
+    if (containsChinese(original)) {
+      return original;
+    }
+    const sourceHtml = unwrap(adocToTinyHtml(original));
+    const translationHtml = translation && unwrap(adocToTinyHtml(translation));
+    return await this.translateSentence(sourceHtml, translationHtml, 'html').then(translation => tinyHtmlToAdoc(wrap(translation)));
   }
 
   translateAttribute(node: AbstractNode, attributeName: string): void {
-    if (attributeName.startsWith('original_') || node.hasAttribute(`original_${attributeName}`)) {
-      return;
-    }
-    const attribute = node.getAttribute(attributeName);
-    if (attribute) {
-      this.translateAdoc(attribute).then(translation => {
-        if (translation && !sameExceptWhitespace(attribute, translation)) {
+    const [original, translation] = buildTranslationPair(
+      node.getAttribute(`original_${attributeName}`, ''),
+      node.getAttribute(attributeName, ''),
+    );
+    if (original) {
+      this.translateAdoc(original, translation).then(translation => {
+        if (translation && original !== translation) {
           node.setAttribute(attributeName, translation);
-          if (attribute !== translation) {
-            node.setAttribute(`original_${attributeName}`, attribute);
-          }
+          node.setAttribute(`original_${attributeName}`, original);
         }
       });
     }
   }
 
-  mergeLines(englishLines: string[], chineseLines: string[]): string[] {
-    if (englishLines.length !== chineseLines.length) {
-      throw 'Cannot merge!';
-    }
-    const result = [];
-    for (let i = 0; i < englishLines.length; ++i) {
-      const english = englishLines[i];
-      const chinese = chineseLines[i];
-      if (english && english !== chinese) {
-        result.push(english);
-        result.push('');
-        result.push(chinese);
-        const isLastLine = i === englishLines.length - 1;
-        if (!isLastLine) {
-          result.push('');
-        }
-      } else {
-        result.push(english);
-      }
-    }
-    return result;
-  }
-
-  hasTranslated(node: Block): boolean {
-    if (containsChinese(node.lines.join('\n'))) {
-      return true;
-    }
-    const parent = node.getParent() as AbstractBlock;
-    const index = parent.getBlocks().indexOf(node);
-    const next = parent.getBlocks()[index + 1];
-    if (!next || next.getNodeName() !== node.getNodeName()) {
-      return false;
-    }
-    return containsChinese(next.lines.join('\n'));
-  }
-
   translateRows(rows: Table.Cell[][]): void {
     rows.map(row => row.map((cell: Cell) => {
-      if (containsChinese(cell.getText())) {
-        return;
-      }
-      this.translateAdoc(cell.text).then(translation => {
-        if (translation !== cell.text) {
+      const [original, translation] = cell.getText().toString().split('\n\n');
+      this.translateAdoc(original, translation).then(translation => {
+        if (translation !== original) {
           cell.style = 'asciidoc';
-          cell.text = `${cell.text}\n\n${translation}`;
+          cell.text = `${original}\n\n${translation}`;
         }
       });
     }));
@@ -189,16 +179,30 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
 
   translateHeadRows(rows: Table.Cell[][]): void {
     rows.map(row => row.map((cell: Cell) => {
-      if (containsChinese(cell.getText())) {
+      if (containsChinese(cell.getText().toString())) {
         return;
       }
       // 标题行不支持 asciidoc 模式，因此只做简单的替换
-      this.translateAdoc(cell.text).then(translation => {
+      this.translateAdoc(cell.text, '').then(translation => {
         if (translation !== cell.text) {
           cell.text = translation;
         }
       });
     }));
+  }
+
+  private buildTranslationPair(node: Asciidoctor.Block): [originalNode: Asciidoctor.Block, translationNode: Asciidoctor.Block] {
+    const parent = node.getParent() as Asciidoctor.Block;
+    const siblings = parent.getBlocks();
+    const next = siblings[siblings.indexOf(node) + 1];
+    if (next?.lines && containsChinese(next.lines.join('\n'))) {
+      return [node, next];
+    } else {
+      const newNext = adoc.createBlock(parent, 'paragraph');
+      newNext.lines = [];
+      siblings.splice(siblings.indexOf(node) + 1, 0, newNext);
+      return [node, newNext];
+    }
   }
 }
 

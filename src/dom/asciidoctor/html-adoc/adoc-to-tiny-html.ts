@@ -4,6 +4,9 @@ import { adoc } from '../utils/adoc';
 import ProcessorOptions = Asciidoctor.ProcessorOptions;
 
 export function adocToTinyHtml(content: string, options?: ProcessorOptions): string {
+  if (!content) {
+    return '';
+  }
   const doc = createAsciidoctor();
   adoc.setSubstitutionsForTranslatableHtml(doc);
   try {
