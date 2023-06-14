@@ -1,6 +1,5 @@
 export * from './dom/common';
 export * from './dom/unified/markdown';
-export * from './extractor/extractor';
 export * from './injector/injector';
 export * from './exporter/html-exporter';
 export * from './dom/parse5/dom-models';
