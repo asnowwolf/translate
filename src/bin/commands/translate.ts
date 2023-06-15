@@ -31,6 +31,7 @@ export const builder: CommandBuilder = {
       TranslationEngineType.dict,
       TranslationEngineType.fake,
       TranslationEngineType.normalizer,
+      TranslationEngineType.extractor,
     ],
     default: TranslationEngineType.gcloud,
   },
@@ -130,19 +131,14 @@ export const handler = async function (params: Params) {
     glossary: params.glossary,
     parent: params.parent,
   });
-  await translationEngine.init();
-  try {
-    for (const filename of filenames) {
-      console.log('translating: ', filename);
-      const translator = getTranslator(filename, translationEngine, params);
-      await translator.setup();
-      try {
-        await translator.translateFile(filename, params);
-      } finally {
-        await translator.tearDown();
-      }
+  for (const filename of filenames) {
+    console.log('translating: ', filename);
+    const translator = getTranslator(filename, translationEngine, params);
+    await translator.setup();
+    try {
+      await translator.translateFile(filename, params);
+    } finally {
+      await translator.tearDown();
     }
-  } finally {
-    await translationEngine.dispose();
   }
 };
