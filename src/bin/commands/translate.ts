@@ -91,6 +91,8 @@ interface Params {
   sourceGlobs: string[];
   engine: TranslationEngineType;
   dict: string;
+  // 源文件的基础路径，用于从文件名计算出相对路径，以便在词典中保留相对路径
+  cwd: string;
   mustIncludesTag: string;
   mustExcludesTag: string;
   jsonProperties: string[];
@@ -127,6 +129,7 @@ export const handler = async function (params: Params) {
   }
   const translationEngine = getTranslationEngine(params.engine, {
     dict: params.dict,
+    cwd: params.cwd,
     model: params.model,
     glossary: params.glossary,
     parent: params.parent,

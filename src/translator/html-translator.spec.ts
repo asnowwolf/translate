@@ -1,6 +1,8 @@
 import { HtmlTranslator } from './html-translator';
 import { readFileSync } from 'fs';
 import { FakeTranslationEngine } from '../translation-engine/fake-engine';
+import { ExtractorEngine } from '../translation-engine/extractor-engine';
+import { TranslationEngineType } from '../translation-engine/translation-engine-type';
 
 describe('html-translator', () => {
   it('translate html file', async () => {
@@ -10,6 +12,40 @@ describe('html-translator', () => {
     const translation = await translator.translateContent(original, { htmlFragment: false });
     const expected = readFileSync('samples/html/demo-translated.html', 'utf8');
     expect(translation.trim()).toEqual(expected.trim());
+  });
+
+  it('should extract from html file', async () => {
+    const engine = new ExtractorEngine({ dict: 'src/dict/examples', cwd: 'samples/html' });
+    const translator = new HtmlTranslator(engine);
+    await translator.translateFile('samples/html/demo-translated.html', { engine: TranslationEngineType.extractor });
+    const markdownDict = readFileSync('src/dict/examples/demo-translated.dict.md', 'utf8');
+    expect(markdownDict).toEqual(`one
+
+译one
+
+# one
+
+# 译one
+
+two
+
+译two
+
+six
+
+译six
+
+seven
+
+译seven
+
+eight
+
+译eight
+
+nine
+
+译nine`);
   });
 
   it('translate simple html fragment file with fake engine', async () => {
@@ -64,7 +100,7 @@ describe('html-translator', () => {
     </tr>
   </tbody></table>
 </li>`);
-    expect(engine.totalBytes).toEqual(46);
+    expect(engine.totalBytes).toEqual(88);
   });
 
   it('only translate one time', async () => {

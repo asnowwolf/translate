@@ -3,6 +3,7 @@ import { PromiseMaker } from '../dom/promise-maker';
 import { delay } from '../dom/delay';
 import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
+import { containsChinese } from '../dom/common';
 
 function isPlainUrl(url: string): boolean {
   return /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url);
@@ -30,27 +31,27 @@ export abstract class TranslationEngine {
 
   currentFile: string;
 
-  async init(): Promise<void> {
+  async setup(currentFile: string): Promise<void> {
+    this.currentFile = currentFile;
     this._totalBytes = 0;
   }
 
-  async dispose(): Promise<void> {
+  async tearDown(): Promise<void> {
+    console.log('Total bytes: ', this.totalBytes);
   }
 
-  private tasks: { sentence: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
+  private tasks: { original: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
-  translate(sentence: string, format: SentenceFormat): Promise<string> {
-    const text = sentence.trim();
-    if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text)) {
-      return Promise.resolve(sentence);
+  async translate(original: string, translation: string, format: SentenceFormat): Promise<string> {
+    if (this.shouldIgnore(original, format)) {
+      return original;
     }
-    const html = SentenceFormatter.toHtml(sentence, format).trim();
-    if (isCode(html)) {
-      return Promise.resolve(sentence);
+    if (containsChinese(translation)) {
+      return translation;
     }
 
     const result$ = new PromiseMaker<string>();
-    this.tasks.push({ sentence, format, result$ });
+    this.tasks.push({ original, format, result$ });
     return result$.promise;
   }
 
@@ -61,7 +62,7 @@ export abstract class TranslationEngine {
     Object.entries(groups).forEach(([format, tasks]) => {
       const chunks = chunk(tasks, this.batchSize);
       chunks.forEach(chunk => {
-        const sentences = chunk.map(it => it.sentence);
+        const sentences = chunk.map(it => it.original);
         this._totalBytes += sentences.join('\n').length;
         this.batchTranslate(sentences, format as SentenceFormat).then(translations => {
           chunk.forEach(({ result$ }, index) => {
@@ -76,5 +77,14 @@ export abstract class TranslationEngine {
       .then(() => this.tasks = [])
       // add a small delay to ensure that all derived promises(such as Promise.all) are resolved
       .then(() => delay(0));
+  }
+
+  protected shouldIgnore(original: string, format: SentenceFormat) {
+    const text = original.trim();
+    if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text)) {
+      return true;
+    }
+    const html = SentenceFormatter.toHtml(original, format).trim();
+    return isCode(html.replace(/^<p>(.*)<\/p>$/gs, '$1'));
   }
 }

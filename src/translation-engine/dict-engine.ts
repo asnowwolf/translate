@@ -2,29 +2,31 @@ import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { Dict } from '../dict/dict';
 import { SentenceFormat } from '../translator/sentence-format';
-import { getDict } from '../dict/get-dict';
 import { SentenceFormatter } from './sentence-formatter';
+import { getDictFilenameFor } from './get-dict-filename-for';
 
 export class DictTranslationEngine extends TranslationEngine {
   private dict: Dict;
 
   constructor(private readonly options: TranslationEngineOptions) {
     super();
+    this.dict = new Dict();
   }
 
-  async init(): Promise<void> {
-    this.dict = getDict();
-    this.dict.open(this.options.dict);
+  async setup(currentFile: string): Promise<void> {
+    await super.setup(currentFile);
+    await this.dict.open(getDictFilenameFor(currentFile, this.options.cwd, this.options.dict));
   }
 
-  async dispose(): Promise<void> {
-    this.dict.close();
+  async tearDown(): Promise<void> {
+    await this.dict.close();
+    await super.tearDown();
   }
 
   protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
     return Promise.all(texts.map(async (text) => {
       const english = SentenceFormatter.toMarkdown(text, format);
-      const entry = this.dict.get(english);
+      const entry = await this.dict.get(english);
       if (!entry) {
         return text;
       }
@@ -32,12 +34,7 @@ export class DictTranslationEngine extends TranslationEngine {
       if (!chinese) {
         return text;
       }
-      switch (entry.confidence) {
-        case 'Engine':
-          return `${SentenceFormatter.fromMarkdown(chinese, format)}【引擎翻译】`;
-        case 'Manual':
-          return SentenceFormatter.fromMarkdown(chinese, format);
-      }
+      return SentenceFormatter.fromMarkdown(chinese, format);
     }));
   }
 }

@@ -13,11 +13,7 @@ export class MarkdownTranslator extends AbstractTranslator<Node> {
 
   translateDoc(doc: Parent): Node {
     markdown.visit(doc, undefined, async (original, translation) => {
-      if (!translation) {
-        return this.translateSentence(original, translation, 'markdown');
-      } else {
-        return undefined;
-      }
+      return await this.translateSentence(original, translation, 'markdown');
     });
     return doc;
   }

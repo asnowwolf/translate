@@ -4,6 +4,10 @@ import { TranslationOptions } from './translation-options';
 import { buildTranslationPair, TranslationPair } from './translation-pair';
 import { containsChinese } from '../dom/common';
 
+function extractInnerHtml(html: string): string {
+  return html.replace(/^<([\w-]+)\b[^>]*>(.*?)<\/\1>$/g, '$2');
+}
+
 export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | DomDocument> {
   private selectors = defaultSelectors;
 
@@ -81,13 +85,14 @@ export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | Dom
   private buildTranslationPair(element: DomElement): TranslationPair {
     const next = element.nextElementSibling;
     if (element.hasAttribute('translation-origin')) {
-      return [element.innerHTML, next?.innerHTML ?? ''];
+      return [element.outerHTML, next?.outerHTML ?? ''];
     } else {
-      return [element.innerHTML, ''];
+      return [element.outerHTML, ''];
     }
   }
 
   applyTranslation(original: DomElement, translation: string): void {
+    translation = extractInnerHtml(translation);
     const existingTranslationNode = original.nextElementSibling;
     if (existingTranslationNode?.hasAttribute('translation-result')) {
       existingTranslationNode.innerHTML = translation;

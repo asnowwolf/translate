@@ -61,8 +61,8 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     return super.flush();
   }
 
-  translateMarkdown(sentence: string): Promise<string> {
-    return this.markdownTranslator.translateContent(sentence).then((result) => result);
+  translateMarkdown(sentence: string, options: TranslationOptions): Promise<string> {
+    return this.markdownTranslator.translateContent(sentence, options).then((result) => result);
   }
 
   translateDoc(doc: SourceFile, options: TranslationOptions): SourceFile {
@@ -75,9 +75,9 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
       const docs = node.getJsDocs();
       for (const doc of docs) {
         const structure = doc.getStructure();
-        const tagTasks = structure.tags.map(tag => this.translateTag(tag));
+        const tagTasks = structure.tags.map(tag => this.translateTag(tag, options));
         const origin = (structure.description as string).trim();
-        const descriptionTask = this.translateMarkdown(origin).then(translation => {
+        const descriptionTask = this.translateMarkdown(origin, options).then(translation => {
           if (translation.trim() !== origin.trim()) {
             structure.description = removeExtraBlankLines(translation);
           }
@@ -96,13 +96,13 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     return delay(1000).then(() => node);
   }
 
-  translateTag(tag: OptionalKind<JSDocTagStructure>): Promise<void> | undefined {
+  translateTag(tag: OptionalKind<JSDocTagStructure>, options: TranslationOptions): Promise<void> | undefined {
     const text = tag.text as string;
 
     if (isBinaryTag(tag)) {
       const [, name, description] = (text ?? '').match(/^((?:{.*?}\s*)?(?:[\w.\[\]]+|\[.*?])\s+)([\s\S]*)$/) ?? [];
       if (description?.trim()) {
-        return this.translateMarkdown(description).then(translation => {
+        return this.translateMarkdown(description, options).then(translation => {
           if (translation.trim() !== description.trim()) {
             tag.text = (name ?? '') + removeExtraBlankLines(translation);
           }
@@ -111,7 +111,7 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     } else if (isUnaryTag(tag)) {
       const [, prefix, description] = (text ?? '').match(/^({.*?}\s*)?([\s\S]*)$/);
       if (description?.trim()) {
-        return this.translateMarkdown(description).then(translation => {
+        return this.translateMarkdown(description, options).then(translation => {
           if (translation.trim() !== description.trim()) {
             const leadingLines = ['publicApi', 'returns', 'codeGenApi', 'ngModule'].includes(tag.tagName) ? '\n\n' : '';
             const tailingLines = ['usageNotes', 'description', 'deprecated'].includes(tag.tagName) ? '\n\n' : '';
