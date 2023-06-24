@@ -12,8 +12,11 @@ export class SubtitleExporter extends Exporter {
     return filename.replace(/.en\.(\w+)$/, '.cn.$1');
   }
 
-  // 不支持对照显示，mono 永远为 true
-  exportContent(content: string, options: SubtitleExporterOptions): string {
+  // 不支持对照显示，mono 永远为 true，只支持 auto 模式
+  exportContent(content: string, options: SubtitleExporterOptions): string | undefined {
+    if (options.format !== 'auto') {
+      return;
+    }
     return splitSubtitles(content);
   }
 }

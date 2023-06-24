@@ -1,9 +1,8 @@
 import { Exporter } from './exporter';
 import { HtmlExporter, HtmlExporterOptions } from './html-exporter';
 import { defaultSelectors, DomElement } from '../dom/parse5/dom-models';
-import { SentenceFormatter } from '../translation-engine/sentence-formatter';
-import { ExportOptions } from './common';
-import { parse } from 'path';
+import { ExportFormat } from './common';
+import { markdown } from '../dom/unified/markdown';
 
 function purgeHtml(result: string): string {
   return result
@@ -13,8 +12,6 @@ function purgeHtml(result: string): string {
     .replace(/<(div|header)[^>]*>/gs, '')
     .replace(/<\/\s*(div|header)>/gs, '')
     .replace(/<a title=.*?><i class="material-icons">link<\/i><\/a>/g, '')
-    .replace(/\[\*(mode_edit|code)\*]\(.*?\)/g, '')
-    .replace(/\n\n+/g, '\n\n')
     .trim();
 }
 
@@ -32,28 +29,15 @@ export class AngularJsonExporter extends Exporter {
       return;
     }
 
-    const html = this.htmlExporter.exportContent(this.preprocessAngularJson(json.contents), options);
+    const result = this.htmlExporter.exportContent(this.preprocessAngularJson(json.contents), { ...options, format: ExportFormat.html });
     switch (options.format) {
-      case 'auto':
-        json.contents = html;
+      case ExportFormat.auto:
+        json.contents = result;
         return JSON.stringify(json);
-      case 'html':
-        return purgeHtml(html);
-      case 'markdown':
-        return SentenceFormatter.toMarkdown(purgeHtml(html), 'html');
-    }
-  }
-
-  protected getTargetFileName(filename: string, options: ExportOptions): string {
-    const targetFileName = super.getTargetFileName(filename, options);
-    if (options.format === 'auto') {
-      return targetFileName;
-    }
-    const parsed = parse(targetFileName);
-    if (options.format === 'markdown') {
-      return `${parsed.dir}/${parsed.name}.md`;
-    } else if (options.format === 'html') {
-      return `${parsed.dir}/${parsed.name}.html`;
+      case ExportFormat.html:
+        return purgeHtml(result);
+      case ExportFormat.markdown:
+        return markdown.mdFromHtml(purgeHtml(result)).replace(/\n\n+/g, '\n\n');
     }
   }
 

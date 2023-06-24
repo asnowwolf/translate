@@ -13,6 +13,7 @@ import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
 import { Exporter } from './exporter';
 import { ExportOptions } from './common';
+import { markdown } from '../dom/unified/markdown';
 
 export interface HtmlExporterOptions extends ExportOptions {
   mono: boolean;
@@ -32,7 +33,16 @@ export class HtmlExporter extends Exporter {
     if (options.mono) {
       this.monochromatic(doc);
     }
-    return doc.toHtml();
+    const html = doc.toHtml();
+    switch (options.format) {
+      case 'auto':
+      case 'html':
+        return html;
+      case 'markdown':
+        return markdown.mdFromHtml(html);
+      default:
+        return;
+    }
   }
 
   addIdForHeaders(body: DomParentNode): void {
@@ -53,6 +63,7 @@ export class HtmlExporter extends Exporter {
   monochromatic(parent: DomParentNode): void {
     parent.querySelectorAll(it => it.hasAttribute('translation-origin')).forEach(it => it.remove());
     parent.querySelectorAll(it => it.hasAttribute('translation-result')).forEach(it => it.removeAttribute('translation-result'));
+    parent.querySelectorAll(it => it.hasAttribute('ng-should-translate')).forEach(it => it.removeAttribute('ng-should-translate'));
   }
 }
 

@@ -11,15 +11,27 @@ interface MarkdownExporterOptions extends ExportOptions {
 }
 
 export class MarkdownExporter extends Exporter {
-  exportContent(content: string, options: MarkdownExporterOptions): string {
+  exportContent(content: string, options: MarkdownExporterOptions): string | undefined {
+    switch (options.format) {
+      case 'auto':
+      case 'markdown':
+        return markdown.stringify(this.buildMarkdownDom(content, options.mono));
+      case 'html':
+        return markdown.toHtml(this.buildMarkdownDom(content, options.mono));
+      default:
+        return;
+    }
+  }
+
+  private buildMarkdownDom(content: string, mono: boolean) {
     const dom = markdown.parse(content);
     unistVisit(dom, 'text', (node: Text) => {
       node.value = node.value.replace(/\n/g, ' ');
     });
-    if (options.mono) {
+    if (mono) {
       this.removeOriginals(dom as Parent);
     }
-    return markdown.stringify(dom);
+    return dom;
   }
 
   private removeOriginals(dom: Parent): Parent {
