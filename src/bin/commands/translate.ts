@@ -8,15 +8,6 @@ export const command = `translate <sourceGlobs...>`;
 
 export const describe = '自动翻译 sourceGlob 中的文件，支持 html 和 markdown 两种格式';
 
-enum TranslationDomainType {
-  angular = 'angular',
-  ng = 'ng',
-  spring = 'spring',
-  material = 'material',
-  custom = 'custom',
-  none = 'none',
-}
-
 export const builder: CommandBuilder = {
   sourceGlobs: {
     description: '文件通配符，注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
@@ -26,48 +17,17 @@ export const builder: CommandBuilder = {
     description: '要使用的翻译引擎。如果使用 normalize 引擎可以对目标进行预处理，以减少变更冲突',
     choices: [
       TranslationEngineType.google,
-      TranslationEngineType.gcloud,
       TranslationEngineType.ms,
       TranslationEngineType.dict,
       TranslationEngineType.fake,
       TranslationEngineType.normalizer,
       TranslationEngineType.extractor,
     ],
-    default: TranslationEngineType.gcloud,
+    default: TranslationEngineType.google,
   },
   dict: {
     type: 'string',
     description: '当使用 dict 引擎时，指定要使用的字典目录，字典目录是由一组 markdown 文件构成的与原文同构的目录。',
-  },
-  domain: {
-    type: 'string',
-    description: '翻译时要使用的子领域，如 angular、spring 等，如果为 custom，则必须指定 parent 和 model 参数',
-    choices: [
-      TranslationDomainType.angular,
-      TranslationDomainType.ng,
-      TranslationDomainType.material,
-      TranslationDomainType.spring,
-      TranslationDomainType.custom,
-      TranslationDomainType.none,
-    ],
-  },
-  parent: {
-    type: 'string',
-    description: 'GCE 中的父项目，默认为本作者的项目',
-    default: 'projects/ralph-gde/locations/us-central1',
-  },
-  model: {
-    type: 'string',
-    description: '要使用的自定义 AutoML 模型。',
-  },
-  glossary: {
-    type: 'string',
-    description: '要使用的词汇表，默认为编程词汇集。',
-    choices: [
-      'programming',
-      'angular',
-      'material',
-    ],
   },
   jsonProperties: {
     type: 'array',
@@ -96,10 +56,6 @@ interface Params {
   mustIncludesTag: string;
   mustExcludesTag: string;
   jsonProperties: string[];
-  domain: TranslationDomainType;
-  parent: string;
-  model: string;
-  glossary: string;
 }
 
 export const handler = async function (params: Params) {
@@ -109,31 +65,7 @@ export const handler = async function (params: Params) {
     return;
   }
 
-  switch (params.domain) {
-    case TranslationDomainType.angular:
-    case TranslationDomainType.ng:
-      params.parent = 'projects/ralph-gde/locations/us-central1';
-      params.model = 'TRL9199068616738092360';
-      params.glossary = 'angular';
-      break;
-    case TranslationDomainType.material:
-      params.parent = 'projects/ralph-gde/locations/us-central1';
-      params.model = 'TRL9199068616738092360';
-      params.glossary = 'material';
-      break;
-    case TranslationDomainType.spring:
-      params.parent = 'projects/ralph-gde/locations/us-central1';
-      params.model = 'TRL5769675172126654464';
-      params.glossary = 'spring';
-      break;
-  }
-  const translationEngine = getTranslationEngine(params.engine, {
-    dict: params.dict,
-    cwd: params.cwd,
-    model: params.model,
-    glossary: params.glossary,
-    parent: params.parent,
-  });
+  const translationEngine = getTranslationEngine(params.engine, params);
   for (const filename of filenames) {
     console.log('translating: ', filename);
     const translator = getTranslator(filename, translationEngine, params);

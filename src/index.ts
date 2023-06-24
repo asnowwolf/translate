@@ -9,7 +9,6 @@ export * from './translation-engine/get-translation-engine';
 export * from './translation-engine/translation-engine-options';
 export * from './translation-engine/dict-engine';
 export * from './translation-engine/fake-engine';
-export * from './translation-engine/gcloud-engine';
 export * from './translation-engine/google-engine';
 export * from './translation-engine/ms-engine';
 export * from './translator/abstract-translator';
