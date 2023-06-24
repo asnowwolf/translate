@@ -12,6 +12,10 @@ export const builder: CommandBuilder = {
   sourceGlobs: {
     description: '文件通配符，不同的扩展名导出方式不同。注意：要包含在引号里，参见 https://github.com/isaacs/node-glob#glob-primer',
   },
+  cwd: {
+    description: '源文件的基础路径，用于从文件名计算出相对路径，以便计算出相对路径，与 outputDir 一起使用',
+    default: '.',
+  },
   outputDir: {
     description: '结果要输出到的目录',
     // 默认写回原地
@@ -20,7 +24,7 @@ export const builder: CommandBuilder = {
   format: {
     description: '把结果输出成指定的格式，目前只支持写回原有格式',
     type: 'string',
-    choices: [ExportFormat.auto],
+    choices: [ExportFormat.auto, ExportFormat.markdown, ExportFormat.html],
     default: ExportFormat.auto,
   },
   maxVisualLength: {

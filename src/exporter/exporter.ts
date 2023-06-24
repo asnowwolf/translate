@@ -9,12 +9,15 @@ export abstract class Exporter {
     const targetFileName = this.getTargetFileName(filename, options);
     const targetDir = dirname(targetFileName);
     mkdirp(targetDir);
-    writeFileSync(targetFileName, this.exportContent(content, options), 'utf8');
+    const result = this.exportContent(content, options);
+    if (result) {
+      writeFileSync(targetFileName, result, 'utf8');
+    }
   }
 
   protected getTargetFileName(filename: string, options: ExportOptions) {
-    const relativePath = relative('.', filename);
-    return join(options.outputDir, relativePath);
+    const relativePath = relative(options.cwd ?? '.', filename);
+    return join(options.outputDir ?? '.', relativePath);
   }
 
   abstract exportContent(content: string, options: ExportOptions): string;
