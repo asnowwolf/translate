@@ -10,7 +10,6 @@ export * from './translation-engine/translation-engine-options';
 export * from './translation-engine/dict-engine';
 export * from './translation-engine/fake-engine';
 export * from './translation-engine/google-engine';
-export * from './translation-engine/ms-engine';
 export * from './translator/abstract-translator';
 export { TranslationEngineType } from './translation-engine/translation-engine-type';
 export { PromiseMaker } from './dom/promise-maker';

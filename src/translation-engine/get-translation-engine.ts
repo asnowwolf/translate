@@ -1,5 +1,4 @@
 import { GoogleTranslationEngine } from './google-engine';
-import { MsTranslationEngine } from './ms-engine';
 import { DictTranslationEngine } from './dict-engine';
 import { FakeTranslationEngine } from './fake-engine';
 import { NormalizeTranslationEngine } from './normalize-engine';
@@ -12,8 +11,6 @@ export function getTranslationEngine(engine: TranslationEngineType, options: Tra
   switch (engine) {
     case TranslationEngineType.google:
       return new GoogleTranslationEngine();
-    case TranslationEngineType.ms:
-      return new MsTranslationEngine();
     case TranslationEngineType.dict:
       return new DictTranslationEngine(options);
     case TranslationEngineType.fake:

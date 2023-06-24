@@ -17,7 +17,6 @@ export const builder: CommandBuilder = {
     description: '要使用的翻译引擎。如果使用 normalize 引擎可以对目标进行预处理，以减少变更冲突',
     choices: [
       TranslationEngineType.google,
-      TranslationEngineType.ms,
       TranslationEngineType.dict,
       TranslationEngineType.fake,
       TranslationEngineType.normalizer,
