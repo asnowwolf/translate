@@ -21,6 +21,10 @@ function isCamelCaseName(text: string): boolean {
   return /^[_a-zA-Z]+([A-Z]\w+)+$/.test(text);
 }
 
+function isAnchor(html: string): boolean {
+  return /^<a id="[^"]*">\s*<\/a>$/.test(html);
+}
+
 export abstract class TranslationEngine {
   batchSize = 50;
   private _totalBytes = 0;
@@ -81,10 +85,10 @@ export abstract class TranslationEngine {
 
   protected shouldIgnore(original: string, format: SentenceFormat) {
     const text = original.trim();
-    if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text)) {
+    if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text) || isAnchor(text)) {
       return true;
     }
-    const html = SentenceFormatter.toHtml(original, format).trim();
-    return isCode(html.replace(/^<p>(.*)<\/p>$/gs, '$1'));
+    const html = SentenceFormatter.toHtml(original, format).trim().replace(/^<p>(.*)<\/p>$/gs, '$1');
+    return isCode(html);
   }
 }

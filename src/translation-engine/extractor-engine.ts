@@ -40,7 +40,10 @@ export class ExtractorEngine extends TranslationEngine {
   }
 
   saveToFile(dictFile: string): void {
-    const content = this.entries.map((entry) => [entry.english, entry.chinese].join('\n\n')).join('\n\n').trim();
+    const content = this.entries.map((entry) => [entry.english, entry.chinese].join('\n\n'))
+      .join('\n\n')
+      .replace(/\n\n\n+/g, '\n\n')
+      .trim();
     if (content) {
       const dir = dirname(dictFile);
       mkdirSync(dir, { recursive: true });
