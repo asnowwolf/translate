@@ -314,7 +314,9 @@ export namespace markdown {
       return;
     }
     const cloned = cloneDeep(node);
-    cloned.type = 'paragraph';
+    if (cloned.type !== 'paragraph' && cloned.type !== 'heading') {
+      cloned.type = 'paragraph';
+    }
     return stringify(cloned);
   }
 }
