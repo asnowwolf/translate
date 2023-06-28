@@ -94,6 +94,9 @@ export namespace markdown {
   }
 
   export function stringify(tree: Node): string {
+    if (!tree) {
+      return '';
+    }
     tree.children = tree.children ?? [];
     return unified().use(remarkStringify, stringifyOptions)
       .use(frontmatter)

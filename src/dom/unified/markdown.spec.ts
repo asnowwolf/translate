@@ -403,7 +403,7 @@ three
       });
       expect(result).toEqual([
         { original: 'zero', translation: '零' },
-        { original: 'one', translation: '一' },
+        { original: '# one', translation: '# 一' },
         { original: 'two', translation: '二' },
         { original: 'three' },
       ]);
@@ -441,7 +441,7 @@ three
       const engine = new FakeTranslationEngine();
       markdown.visit(ast, undefined, async (original, translation) => {
         if (!translation) {
-          return engine.translate(original, 'markdown');
+          return engine.translate(original, '', 'markdown');
         } else {
           return translation;
         }
