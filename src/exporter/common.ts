@@ -6,7 +6,8 @@ export enum ExportFormat {
 }
 
 export interface ExportOptions {
-  cwd: string;
+  cwd?: string;
   outputDir: string;
-  format: ExportFormat;
+  format?: ExportFormat;
+  mono?: boolean;
 }
