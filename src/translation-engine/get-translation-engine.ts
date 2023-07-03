@@ -6,6 +6,7 @@ import { TranslationEngine } from './translation-engine';
 import { TranslationEngineOptions } from './translation-engine-options';
 import { TranslationEngineType } from './translation-engine-type';
 import { ExtractorEngine } from './extractor-engine';
+import { VectorizerEngine } from './vectorizer-engine';
 
 export function getTranslationEngine(engine: TranslationEngineType, options: TranslationEngineOptions = {}): TranslationEngine {
   switch (engine) {
@@ -19,6 +20,8 @@ export function getTranslationEngine(engine: TranslationEngineType, options: Tra
       return new NormalizeTranslationEngine();
     case TranslationEngineType.extractor:
       return new ExtractorEngine(options);
+    case TranslationEngineType.vectorizer:
+      return new VectorizerEngine(options);
     default:
       throw new Error('Unknown Translation Engine type');
   }

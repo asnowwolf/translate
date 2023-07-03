@@ -21,6 +21,7 @@ export const builder: CommandBuilder = {
       TranslationEngineType.fake,
       TranslationEngineType.normalizer,
       TranslationEngineType.extractor,
+      TranslationEngineType.vectorizer,
     ],
     default: TranslationEngineType.google,
   },
