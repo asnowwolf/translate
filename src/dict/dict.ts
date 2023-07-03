@@ -37,7 +37,7 @@ function fuzzyLookup(entries: DictEntry[], english: string): DictEntry | undefin
     const [, prefix, base2] = english.match(markdownHeaderPattern) ?? ['', '', english];
     if (base1 === base2) {
       const [, , chinese] = entry.chinese?.match(markdownHeaderPattern) ?? ['', '', entry.chinese];
-      return { ...entry, chinese: prefix + ' ' + chinese };
+      return { ...entry, chinese: [prefix, chinese].filter(it => !!it).join(' ') };
     }
   }
 }
