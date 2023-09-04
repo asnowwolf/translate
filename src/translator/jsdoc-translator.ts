@@ -57,12 +57,13 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
   }
 
   async flush(): Promise<void> {
-    await this.markdownTranslator.flush();
-    return super.flush();
+    return super.flush()
+      // 需要等待一小段时间才能确保已经写回，目前原因不详
+      .then(() => delay(500));
   }
 
   translateMarkdown(sentence: string, options: TranslationOptions): Promise<string> {
-    return this.markdownTranslator.translateContent(sentence, options).then((result) => result);
+    return this.markdownTranslator.translateContentAndFlush(sentence, options).then((result) => result);
   }
 
   translateDoc(doc: SourceFile, options: TranslationOptions): SourceFile {
@@ -93,7 +94,7 @@ export class JsdocTranslator extends AbstractTranslator<SourceFile> {
     children.forEach((subNode) => {
       this.translateNode(subNode, options);
     });
-    return delay(1000).then(() => node);
+    return node;
   }
 
   translateTag(tag: OptionalKind<JSDocTagStructure>, options: TranslationOptions): Promise<void> | undefined {

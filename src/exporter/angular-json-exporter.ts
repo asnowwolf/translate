@@ -1,7 +1,6 @@
 import { Exporter } from './exporter';
 import { HtmlExporter, HtmlExporterOptions } from './html-exporter';
 import { defaultSelectors, DomElement } from '../dom/parse5/dom-models';
-import { ExportFormat } from './common';
 import { markdown } from '../dom/unified/markdown';
 
 function purgeHtml(result: string): string {
@@ -29,14 +28,14 @@ export class AngularJsonExporter extends Exporter {
       return;
     }
 
-    const result = this.htmlExporter.exportContent(this.preprocessAngularJson(json.contents), { ...options, format: ExportFormat.html });
+    const result = this.htmlExporter.exportContent(this.preprocessAngularJson(json.contents), { ...options, format: 'html' });
     switch (options.format) {
-      case ExportFormat.auto:
+      case 'auto':
         json.contents = result;
         return JSON.stringify(json);
-      case ExportFormat.html:
+      case 'html':
         return purgeHtml(result);
-      case ExportFormat.markdown:
+      case 'markdown':
         return markdown.mdFromHtml(purgeHtml(result)).replace(/\n\n+/g, '\n\n');
     }
   }

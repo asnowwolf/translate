@@ -33,10 +33,10 @@ export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | Dom
           titleElement.getAttribute('original-title'),
           titleElement.textContent,
         );
-        this.translateSentence(original, translation, 'plain').then(translation => {
-          if (translation && translation !== original) {
+        this.translateSentence(original, translation, 'plain').then(result => {
+          if (result && result !== original) {
             titleElement.setAttribute('original-title', original);
-            titleElement.textContent = translation;
+            titleElement.textContent = result;
           }
         });
       }
@@ -50,9 +50,9 @@ export class HtmlTranslator extends AbstractTranslator<DomDocumentFragment | Dom
 
     for (let element of elements) {
       const [original, translation] = this.buildTranslationPair(element);
-      this.translateSentence(original, translation, 'html').then(translation => {
-        if (translation && translation !== original) {
-          this.applyTranslation(element, translation);
+      this.translateSentence(original, translation, 'html').then(result => {
+        if (result && result !== original) {
+          this.applyTranslation(element, result);
         }
       });
     }

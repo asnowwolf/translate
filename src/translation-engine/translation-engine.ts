@@ -1,9 +1,9 @@
-import { chunk, groupBy } from 'lodash';
+import { chunk, cloneDeep, groupBy } from 'lodash';
 import { PromiseMaker } from '../dom/promise-maker';
-import { delay } from '../dom/delay';
 import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
-import { containsChinese } from '../dom/common';
+import { TranslationPair } from '../translator/translation-pair';
+import { delay } from '../dom/delay';
 
 function isPlainUrl(url: string): boolean {
   return /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url);
@@ -44,37 +44,39 @@ export abstract class TranslationEngine {
     console.log('Total bytes: ', this.totalBytes);
   }
 
-  private tasks: { original: string, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
+  private tasks: { pair: TranslationPair, format: SentenceFormat, result$: PromiseMaker<string> }[] = [];
 
-  async translate(original: string, translation: string, format: SentenceFormat): Promise<string> {
+  // 不要 override 这个方法，只能 override batchTranslate
+  public async translate(original: string, translation: string, format: SentenceFormat): Promise<string> {
     if (this.shouldIgnore(original, format)) {
       return original;
     }
-    if (containsChinese(translation)) {
-      return translation;
-    }
 
     const result$ = new PromiseMaker<string>();
-    this.tasks.push({ original, format, result$ });
+    const pair: TranslationPair = [original, translation];
+    this.tasks.push({ pair, format, result$ });
     return result$.promise;
   }
 
-  protected abstract batchTranslate(sentences: string[], format: SentenceFormat): Promise<string[]>;
+  protected abstract batchTranslate(pairs: TranslationPair[], format: SentenceFormat): Promise<TranslationPair[]>;
 
-  flush(): Promise<void> {
+  async flush(): Promise<void> {
     const groups = groupBy(this.tasks, 'format');
-    Object.entries(groups).forEach(([format, tasks]) => {
+    for (let [format, tasks] of Object.entries(groups)) {
       const chunks = chunk(tasks, this.batchSize);
-      chunks.forEach(chunk => {
-        const sentences = chunk.map(it => it.original);
-        this._totalBytes += sentences.join('\n').length;
-        this.batchTranslate(sentences, format as SentenceFormat).then(translations => {
-          chunk.forEach(({ result$ }, index) => {
-            result$.resolve(translations[index]);
-          });
+      for (let chunk of chunks) {
+        const pairs = chunk.map(it => it.pair);
+        this._totalBytes += pairs.map(it => it[0]).join('\n').length;
+        const translations = await this.batchTranslate(cloneDeep(pairs), format as SentenceFormat);
+        chunk.forEach(({ result$ }, index) => {
+          if (pairs[index][1]) {
+            result$.resolve(undefined);
+          } else {
+            result$.resolve(translations[index][1]);
+          }
         });
-      });
-    });
+      }
+    }
 
     const tasks = this.tasks.map(({ result$ }) => result$.promise);
     return Promise.all(tasks)
@@ -84,7 +86,7 @@ export abstract class TranslationEngine {
   }
 
   protected shouldIgnore(original: string, format: SentenceFormat) {
-    const text = original.trim();
+    const text = original?.trim();
     if (!text || isPlainUrl(text) || inBlackList(text) || isCamelCaseName(text) || isAnchor(text)) {
       return true;
     }

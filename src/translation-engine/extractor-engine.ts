@@ -1,10 +1,11 @@
 import { TranslationEngine } from './translation-engine';
 import { SentenceFormat } from '../translator/sentence-format';
 import { DictEntry } from '../dict/dict-entry';
-import { SentenceFormatter } from './sentence-formatter';
 import { mkdirSync, writeFileSync } from 'fs';
 import { dirname } from 'path';
-import { getDictFilenameFor } from './get-dict-filename-for';
+import { getNewFilenameFor } from './get-new-filename-for';
+import { TranslationPair } from '../translator/translation-pair';
+import { SentenceFormatter } from './sentence-formatter';
 
 export class ExtractorEngine extends TranslationEngine {
   constructor(private options: { dict?: string, cwd?: string } = {}) {
@@ -17,26 +18,20 @@ export class ExtractorEngine extends TranslationEngine {
     return this._entries;
   }
 
-  async translate(original: string, translation: string, format: SentenceFormat): Promise<string> {
-    if (this.shouldIgnore(original, format)) {
-      return original;
+  protected async batchTranslate(sentences: TranslationPair[], format: SentenceFormat): Promise<TranslationPair[]> {
+    for (let [original, translation] of sentences) {
+      const newEntry = {
+        english: SentenceFormatter.toMarkdown(original.trim(), format),
+        chinese: SentenceFormatter.toMarkdown(translation?.trim(), format),
+      };
+      const existingEntry = this.entries.find(it => it.english === original);
+      if (!existingEntry) {
+        this._entries.push(newEntry);
+      } else {
+        Object.assign(existingEntry, newEntry);
+      }
     }
-    const newEntry = {
-      english: SentenceFormatter.toMarkdown(original.trim(), format),
-      chinese: SentenceFormatter.toMarkdown(translation?.trim(), format),
-    };
-    const existingEntry = this.entries.find(it => it.english === original);
-    if (!existingEntry) {
-      this._entries.push(newEntry);
-    } else {
-      Object.assign(existingEntry, newEntry);
-    }
-    // 返回 original，以免应用翻译结果
-    return original;
-  }
-
-  protected batchTranslate(sentences: string[], format: SentenceFormat): Promise<string[]> {
-    return Promise.resolve(sentences);
+    return sentences;
   }
 
   saveToFile(dictFile: string): void {
@@ -61,7 +56,7 @@ export class ExtractorEngine extends TranslationEngine {
     if (dict) {
       const cwd = this.options.cwd;
       const currentFile = this.currentFile;
-      const dictFile = getDictFilenameFor(currentFile, cwd, dict);
+      const dictFile = getNewFilenameFor(currentFile, cwd, dict, '.dict.md');
       this.saveToFile(dictFile);
     }
   }

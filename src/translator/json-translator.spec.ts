@@ -7,7 +7,8 @@ describe('json-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsonTranslator(engine);
     const original = readFileSync('samples/json/demo.json', 'utf8');
-    const translation = await translator.translateContent(original, { jsonProperties: ['b'] });
+    const translation = await translator.translateContentAndFlush(original, { jsonProperties: ['b'] });
+    await translator.flush();
     expect(translation).toEqual(readFileSync('samples/json/demo-translated.json', 'utf8').trim());
   });
 });

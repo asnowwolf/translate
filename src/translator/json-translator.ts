@@ -25,7 +25,7 @@ export class JsonTranslator extends AbstractTranslator<object> {
             this.translateSentence(original, translation, 'markdown')
               .then((it) => it.trim())
               .then((translation) => {
-                if (original !== translation && containsChinese(translation)) {
+                if (translation && original !== translation && !key.endsWith('Cn') && containsChinese(translation)) {
                   result[`${key}Cn`] = translation;
                 }
               });

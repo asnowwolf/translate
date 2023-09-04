@@ -4,7 +4,7 @@ import { FakeTranslationEngine } from '../translation-engine/fake-engine';
 
 async function adocTranslate(adoc: string): Promise<string> {
   const translator = new AdocTranslator(new FakeTranslationEngine());
-  return translator.translateContent(adoc, { filename: 'test.adoc' });
+  return translator.translateContentAndFlush(adoc, { filename: 'test.adoc' });
 }
 
 describe('adoc-translator', () => {

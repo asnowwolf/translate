@@ -11,7 +11,7 @@ ghi
   a1
   a2
 - b
-`, { outputDir: '.', mono: false });
+`, { outputDir: '.', mono: false, format: 'markdown' });
     expect(result).toEqual(`abc def ghi
 
 - a a1 a2
@@ -46,7 +46,7 @@ two-2
 const a = 1; // one
 const a = 1; // 一
 \`\`\`
-`, { outputDir: '.', mono: true });
+`, { outputDir: '.', mono: true, format: 'markdown' });
     expect(result).toEqual(`# 一
 
 二

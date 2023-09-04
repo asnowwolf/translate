@@ -1,7 +1,7 @@
 import { CommandBuilder } from 'yargs';
 import { sync as globby } from 'globby';
 import { getExporterFor } from '../../exporter/get-exporter-for';
-import { ExportFormat, ExportOptions } from '../../exporter/common';
+import { ExportOptions } from '../../exporter/common';
 import { MAX_VISUAL_LENGTH } from '../../translator/subtitle-translator';
 
 export const command = `export <sourceGlobs...>`;
@@ -24,8 +24,8 @@ export const builder: CommandBuilder = {
   format: {
     description: '把结果输出成指定的格式，目前只支持写回原有格式',
     type: 'string',
-    choices: [ExportFormat.auto, ExportFormat.markdown, ExportFormat.html],
-    default: ExportFormat.auto,
+    choices: ['auto', 'markdown', 'html'],
+    default: 'auto',
   },
   maxVisualLength: {
     description: '最大可视长度，超过这个长度的文本会被截断（适用于字幕文件）',

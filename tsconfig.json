@@ -23,6 +23,7 @@
     ],
     "lib": [
       "es2020",
+      "dom",
       "ESNext.Array",
       "es2018.asyncgenerator"
     ]

@@ -6,9 +6,10 @@ describe('extract engine', () => {
     await engine.setup('');
     try {
       for (let i = 0; i < 10; ++i) {
-        await engine.translate('# One', '', 'markdown');
-        await engine.translate('# Two', '# 二', 'markdown');
+        engine.translate('# One', '', 'markdown').then(result => console.log(result));
+        engine.translate('# Two', '# 二', 'markdown').then(result => console.log(result));
       }
+      await engine.flush();
     } finally {
       await engine.tearDown();
     }

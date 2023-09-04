@@ -7,13 +7,13 @@ describe('jsdoc-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
     const content = readFileSync('samples/ts/demo.ts', 'utf8');
-    const result = await translator.translateContent(content);
+    const result = await translator.translateContentAndFlush(content, {});
     expect(result).toEqual(readFileSync('samples/ts/demo-translated.ts', 'utf8'));
   });
   it('translate ts file - must includes tag', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContent(`
+    const result = await translator.translateContentAndFlush(`
 /**
  * Class One
  * @publicApi
@@ -94,7 +94,7 @@ export class Class2 {
   it('translate ts file - must excludes tag', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContent(`
+    const result = await translator.translateContentAndFlush(`
 /**
  * Class One
  * @docs-private
@@ -187,7 +187,7 @@ class A {}
 `;
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContent(js);
+    const result = await translator.translateContentAndFlush(js, {});
     expect(result).toEqual(js);
   });
 
@@ -218,7 +218,7 @@ class A {}
 `;
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContent(js);
+    const result = await translator.translateContentAndFlush(js, {});
     expect(result).toEqual(expected);
   });
 });

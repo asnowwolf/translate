@@ -4,6 +4,7 @@ import { DomDocumentFragment, DomElement, DomNode, DomParentNode, DomText } from
 import { simpleEmailPattern, urlSchemaPattern } from './url-patterns';
 import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
+import { TranslationPair } from '../translator/translation-pair';
 
 function isTranslatableText(text: string): boolean {
   return /[A-Za-z]/.test(text) && text !== 'no-translate' && !/^[A-Z]+$/.test(text);
@@ -63,13 +64,15 @@ function mergeTextNodes(parent: DomParentNode): void {
 }
 
 export class FakeTranslationEngine extends TranslationEngine {
-  protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
-    return delay(200).then(() => Promise.all(texts.map(text => {
-      const html = SentenceFormatter.toHtml(text, format);
+  protected async batchTranslate(pairs: TranslationPair[], format: SentenceFormat): Promise<TranslationPair[]> {
+    await delay(200);
+    for (let pair of pairs) {
+      const html = SentenceFormatter.toHtml(pair[0], format);
       const doc = DomDocumentFragment.parse(html);
       mergeTextNodes(doc);
       translate(doc);
-      return SentenceFormatter.fromHtml(doc.toHtml(), format);
-    })));
+      pair[1] = SentenceFormatter.fromHtml(doc.toHtml(), format);
+    }
+    return pairs;
   }
 }

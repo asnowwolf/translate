@@ -8,7 +8,7 @@ describe('subtitle-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new SubtitleTranslator(engine);
     const original = readFileSync('samples/subtitle/demo.vtt', 'utf8');
-    const translation = await translator.translateContent(original);
+    const translation = await translator.translateContentAndFlush(original, {});
     expect(translation).toEqual(readFileSync('samples/subtitle/demo-translated.vtt', 'utf8').trim());
   });
 
@@ -16,7 +16,7 @@ describe('subtitle-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new SubtitleTranslator(engine);
     const original = readFileSync('samples/subtitle/demo.srt', 'utf8');
-    const translation = await translator.translateContent(original);
+    const translation = await translator.translateContentAndFlush(original, {});
     expect(translation).toEqual(readFileSync('samples/subtitle/demo-translated.srt', 'utf8').trim());
   });
 
@@ -24,7 +24,7 @@ describe('subtitle-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new SubtitleTranslator(engine);
     const original = readFileSync('samples/subtitle/demo-translated.srt', 'utf8');
-    const translation = await translator.translateContent(original);
+    const translation = await translator.translateContentAndFlush(original, {});
     expect(translation).toEqual(readFileSync('samples/subtitle/demo-translated.srt', 'utf8').trim());
   });
 

@@ -19,9 +19,9 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
     if (adoc.isAbstractBlock(node)) {
       if (!adoc.isDocument(node)) {
         const [original, translation] = buildTranslationPair(node.getAttribute(`original_title`, ''), node.getTitle());
-        this.translateAdoc(original, translation).then(translation => {
-          if (translation && translation !== original) {
-            node.setTitle(translation);
+        this.translateAdoc(original, translation).then(result => {
+          if (result && result !== original) {
+            node.setTitle(result);
             node.setAttribute(`original_title`, original);
           }
         });
@@ -41,18 +41,18 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
       if (text && !containsChinese(text)) {
         if (adoc.isListItem(node.getParent())) {
           const [original, translation] = text.split(this.inlinePairSeparator) as TranslationPair;
-          this.translateAdoc(original, translation).then(translation => {
-            if (translation && translation !== original) {
-              node.lines = [original, translation].join(this.inlinePairSeparator).split('\n');
+          this.translateAdoc(original, translation).then(result => {
+            if (result && result !== original) {
+              node.lines = [original, result].join(this.inlinePairSeparator).split('\n');
             }
           });
         } else if (adoc.isParagraph(node)) {
           const [originalNode, translationNode] = this.buildTranslationPair(node);
           const originalText = originalNode.lines.join('\n');
           const translationText = translationNode.lines.join('\n');
-          this.translateAdoc(originalText, translationText).then(translation => {
-            if (translation && translation !== originalText) {
-              translationNode.lines = translation.split('\n');
+          this.translateAdoc(originalText, translationText).then(result => {
+            if (result && result !== originalText) {
+              translationNode.lines = result.split('\n');
             } else {
               adoc.removeNode(translationNode);
             }
@@ -73,9 +73,9 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
           }
 
           const tasks = pairs.map((pair) => {
-            return this.translateAdoc(pair[0], pair[1]).then(translation => {
-              if (translation && translation !== pair[0]) {
-                pair[1] = translation;
+            return this.translateAdoc(pair[0], pair[1]).then(result => {
+              if (result && result !== pair[0]) {
+                pair[1] = result;
               }
             });
           });
@@ -147,7 +147,9 @@ export class AdocTranslator extends AbstractTranslator<AbstractNode> {
     }
     const sourceHtml = unwrap(adocToTinyHtml(original));
     const translationHtml = translation && unwrap(adocToTinyHtml(translation));
-    return await this.translateSentence(sourceHtml, translationHtml, 'html').then(translation => tinyHtmlToAdoc(wrap(translation)));
+    return await this.translateSentence(sourceHtml, translationHtml, 'html').then(result => {
+      return tinyHtmlToAdoc(wrap(result));
+    });
   }
 
   translateAttribute(node: AbstractNode, attributeName: string): void {

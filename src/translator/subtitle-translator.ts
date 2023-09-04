@@ -35,8 +35,8 @@ export class SubtitleTranslator extends AbstractTranslator<object> {
 
   translateWholeSentences(wholeSentences: WholeSentence[]): Promise<WholeSentence[]> {
     return Promise.all(wholeSentences.map((wholeSentence) => {
-      return this.translateSentence(wholeSentence.original, wholeSentence.translation, 'plain').then((translation) => {
-        wholeSentence.translation = translation;
+      return this.translateSentence(wholeSentence.original, wholeSentence.translation, 'plain').then((result) => {
+        wholeSentence.translation = result;
       });
     })).then(() => wholeSentences);
   }

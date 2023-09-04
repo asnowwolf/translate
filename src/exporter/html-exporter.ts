@@ -1,13 +1,4 @@
-import {
-  defaultSelectors,
-  DomDocument,
-  DomDocumentFragment,
-  DomElement,
-  DomParentNode,
-  DomSelector,
-  DomTableElement,
-  DomTableRowElement,
-} from '../dom/parse5/dom-models';
+import { defaultSelectors, DomDocument, DomDocumentFragment, DomElement, DomParentNode, DomSelector, DomTableElement, DomTableRowElement } from '../dom/parse5/dom-models';
 import { containsChinese } from '../dom/common';
 import * as slugs from 'github-slugger';
 import { isDeepStrictEqual } from 'util';
@@ -36,6 +27,7 @@ export class HtmlExporter extends Exporter {
     const html = doc.toHtml();
     switch (options.format) {
       case 'auto':
+      case undefined:
       case 'html':
         return html;
       case 'markdown':

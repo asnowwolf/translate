@@ -17,18 +17,17 @@ export abstract class AbstractTranslator<T> {
 
   async translateFile(filename: string, options: TranslationOptions = {}): Promise<void> {
     const content = readFileSync(filename, 'utf8');
-    const result = await this.translateContent(content, { ...options, filename });
+    const result = await this.translateContentAndFlush(content, { ...options, filename });
     // 提取时不应该更新原始文件
-    if (options.engine !== TranslationEngineType.extractor) {
+    if (![TranslationEngineType.extractor, TranslationEngineType.vectorizer].includes(options.engine)) {
       writeFileSync(filename, result.trim() + '\n', 'utf8');
     }
   }
 
-  async translateContent(content: string, options: TranslationOptions): Promise<string> {
+  async translateContentAndFlush(content: string, options: TranslationOptions): Promise<string> {
     await this.engine.setup(options.filename);
     try {
-      const doc = this.parse(content, options);
-      const result = this.translateDoc(doc, options);
+      const result = this.translateContent(content, options);
       await this.flush();
       return this.serialize(result, options);
     } finally {
@@ -36,7 +35,12 @@ export abstract class AbstractTranslator<T> {
     }
   }
 
-  // 前面所有的工作都是在安排异步任务，调 flush 才真正开始执行
+  translateContent(content: string, options: TranslationOptions) {
+    const doc = this.parse(content, options);
+    return this.translateDoc(doc, options);
+  }
+
+// 前面所有的工作都是在安排异步任务，调 flush 才真正开始执行
   async flush(): Promise<void> {
     return this.engine.flush();
   }

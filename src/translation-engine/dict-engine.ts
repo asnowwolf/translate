@@ -3,7 +3,8 @@ import { TranslationEngineOptions } from './translation-engine-options';
 import { Dict } from '../dict/dict';
 import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
-import { getDictFilenameFor } from './get-dict-filename-for';
+import { getNewFilenameFor } from './get-new-filename-for';
+import { TranslationPair } from '../translator/translation-pair';
 
 export class DictTranslationEngine extends TranslationEngine {
   private dict: Dict;
@@ -15,7 +16,7 @@ export class DictTranslationEngine extends TranslationEngine {
 
   async setup(currentFile: string): Promise<void> {
     await super.setup(currentFile);
-    await this.dict.open(getDictFilenameFor(currentFile, this.options.cwd, this.options.dict));
+    await this.dict.open(getNewFilenameFor(currentFile, this.options.cwd, this.options.dict, '.dict.md'));
   }
 
   async tearDown(): Promise<void> {
@@ -23,18 +24,19 @@ export class DictTranslationEngine extends TranslationEngine {
     await super.tearDown();
   }
 
-  protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
-    return Promise.all(texts.map(async (text) => {
-      const english = SentenceFormatter.toMarkdown(text, format);
+  protected async batchTranslate(pairs: TranslationPair[], format: SentenceFormat): Promise<TranslationPair[]> {
+    for (let pair of pairs) {
+      const english = SentenceFormatter.toMarkdown(pair[0], format);
       const entry = await this.dict.get(english);
       if (!entry) {
-        return text;
+        continue;
       }
       const chinese = entry.chinese;
       if (!chinese) {
-        return text;
+        continue;
       }
-      return SentenceFormatter.fromMarkdown(chinese, format);
-    }));
+      pair[1] = SentenceFormatter.fromMarkdown(chinese, format);
+    }
+    return pairs;
   }
 }

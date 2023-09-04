@@ -2,6 +2,7 @@ import { TranslationEngine } from './translation-engine';
 import { SentenceFormat } from '../translator/sentence-format';
 import { SentenceFormatter } from './sentence-formatter';
 import { post } from 'request';
+import { TranslationPair } from '../translator/translation-pair';
 
 function fetch(url: string, data: object): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -16,10 +17,9 @@ function fetch(url: string, data: object): Promise<any> {
 }
 
 export class GoogleTranslationEngine extends TranslationEngine {
-  protected async batchTranslate(texts: string[], format: SentenceFormat): Promise<string[]> {
-    const result: string[] = [];
-    for (let line of texts) {
-      const text = SentenceFormatter.toHtml(line, format);
+  protected async batchTranslate(pairs: TranslationPair[], format: SentenceFormat): Promise<TranslationPair[]> {
+    for (let pair of pairs) {
+      const text = SentenceFormatter.toHtml(pair[0], format);
       if (!text.trim()) {
         continue;
       }
@@ -28,8 +28,8 @@ export class GoogleTranslationEngine extends TranslationEngine {
       });
       const multiSentencesPattern = /<i>(.*?)<\/i>\s*<b>(.*?)<\/b>/g;
       const translation = ((response?.[0]?.[0] ?? '') as string).replace(/^<p>([\s\S]*)<\/p>$/, '$1');
-      result.push(SentenceFormatter.fromHtml(translation.replace(multiSentencesPattern, '$2'), format));
+      pair[1] = SentenceFormatter.fromHtml(translation.replace(multiSentencesPattern, '$2'), format);
     }
-    return result;
+    return pairs;
   }
 }
