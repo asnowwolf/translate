@@ -27,10 +27,15 @@ function createLinkVisitor(link: Visitor) {
 
 function createTextVisitor(text: Visitor) {
   return function (this: UnifiedParser, node: Node, parent?: Parent, position?: Position, bullet?: string): string {
-    return text.call(this, node, parent, position, bullet)
-      .replace(/@/g, '&commat;')
-      // `[` 默认已经被转义过了，不需要这里补充转义
-      .replace(/([()\]])/g, '\\$1');
+    const content = text.call(this, node, parent, position, bullet)
+        .replace(/@/g, '&commat;');
+    if (parent.type === 'link') {
+      return content
+          // `[` 默认已经被转义过了，不需要这里补充转义
+          .replace(/]/g, '\\]');
+    } else {
+      return content;
+    }
   };
 }
 
