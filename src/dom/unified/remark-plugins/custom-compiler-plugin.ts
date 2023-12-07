@@ -27,15 +27,16 @@ function createLinkVisitor(link: Visitor) {
 
 function createTextVisitor(text: Visitor) {
   return function (this: UnifiedParser, node: Node, parent?: Parent, position?: Position, bullet?: string): string {
-    const content = text.call(this, node, parent, position, bullet)
-        .replace(/@/g, '&commat;');
+    let content = text.call(this, node, parent, position, bullet);
+    if (parent.type !== 'cell') {
+      content = content.replace(/@/g, '&commat;');
+    }
     if (parent.type === 'link') {
-      return content
+      content = content
           // `[` 默认已经被转义过了，不需要这里补充转义
           .replace(/]/g, '\\]');
-    } else {
-      return content;
     }
+    return content;
   };
 }
 
