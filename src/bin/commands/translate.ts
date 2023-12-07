@@ -72,6 +72,8 @@ export const handler = async function (params: Params) {
     await translator.setup();
     try {
       await translator.translateFile(filename, params);
+    } catch (e) {
+      console.error(e);
     } finally {
       await translator.tearDown();
     }

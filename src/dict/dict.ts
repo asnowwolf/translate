@@ -1,7 +1,8 @@
 import { MarkdownTranslator } from '../translator/markdown-translator';
 import { ExtractorEngine } from '../translation-engine/extractor-engine';
 import { DictEntry } from './dict-entry';
-import { existsSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { dirname } from 'path';
 
 export class Dict {
   entries: DictEntry[] = [];
@@ -15,6 +16,7 @@ export class Dict {
     try {
       const translator = new MarkdownTranslator(engine);
       if (!existsSync(dictFile)) {
+        mkdirSync(dirname(dictFile), { recursive: true });
         writeFileSync(dictFile, '', 'utf8');
       }
       await translator.translateFile(dictFile);
