@@ -12,6 +12,12 @@ inline [two](AbC)
 
 <div>abc</div>
 
+<div>
+
+abc
+
+</div>
+
 Three
 
 no-translate

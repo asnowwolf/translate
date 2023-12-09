@@ -2,8 +2,7 @@ import { Eater, UnifiedParser } from './unified-parser';
 import { Node } from 'unist';
 
 export function htmlBlockTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
-  const matches = /^<(code-examples?|code-tabs)\b(.*?)>([\s\S]*?)<\/\1>/s.exec(value) ??
-    /^<([\w-]+)[^>]*>.*?\n<\/\1>(\n|$)/s.exec(value);
+  const matches = /^<(code-example|code-examples|code-tabs)\b(.*?)>([\s\S]*?)<\/\1>/s.exec(value);
   if (matches) {
     try {
       if (silent || !matches) {

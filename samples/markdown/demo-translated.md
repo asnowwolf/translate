@@ -22,6 +22,14 @@ inline [two](AbC)
 
 <div>译 abc</div>
 
+<div>
+
+abc
+
+译 abc
+
+</div>
+
 Three
 
 译 Three
