@@ -14,18 +14,18 @@ export class JsonTranslator extends AbstractTranslator<object> {
   translateDoc(doc: Readonly<Object>, options: TranslationOptions): Object {
     const result = createTranslationWithOrderedProperties(doc);
     for (let key in doc) {
-      if (doc.hasOwnProperty(key)) {
+      if (!key.endsWith('Cn') && doc.hasOwnProperty(key)) {
         const original = doc[key];
-        const translation = doc[`${key}Cn`];
+        const currentTranslation = doc[`${key}Cn`];
         if (original instanceof Object) {
           result[key] = this.translateDoc(original, options);
         } else {
           result[key] = original;
           if (options.jsonProperties?.includes(key) && typeof original === 'string' && !containsChinese(original)) {
-            this.translateSentence(original, translation, 'markdown')
+            this.translateSentence(original, currentTranslation, 'markdown')
               .then((it) => it.trim())
               .then((translation) => {
-                if (translation && original !== translation && !key.endsWith('Cn') && containsChinese(translation)) {
+                if (translation && original !== translation && containsChinese(translation)) {
                   result[`${key}Cn`] = translation;
                 }
               });
@@ -42,7 +42,7 @@ function createTranslationWithOrderedProperties(original: Readonly<Object>): Obj
   const descriptors = Object.getOwnPropertyDescriptors(original);
   const resultDescriptors = {};
   Object.entries(descriptors).forEach(([key, descriptor]) => {
-    if (typeof original[key] === 'string') {
+    if (typeof original[key] === 'string' && !key.endsWith('Cn')) {
       resultDescriptors[`${key}Cn`] = descriptor;
     }
     resultDescriptors[key] = descriptor;

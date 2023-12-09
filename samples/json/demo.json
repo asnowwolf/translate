@@ -3,6 +3,7 @@
   "b": "one",
   "c": {
     "b": "two",
+    "bCn": "译two",
     "c": {
       "b": "three"
     }
