@@ -2,9 +2,8 @@ import { Processor } from 'unified';
 import { strongVisitor } from './strong-visitor';
 import { emphasisVisitor } from './emphasis-visitor';
 import { listItemVisitor } from './list-item-visitor';
-import { anchorVisitor } from './anchor-visitor';
 import { UnifiedParser, Visitor, Visitors } from './unified-parser';
-import { originalIdVisitor } from './original-id-visitor';
+import { ngInlineAtVisitor } from './ng-inline-at-visitor';
 import { Node, Parent, Position } from 'unist';
 import { htmlCommentVisitor } from './html-comment-visitor';
 import { htmlRawVisitor } from './html-raw-visitor';
@@ -53,11 +52,10 @@ export function customCompiler(this: Processor) {
   visitors.listItem = listItemVisitor;
   visitors.strong = strongVisitor;
   visitors.emphasis = emphasisVisitor;
-  visitors.anchor = anchorVisitor;
   visitors['comment'] = htmlCommentVisitor;
   visitors['htmlRaw'] = htmlRawVisitor;
   visitors['htmlTag'] = htmlTagVisitor;
-  visitors.originalId = originalIdVisitor;
+  visitors.ngInlineAt = ngInlineAtVisitor;
   visitors.tableCell = createTableCellVisitor(visitors.tableCell);
   visitors.ngDocDirective = ngDocDirectiveVisitor;
 }

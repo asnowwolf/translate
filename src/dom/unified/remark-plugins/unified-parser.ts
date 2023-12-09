@@ -59,7 +59,7 @@ export interface InlineTokenizers {
   htmlComment: Tokenizer;
   emphasis: Tokenizer;
   strong: Tokenizer;
-  originalId: Tokenizer;
+  ngInlineAt: Tokenizer;
   htmlInlineExample: Tokenizer;
 }
 
@@ -79,5 +79,5 @@ export interface Visitors {
   anchor: Visitor;
   htmlBlock: Visitor;
   htmlInline: Visitor;
-  originalId: Visitor;
+  ngInlineAt: Visitor;
 }

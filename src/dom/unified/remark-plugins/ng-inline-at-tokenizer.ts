@@ -1,9 +1,9 @@
 import { Eater, UnifiedParser } from './unified-parser';
 import { Node } from 'unist';
 
-// 翻译原文 id
-export function originalIdTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
-  const matches = /^ *{@originalId (.*?)}/.exec(value);
+// Angular docs 内联的 @ 指令
+export function ngInlineAtTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
+  const matches = /^ *{@(\w+)\b([^}]*)}/.exec(value);
   if (matches) {
     try {
       if (silent || !matches) {
@@ -11,20 +11,21 @@ export function originalIdTokenizer(this: UnifiedParser, eat: Eater, value: stri
         return !!matches;
       }
       return eat(matches[0])({
-        type: 'originalId',
-        value: matches[1],
+        type: 'ngInlineAt',
+        name: matches[1],
+        value: matches[2],
       });
     } catch (e: any) {
-      this.file.fail('Unmatched originalId tag: ' + e.message);
+      this.file.fail('Unmatched @ tag: ' + e.message);
     }
   }
 }
 
 
 function locate(value: string, fromIndex: number): number {
-  const pattern = / *{@originalId (.*?)}/;
+  const pattern = / *{@(\w+)\b([^}]*)}/;
   pattern.lastIndex = fromIndex;
   return value.search(pattern);
 }
 
-originalIdTokenizer.locator = locate;
+ngInlineAtTokenizer.locator = locate;

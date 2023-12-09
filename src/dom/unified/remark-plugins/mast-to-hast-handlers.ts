@@ -12,5 +12,5 @@ export const mastToHastHandlers = {
     type: 'comment',
     value: node.value,
   }),
-  originalId: (h, node) => h(node, 'original-id', { translate: 'no', value: node.value }, all(h, node)),
+  originalId: (h, node) => h(node, 'at', { translate: 'no', value: node.value }, all(h, node)),
 };

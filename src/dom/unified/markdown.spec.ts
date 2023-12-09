@@ -290,16 +290,25 @@ var b = 2;
       expect(markdown.stringify(ast)).toEqual(`“中文—”`);
     });
 
-    it('originalId should mark with translate="no"', () => {
-      const md = `# h1 {@originalId 123}`;
-      const html = '<h1>h1<original-id translate="no" value="123"></original-id></h1>';
+    it('{@link foo}', () => {
+      const md = `...{@link foo}...`;
       const ast = markdown.parse(md);
       // 重建 markdown
       expect(markdown.stringify(ast)).toEqual(md);
-      // 从 html 转换成 markdown
-      expect(markdown.mdFromHtml(html)).toEqual(md);
-      // 从 markdown 转换成 html
-      expect(markdown.toHtml(ast).trim()).toEqual(html);
+    });
+
+    it('{@a foo}', () => {
+      const md = `...{@a foo}...`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
+    });
+
+    it('{@searchKeywords foo}', () => {
+      const md = `...{@searchKeywords foo}...`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
     });
   });
 
@@ -328,12 +337,6 @@ title: abc
 
     it('strong/italic', () => {
       const md = `*a*_b_`;
-      const ast = markdown.parse(md);
-      expect(markdown.stringify(ast)).toEqual(md);
-    });
-
-    it('originalId', () => {
-      const md = `# h1 {@originalId 123}`;
       const ast = markdown.parse(md);
       expect(markdown.stringify(ast)).toEqual(md);
     });

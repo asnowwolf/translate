@@ -2,8 +2,7 @@ import { Processor } from 'unified';
 import { emphasisTokenizer } from './emphasis-tokenizer';
 import { strongTokenizer } from './strong-tokenizer';
 import { listTokenizer } from './list-tokenizer';
-import { anchorTokenizer } from './anchor-tokenizer';
-import { originalIdTokenizer } from './original-id-tokenizer';
+import { ngInlineAtTokenizer } from './ng-inline-at-tokenizer';
 import { BlockTokenizers, InlineTokenizers } from './unified-parser';
 import { htmlBlockTokenizer } from './html-block-tokenizer';
 import { htmlInlineExampleTokenizer } from './html-inline-example-tokenizer';
@@ -22,7 +21,6 @@ export function customParser(this: Processor) {
 
   blockTokenizers.htmlBlock = htmlBlockTokenizer;
   blockTokenizers.htmlComment = htmlCommentBlockTokenizer;
-  blockTokenizers.anchor = anchorTokenizer;
   blockTokenizers.ngDocDirective = ngDocDirectiveTokenizer;
   blockMethods.splice(blockMethods.indexOf('indentedCode'), 1);
   blockMethods.splice(blockMethods.indexOf('html'), 1, 'htmlBlock', 'htmlComment', 'anchor', 'ngDocDirective');
@@ -34,7 +32,7 @@ export function customParser(this: Processor) {
   inlineTokenizers.htmlComment = htmlCommentInlineTokenizer;
   inlineTokenizers.emphasis = emphasisTokenizer;
   inlineTokenizers.strong = strongTokenizer;
-  inlineTokenizers.originalId = originalIdTokenizer;
+  inlineTokenizers.ngInlineAt = ngInlineAtTokenizer;
   inlineMethods.splice(inlineMethods.indexOf('html'), 0, 'htmlInlineExample', 'htmlComment');
-  inlineMethods.splice(inlineMethods.indexOf('emphasis'), 0, 'originalId');
+  inlineMethods.splice(inlineMethods.indexOf('emphasis'), 0, 'ngInlineAt');
 }
