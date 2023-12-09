@@ -2,7 +2,7 @@ import { Eater, UnifiedParser } from './unified-parser';
 import { Node } from 'unist';
 
 export function ngDocDirectiveTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
-  const matches = /^@(.*)/.exec(value);
+  const matches = /^@(\w+)\b(.*)$/.exec(value);
   if (matches) {
     try {
       if (silent || !matches) {
@@ -11,10 +11,11 @@ export function ngDocDirectiveTokenizer(this: UnifiedParser, eat: Eater, value: 
       }
       return eat(matches[0])({
         type: 'ngDocDirective',
-        value: matches[1],
+        name: matches[1],
+        value: matches[2]?.trim(),
       });
     } catch (e: any) {
-      this.file.fail('Unmatched anchor tag: ' + e.message);
+      this.file.fail('Unmatched ngDocDirective: ' + e.message);
     }
   }
 }

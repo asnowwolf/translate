@@ -310,6 +310,13 @@ var b = 2;
       // 重建 markdown
       expect(markdown.stringify(ast)).toEqual(md);
     });
+
+    it('@name one', () => {
+      const md = `@name one`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
+    });
   });
 
   describe('should rebuild markdown exactly', () => {

@@ -23,7 +23,7 @@ export function customParser(this: Processor) {
   blockTokenizers.htmlComment = htmlCommentBlockTokenizer;
   blockTokenizers.ngDocDirective = ngDocDirectiveTokenizer;
   blockMethods.splice(blockMethods.indexOf('indentedCode'), 1);
-  blockMethods.splice(blockMethods.indexOf('html'), 1, 'htmlBlock', 'htmlComment', 'anchor', 'ngDocDirective');
+  blockMethods.splice(blockMethods.indexOf('html'), 1, 'ngDocDirective', 'htmlBlock', 'htmlComment', 'anchor');
   blockTokenizers.list = listTokenizer;
 
   const inlineTokenizers = Parser.prototype.inlineTokenizers as InlineTokenizers;
