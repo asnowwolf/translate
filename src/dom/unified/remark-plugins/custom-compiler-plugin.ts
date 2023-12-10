@@ -32,6 +32,14 @@ function createTextVisitor(text: Visitor) {
         // `[` 默认已经被转义过了，不需要这里补充转义
         .replace(/]/g, '\\]');
     }
+    content = content
+      .replace(/&#x3A;/g, ':')
+      .replace(/®/g, '&reg;')
+      .replace(/^@/g, '&commat;')
+      .replace(/→/g, '&rarr;')
+      .replace(/[$]/g, '&dollar;')
+      .replace(/—/g, '&mdash;');
+
     return content;
   };
 }
