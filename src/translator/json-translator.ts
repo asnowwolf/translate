@@ -25,6 +25,8 @@ export class JsonTranslator extends AbstractTranslator<object> {
           // 以前版本的翻译中只有单行的才是对照格式，多行的无法复用，需要重新翻译
           if (!currentTranslation.includes('\n\n')) {
             this.engine.translate(original, currentTranslation, 'plain').then();
+          } else {
+            this.markdownTranslator.translateContentAndFlush(currentTranslation, options).then();
           }
           continue;
         }
