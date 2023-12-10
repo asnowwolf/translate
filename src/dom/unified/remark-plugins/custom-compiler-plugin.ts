@@ -27,13 +27,10 @@ function createLinkVisitor(link: Visitor) {
 function createTextVisitor(text: Visitor) {
   return function (this: UnifiedParser, node: Node, parent?: Parent, position?: Position, bullet?: string): string {
     let content = text.call(this, node, parent, position, bullet);
-    if (parent.type !== 'cell') {
-      content = content.replace(/@/g, '&commat;');
-    }
     if (parent.type === 'link') {
       content = content
-          // `[` 默认已经被转义过了，不需要这里补充转义
-          .replace(/]/g, '\\]');
+        // `[` 默认已经被转义过了，不需要这里补充转义
+        .replace(/]/g, '\\]');
     }
     return content;
   };
