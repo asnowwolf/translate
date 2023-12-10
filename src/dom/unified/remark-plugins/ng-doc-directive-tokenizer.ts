@@ -2,7 +2,7 @@ import { Eater, UnifiedParser } from './unified-parser';
 import { Node } from 'unist';
 
 export function ngDocDirectiveTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
-  const matches = /^@(\w+)\b(.*)$/.exec(value);
+  const matches = /^@(\w+)\b(.*)/.exec(value);
   if (matches) {
     try {
       if (silent || !matches) {
