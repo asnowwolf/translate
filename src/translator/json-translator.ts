@@ -22,10 +22,20 @@ export class JsonTranslator extends AbstractTranslator<object> {
         const original = doc[key];
         const currentTranslation = doc[`${key}Cn`];
         if (currentTranslation) {
+          // 以前版本的翻译中只有单行的才是对照格式，多行的无法复用，需要重新翻译
+          if (!currentTranslation.includes('\n\n')) {
+            this.engine.translate(original, currentTranslation, 'plain').then();
+          }
           continue;
         }
         if (Array.isArray(original)) {
-          result[key] = original.map(it => this.translateDoc(it, options));
+          result[key] = original.map(it => {
+            if (Array.isArray(it) || it instanceof Object) {
+              return this.translateDoc(it, options);
+            } else {
+              return it;
+            }
+          });
         } else if (original instanceof Object) {
           result[key] = this.translateDoc(original, options);
         } else {
