@@ -270,7 +270,7 @@ none @directive`;
 
 abc
 
-none &commat;directive`);
+none @directive`);
     });
 
     xit('embedded code-example with escape', () => {

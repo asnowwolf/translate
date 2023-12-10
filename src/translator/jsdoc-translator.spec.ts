@@ -197,7 +197,7 @@ class A {}
  * Some Text
  *
  * @usageNotes
- * a {@example path/to/file region='name'} b
+ * a{@example path/to/file region='name'}b
  */
 class A {}
 `;
@@ -209,7 +209,7 @@ class A {}
  *
  * @usageNotes
  *
- * a{@example path/to/file region='name'} b
+ * a{@example path/to/file region='name'}b
  *
  * 译 a{@example path/to/file region='name'}译 b
  *
