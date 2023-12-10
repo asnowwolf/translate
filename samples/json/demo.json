@@ -2,10 +2,11 @@
   "a": 1,
   "b": "one",
   "c": {
-    "b": "two",
-    "bCn": "译two",
-    "c": {
-      "b": "three"
+    "c1": "two",
+    "c1Cn": "译two",
+    "c2": {
+      "c21": "three"
     }
-  }
+  },
+  "d": "# one\ntwo\nthree"
 }

@@ -12,5 +12,6 @@ export const mastToHastHandlers = {
     type: 'comment',
     value: node.value,
   }),
-  originalId: (h, node) => h(node, 'at', { translate: 'no', value: node.value }, all(h, node)),
+  ngInlineAt: (h, node) => h(node, 'ng-inline-at', { translate: 'no', name: node.name, value: node.value }, all(h, node)),
+  ngDocDirective: (h, node) => h(node, 'ng-doc-directive', { translate: 'no', name: node.name, value: node.value }, all(h, node)),
 };

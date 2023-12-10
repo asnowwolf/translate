@@ -9,7 +9,7 @@ describe('html-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new HtmlTranslator(engine);
     const original = readFileSync('samples/html/demo.html', 'utf8');
-    const translation = await translator.translateContentAndFlush(original, { htmlFragment: false });
+    const translation = await translator.translateContentAndFlushStandalone(original, { htmlFragment: false });
     const expected = readFileSync('samples/html/demo-translated.html', 'utf8');
     expect(translation.trim()).toEqual(expected.trim());
   });
@@ -51,7 +51,7 @@ nine
   it('translate simple html fragment file with fake engine', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new HtmlTranslator(engine);
-    const result = await translator.translateContentAndFlush('<p translation-origin="off">One</p>', { htmlFragment: true });
+    const result = await translator.translateContentAndFlushStandalone('<p translation-origin="off">One</p>', { htmlFragment: true });
 
     expect(result).toEqual('<p translation-origin="off">One</p><p translation-result="on">译One</p>');
   });
@@ -59,7 +59,7 @@ nine
   it('translate complex html fragment file with fake engine', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new HtmlTranslator(engine);
-    const result = await translator.translateContentAndFlush(`<li>
+    const result = await translator.translateContentAndFlushStandalone(`<li>
   a<a href="/1">One</a>b
   <p>Two</p>
   <p>Three</p>
@@ -106,7 +106,7 @@ nine
   it('only translate one time', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new HtmlTranslator(engine);
-    const result = await translator.translateContentAndFlush(`<li>
+    const result = await translator.translateContentAndFlushStandalone(`<li>
 <p translation-origin="off">One</p>
 <p translation-result="on">One译</p>
 </li>`, { htmlFragment: true });
@@ -120,7 +120,7 @@ nine
   it('does not change when the original and the translation are the same', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new HtmlTranslator(engine);
-    const result = await translator.translateContentAndFlush(`<li>
+    const result = await translator.translateContentAndFlushStandalone(`<li>
 <p>no-translate</p>
 </li>`, { htmlFragment: true });
 

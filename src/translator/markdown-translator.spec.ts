@@ -8,20 +8,20 @@ describe('markdown-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
     const content = readFileSync('samples/markdown/demo.md', 'utf8');
-    const result = await translator.translateContentAndFlush(content, {});
+    const result = await translator.translateContentAndFlushStandalone(content, {});
     expect(result).toEqual(readFileSync('samples/markdown/demo-translated.md', 'utf8').trim());
   });
   it('do not duplicate heading when it should not be translated', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
-    const result = await translator.translateContentAndFlush(`# no-translate`, {});
+    const result = await translator.translateContentAndFlushStandalone(`# no-translate`, {});
     expect(result).toEqual(`# no-translate`);
   });
 
   it('should not translate text that has translated', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
-    const result = await translator.translateContentAndFlush(`one
+    const result = await translator.translateContentAndFlushStandalone(`one
 
 一
 
@@ -40,7 +40,7 @@ describe('markdown-translator', () => {
   it('translate table', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
-    const result = await translator.translateContentAndFlush(`| header1 | header2 |
+    const result = await translator.translateContentAndFlushStandalone(`| header1 | header2 |
 | :-------- | :------ |
 | <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`, {});
     expect(result).toEqual(`| header1                     | header2                                                             |
@@ -53,7 +53,7 @@ describe('markdown-translator', () => {
   it('translate table - no translate', async () => {
     const engine = new NormalizeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
-    const result = await translator.translateContentAndFlush(`| header1 | header2 |
+    const result = await translator.translateContentAndFlushStandalone(`| header1 | header2 |
 | :-------- | :------ |
 | <header>one</header>two | <code-example>three</code-example><code-example>four</code-example> |`, {});
     expect(result).toEqual(`| header1                 | header2                                                             |
@@ -63,7 +63,7 @@ describe('markdown-translator', () => {
   it('translate table 2', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new MarkdownTranslator(engine);
-    const result = await translator.translateContentAndFlush(`| one | two |
+    const result = await translator.translateContentAndFlushStandalone(`| one | two |
 | :-------- | :------ |
 | <header>three</header> <code-example hideCopy format="html" language="html">four</code-example>five<br />six | [seven](eight)<div>ten</div> |
 `, {});

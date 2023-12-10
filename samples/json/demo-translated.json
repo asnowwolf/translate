@@ -1,13 +1,15 @@
 {
   "a": 1,
-  "bCn": "译one",
+  "bCn": "one\n\n译 one",
   "b": "one",
   "c": {
-    "bCn": "译two",
-    "b": "two",
-    "c": {
-      "bCn": "译three",
-      "b": "three"
+    "c1Cn": "译two",
+    "c1": "two",
+    "c2": {
+      "c21Cn": "three",
+      "c21": "three"
     }
-  }
+  },
+  "dCn": "# one\n\n# 译 one\n\ntwo\nthree\n\n译 two 译 three",
+  "d": "# one\ntwo\nthree"
 }

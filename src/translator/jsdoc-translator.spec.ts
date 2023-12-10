@@ -7,13 +7,13 @@ describe('jsdoc-translator', () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
     const content = readFileSync('samples/ts/demo.ts', 'utf8');
-    const result = await translator.translateContentAndFlush(content, {});
+    const result = await translator.translateContentAndFlushStandalone(content, {});
     expect(result).toEqual(readFileSync('samples/ts/demo-translated.ts', 'utf8'));
   });
   it('translate ts file - must includes tag', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContentAndFlush(`
+    const result = await translator.translateContentAndFlushStandalone(`
 /**
  * Class One
  * @publicApi
@@ -94,7 +94,7 @@ export class Class2 {
   it('translate ts file - must excludes tag', async () => {
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContentAndFlush(`
+    const result = await translator.translateContentAndFlushStandalone(`
 /**
  * Class One
  * @docs-private
@@ -187,7 +187,7 @@ class A {}
 `;
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContentAndFlush(js, {});
+    const result = await translator.translateContentAndFlushStandalone(js, {});
     expect(result).toEqual(js);
   });
 
@@ -197,7 +197,7 @@ class A {}
  * Some Text
  *
  * @usageNotes
- * {@example path/to/file region='name'}
+ * a {@example path/to/file region='name'} b
  */
 class A {}
 `;
@@ -209,16 +209,16 @@ class A {}
  *
  * @usageNotes
  *
- * {@example path/to/file region='name'}
+ * a{@example path/to/file region='name'} b
  *
- * 译{@example path/to/file region='name'}
+ * 译 a{@example path/to/file region='name'}译 b
  *
  */
 class A {}
 `;
     const engine = new FakeTranslationEngine();
     const translator = new JsdocTranslator(engine);
-    const result = await translator.translateContentAndFlush(js, {});
+    const result = await translator.translateContentAndFlushStandalone(js, {});
     expect(result).toEqual(expected);
   });
 });

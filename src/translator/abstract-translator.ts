@@ -17,22 +17,26 @@ export abstract class AbstractTranslator<T> {
 
   async translateFile(filename: string, options: TranslationOptions = {}): Promise<void> {
     const content = readFileSync(filename, 'utf8');
-    const result = await this.translateContentAndFlush(content, { ...options, filename });
+    const result = await this.translateContentAndFlushStandalone(content, { ...options, filename });
     // 提取时不应该更新原始文件
     if (![TranslationEngineType.extractor, TranslationEngineType.vectorizer].includes(options.engine)) {
       writeFileSync(filename, result.trim() + '\n', 'utf8');
     }
   }
 
-  async translateContentAndFlush(content: string, options: TranslationOptions): Promise<string> {
+  async translateContentAndFlushStandalone(content: string, options: TranslationOptions): Promise<string> {
     await this.engine.setup(options.filename);
     try {
-      const result = this.translateContent(content, options);
-      await this.flush();
-      return this.serialize(result, options);
+      return await this.translateContentAndFlush(content, options);
     } finally {
       await this.engine.tearDown();
     }
+  }
+
+  async translateContentAndFlush(content: string, options: TranslationOptions) {
+    const result = this.translateContent(content, options);
+    await this.flush();
+    return this.serialize(result, options);
   }
 
   translateContent(content: string, options: TranslationOptions) {

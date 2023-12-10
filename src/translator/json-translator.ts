@@ -1,8 +1,11 @@
 import { AbstractTranslator } from './abstract-translator';
 import { containsChinese } from '../dom/common';
 import { TranslationOptions } from './translation-options';
+import { MarkdownTranslator } from './markdown-translator';
 
 export class JsonTranslator extends AbstractTranslator<object> {
+  private markdownTranslator = new MarkdownTranslator(this.engine);
+
   parse(text: string): object {
     return JSON.parse(text);
   }
@@ -17,12 +20,15 @@ export class JsonTranslator extends AbstractTranslator<object> {
       if (!key.endsWith('Cn') && doc.hasOwnProperty(key)) {
         const original = doc[key];
         const currentTranslation = doc[`${key}Cn`];
+        if (currentTranslation) {
+          continue;
+        }
         if (original instanceof Object) {
           result[key] = this.translateDoc(original, options);
         } else {
           result[key] = original;
           if (options.jsonProperties?.includes(key) && typeof original === 'string' && !containsChinese(original)) {
-            this.translateSentence(original, currentTranslation, 'markdown')
+            this.markdownTranslator.translateContentAndFlush(original, options)
               .then((it) => it.trim())
               .then((translation) => {
                 if (translation && original !== translation && containsChinese(translation)) {
