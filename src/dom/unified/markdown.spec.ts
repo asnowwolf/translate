@@ -203,7 +203,7 @@ http-server -p 8080
       expect(markdown.stringify(ast)).toEqual(md);
     });
 
-    it('embedded filetree', () => {
+    it('embedded filetree with double quote', () => {
       const md = `<div class="filetree">
     <div class="children">
         <div class="file">
@@ -219,6 +219,42 @@ http-server -p 8080
       expect(markdown.stringify(ast)).toEqual(md);
       // 从 markdown 转换成 html
       expect(markdown.toHtml(ast).trim()).toEqual(`<html-raw value="%3Cdiv%20class%3D%22filetree%22%3E%0A%20%20%20%20%3Cdiv%20class%3D%22children%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22file%22%3E%0A%20%20%20%20%20%20%20%20%20%20environment.ts%0A%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22file%22%3E%0A%20%20%20%20%20%20%20%20%20%20environment.staging.ts%0A%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%3C%2Fdiv%3E%0A%3C%2Fdiv%3E"></html-raw>`);
+    });
+
+    it('embedded filetree with single quote', () => {
+      const md = `abc
+
+<div class='filetree'>
+    <div class="children">
+        <div class="file">
+          environment.ts
+        </div>
+        <div class="file">
+          environment.staging.ts
+        </div>
+    </div>
+</div>
+
+def`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
+    });
+
+    it('embedded filetree without quote', () => {
+      const md = `<div class=filetree>
+    <div class="children">
+        <div class="file">
+          environment.ts
+        </div>
+        <div class="file">
+          environment.staging.ts
+        </div>
+    </div>
+</div>`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
     });
 
     it('angular doc @directives', () => {
