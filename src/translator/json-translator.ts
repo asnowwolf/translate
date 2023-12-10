@@ -11,6 +11,7 @@ export class JsonTranslator extends AbstractTranslator<object> {
   }
 
   serialize(doc: object): string {
+    removeUntranslatedCnProperties(doc);
     return JSON.stringify(doc, null, 2);
   }
 
@@ -23,7 +24,9 @@ export class JsonTranslator extends AbstractTranslator<object> {
         if (currentTranslation) {
           continue;
         }
-        if (original instanceof Object) {
+        if (Array.isArray(original)) {
+          result[key] = original.map(it => this.translateDoc(it, options));
+        } else if (original instanceof Object) {
           result[key] = this.translateDoc(original, options);
         } else {
           result[key] = original;
@@ -48,11 +51,26 @@ function createTranslationWithOrderedProperties(original: Readonly<Object>): Obj
   const descriptors = Object.getOwnPropertyDescriptors(original);
   const resultDescriptors = {};
   Object.entries(descriptors).forEach(([key, descriptor]) => {
-    if (typeof original[key] === 'string' && !key.endsWith('Cn')) {
+    if (typeof original[key] === 'string' && !key.endsWith('Cn') && !descriptors[`${key}Cn`]) {
       resultDescriptors[`${key}Cn`] = descriptor;
     }
     resultDescriptors[key] = descriptor;
   });
   Object.defineProperties(translation, resultDescriptors);
   return translation;
+}
+
+function removeUntranslatedCnProperties(doc: Object) {
+  if (Array.isArray(doc)) {
+    doc.forEach((it) => removeUntranslatedCnProperties(it));
+  } else if (doc instanceof Object) {
+    Object.keys(doc).forEach((key) => {
+      if (!key.endsWith('Cn') && doc[key] === doc[`${key}Cn`]) {
+        delete doc[`${key}Cn`];
+      }
+      if (doc[key] instanceof Object) {
+        removeUntranslatedCnProperties(doc[key]);
+      }
+    });
+  }
 }

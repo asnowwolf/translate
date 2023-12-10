@@ -3,13 +3,27 @@
   "bCn": "one\n\n译 one",
   "b": "one",
   "c": {
-    "c1Cn": "译two",
-    "c1": "two",
+    "bCn": "译two",
+    "b": "two",
+    "c1": {
+      "bCn": "three\n\n译 three",
+      "b": "three"
+    },
     "c2": {
-      "c21Cn": "three",
-      "c21": "three"
+      "bCn": "four\n\n译 four",
+      "b": "four"
     }
   },
-  "dCn": "# one\n\n# 译 one\n\ntwo\nthree\n\n译 two 译 three",
-  "d": "# one\ntwo\nthree"
+  "dCn": "# one\n\n# 译 one\n\ntwo\n\n译 two\n\nthree\n\n译 three",
+  "d": "# one\n\ntwo\n\nthree",
+  "e": [
+    {
+      "bCn": "five\n\n译 five",
+      "b": "five"
+    },
+    {
+      "bCn": "six\n\n译 six",
+      "b": "six"
+    }
+  ]
 }
