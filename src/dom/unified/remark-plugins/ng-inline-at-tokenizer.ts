@@ -3,7 +3,7 @@ import { Node } from 'unist';
 
 // Angular docs 内联的 @ 指令
 export function ngInlineAtTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
-  const matches = /^ *{@(\w+)\b([^}]*)}/.exec(value);
+  const matches = /^{@(\w+)\b([^}]*)}/.exec(value);
   if (matches) {
     try {
       if (silent || !matches) {
@@ -23,7 +23,7 @@ export function ngInlineAtTokenizer(this: UnifiedParser, eat: Eater, value: stri
 
 
 function locate(value: string, fromIndex: number): number {
-  const pattern = / *{@(\w+)\b([^}]*)}/;
+  const pattern = /{@(\w+)\b([^}]*)}/;
   pattern.lastIndex = fromIndex;
   return value.search(pattern);
 }
