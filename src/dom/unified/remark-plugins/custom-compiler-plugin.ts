@@ -37,7 +37,6 @@ function createTextVisitor(text: Visitor) {
       .replace(/®/g, '&reg;')
       .replace(/^@/g, '&commat;')
       .replace(/→/g, '&rarr;')
-      .replace(/[$]/g, '&dollar;')
       .replace(/—/g, '&mdash;');
 
     return content;
