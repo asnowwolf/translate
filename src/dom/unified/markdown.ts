@@ -162,7 +162,6 @@ export namespace markdown {
     } else if (isParent(node)) {
       return node.children.some(it => nodeContainsChinese(it));
     } else {
-      console.warn('nodeContainsChinese: unknown node type:', node.type);
       return containsChinese(contentOf(node));
     }
   }
