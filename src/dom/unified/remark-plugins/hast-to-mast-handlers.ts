@@ -7,7 +7,7 @@ function generateHtmlRaw(h, node: Node) {
   return h(node, 'htmlRaw', { value }, []);
 }
 
-function generateClosingTag(h, node: Node) {
+function generateHtmlTag(h, node: Node) {
   return h(node, 'htmlTag', {
     tagName: node.tagName,
     selfClosing: false,
@@ -25,8 +25,8 @@ export const hastToMastHandlers = {
   'code-examples': (h, node: Node) => generateHtmlRaw(h, node),
   br: (h, node: Node) => generateHtmlRaw(h, node),
   img: (h, node: Node) => generateHtmlRaw(h, node),
-  'header': (h, node: Node) => generateClosingTag(h, node),
-  'div': (h, node: Node) => generateClosingTag(h, node),
+  'header': (h, node: Node) => generateHtmlTag(h, node),
+  'div': (h, node: Node) => generateHtmlTag(h, node),
   'tag': (h, node: Node) => h(node, 'html', { value: decodeURIComponent((node.properties as { value: string }).value) }, all(h, node)),
   'html-raw': (h, node: Node) => h(node, 'htmlRaw', { value: decodeURIComponent((node.properties as { value: string }).value) }, all(h, node)),
   'ng-inline-at': (h, node: Node) => h(node, 'ngInlineAt', { name: node.properties['name'], value: node.properties['value'] }, all(h, node)),
