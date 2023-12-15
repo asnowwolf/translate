@@ -1,7 +1,7 @@
 import { Eater, UnifiedParser } from './unified-parser';
 import { Node } from 'unist';
 
-const pattern = /^<(code-example|live-example)[\s\S]+?<\/\1>/;
+const pattern = /^<(code-example|code)[\s\S]+?<\/\1>/;
 
 export function htmlInlineExampleTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const matches = pattern.exec(value);

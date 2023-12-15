@@ -97,14 +97,14 @@ def`;
 
     it('embedded live-example', () => {
       const md = 'one<live-example src="abc">def</live-example>';
-      const html = `<p>one<live-example src="abc">def</live-example></p>`;
+      const html = `<p>one<tag value="%3Clive-example%20src%3D%22abc%22%3E"></tag>def<tag value="%3C%2Flive-example%3E"></tag></p>`;
       const ast = markdown.parse(md);
       // 重建 markdown
       expect(markdown.stringify(ast)).toEqual(md);
       // 从 html 转换成 markdown
       expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
-      expect(markdown.toHtml(ast).trim()).toEqual(`<p>one<html-raw value="%3Clive-example%20src%3D%22abc%22%3Edef%3C%2Flive-example%3E"></html-raw></p>`);
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
     it('embedded comment - inline', () => {
@@ -147,15 +147,15 @@ links
     });
 
     it('embedded br and inline code', () => {
-      const md = 'one<br />`<table>`';
-      const html = `<p>one<tag value="%3Cbr%20%2F%3E"></tag><code>&#x3C;table></code></p>`;
+      const md = 'one<br />`<table>`<code>&#3A;</code>';
+      const html = `<p>one<tag value="%3Cbr%20%2F%3E"></tag><code>&#x3C;table></code><html-raw value="%3Ccode%3E%26%233A%3B%3C%2Fcode%3E"></html-raw></p>`;
       const ast = markdown.parse(md);
       // 重建 markdown
       expect(markdown.stringify(ast)).toEqual(md);
-      // 从 html 转换成 markdown
-      expect(markdown.mdFromHtml(html)).toEqual(md);
       // 从 markdown 转换成 html
       expect(markdown.toHtml(ast).trim()).toEqual(html);
+      // 从 html 转换成 markdown
+      expect(markdown.mdFromHtml(html)).toEqual(md);
     });
 
     it('embedded code-example', () => {
@@ -308,6 +308,17 @@ var b = 2;
       expect(markdown.toHtml(ast).trim()).toEqual(html);
     });
 
+    it('embedded code tag', () => {
+      const md = `<code>a</code>`;
+      const html = `<p><html-raw value="%3Ccode%3Ea%3C%2Fcode%3E"></html-raw></p>`;
+      const ast = markdown.parse(md);
+      // 重建 markdown
+      expect(markdown.stringify(ast)).toEqual(md);
+      // 从 html 转换成 markdown
+      expect(markdown.mdFromHtml(html)).toEqual(md);
+      // 从 markdown 转换成 html
+      expect(markdown.toHtml(ast).trim()).toEqual(html);
+    });
     it('embedded custom tag', () => {
       const md = `<t>a</t>`;
       const html = `<p><tag value="%3Ct%3E"></tag>a<tag value="%3C%2Ft%3E"></tag></p>`;
