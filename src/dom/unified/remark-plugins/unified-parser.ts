@@ -50,7 +50,7 @@ export interface BlockTokenizers {
   thematicBreak: Tokenizer;
   anchor: Tokenizer;
   list: Tokenizer;
-  htmlBlock: Tokenizer;
+  htmlRaw: Tokenizer;
 }
 
 export interface InlineTokenizers {
@@ -77,7 +77,5 @@ export interface Visitors {
   strong: Visitor;
   emphasis: Visitor;
   anchor: Visitor;
-  htmlBlock: Visitor;
-  htmlInline: Visitor;
   ngInlineAt: Visitor;
 }

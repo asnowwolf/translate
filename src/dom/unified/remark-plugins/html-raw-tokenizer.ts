@@ -1,7 +1,7 @@
 import { Eater, UnifiedParser } from './unified-parser';
 import { Node } from 'unist';
 
-export function htmlBlockTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
+export function htmlRawTokenizer(this: UnifiedParser, eat: Eater, value: string, silent?: boolean): Node | boolean | undefined {
   const matches = /^<(code-example|code-examples|code-tabs)\b(.*?)>([\s\S]*?)<\/\1>/s.exec(value) ??
     /^( *)<div class=(["']?)filetree\2>.*?\n\1<\/div>/s.exec(value);
   if (matches) {

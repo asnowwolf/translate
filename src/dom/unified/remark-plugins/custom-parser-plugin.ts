@@ -4,7 +4,7 @@ import { strongTokenizer } from './strong-tokenizer';
 import { listTokenizer } from './list-tokenizer';
 import { ngInlineAtTokenizer } from './ng-inline-at-tokenizer';
 import { BlockTokenizers, InlineTokenizers } from './unified-parser';
-import { htmlBlockTokenizer } from './html-block-tokenizer';
+import { htmlRawTokenizer } from './html-raw-tokenizer';
 import { htmlInlineExampleTokenizer } from './html-inline-example-tokenizer';
 import { htmlCommentInlineTokenizer } from './html-comment-inline-tokenizer';
 import { ngDocDirectiveTokenizer } from './ng-doc-directive-tokenizer';
@@ -19,11 +19,11 @@ export function customParser(this: Processor) {
   const blockTokenizers = Parser.prototype.blockTokenizers as BlockTokenizers;
   const blockMethods = Parser.prototype.blockMethods as string[];
 
-  blockTokenizers.htmlBlock = htmlBlockTokenizer;
+  blockTokenizers.htmlRaw = htmlRawTokenizer;
   blockTokenizers.htmlComment = htmlCommentBlockTokenizer;
   blockTokenizers.ngDocDirective = ngDocDirectiveTokenizer;
   blockMethods.splice(blockMethods.indexOf('indentedCode'), 1);
-  blockMethods.splice(blockMethods.indexOf('html'), 1, 'ngDocDirective', 'htmlBlock', 'htmlComment', 'anchor');
+  blockMethods.splice(blockMethods.indexOf('html'), 1, 'ngDocDirective', 'htmlRaw', 'htmlComment', 'anchor');
   blockTokenizers.list = listTokenizer;
 
   const inlineTokenizers = Parser.prototype.inlineTokenizers as InlineTokenizers;
