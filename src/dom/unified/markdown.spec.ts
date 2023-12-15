@@ -323,7 +323,7 @@ var b = 2;
     it('escaped text', () => {
       const ast = markdown.parse(`&#8220;中文&mdash;&#8221;`);
       // 重建 markdown
-      expect(markdown.stringify(ast)).toEqual(`“中文—”`);
+      expect(markdown.stringify(ast)).toEqual(`“中文&mdash;”`);
     });
 
     it('{@link foo}', () => {
